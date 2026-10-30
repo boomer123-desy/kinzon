@@ -1,0 +1,195 @@
+TAP version 13
+# Subtest: actual BOM page, submit methods and full production DTO pass strict type checks with host doubles
+ok 1 - actual BOM page, submit methods and full production DTO pass strict type checks with host doubles # SKIP test name does not match pattern
+  ---
+  duration_ms: 1.4997
+  ...
+# Subtest: main BOM loads with converted output quantity, physical units and stable distinct tree IDs
+ok 2 - main BOM loads with converted output quantity, physical units and stable distinct tree IDs # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.1536
+  ...
+# Subtest: unit changes preserve physical demand, manual quantities update outbound snapshots
+ok 3 - unit changes preserve physical demand, manual quantities update outbound snapshots # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.1199
+  ...
+# Subtest: alternatives are exclusive, unselected materials excluded, corrupted multiple selection rejected
+ok 4 - alternatives are exclusive, unselected materials excluded, corrupted multiple selection rejected # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.124
+  ...
+# Subtest: other materials retain edits, restore picker state, delete and survive BOM clearing
+ok 5 - other materials retain edits, restore picker state, delete and survive BOM clearing # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.1275
+  ...
+# Subtest: saved drafts are isolated from parent, tree parent cycles are removed from submit payload
+ok 6 - saved drafts are isolated from parent, tree parent cycles are removed from submit payload # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.1189
+  ...
+# Subtest: empty BOM list supports manual materials; missing/invalid unit ratios block false success
+ok 7 - empty BOM list supports manual materials; missing/invalid unit ratios block false success # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.1554
+  ...
+# Subtest: query failure keeps visible draft and blocks submitting it as a newly selected BOM
+ok 8 - query failure keeps visible draft and blocks submitting it as a newly selected BOM # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.1343
+  ...
+# Subtest: child BOM references are resolved to physical material IDs instead of submitted as version IDs
+ok 9 - child BOM references are resolved to physical material IDs instead of submitted as version IDs # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.1449
+  ...
+# Subtest: invalid BOM totals block queries, empty manual drafts never create NaN outbound quantities
+ok 10 - invalid BOM totals block queries, empty manual drafts never create NaN outbound quantities # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.2511
+  ...
+# Subtest: a late previous-product response cannot overwrite a new current row
+ok 11 - a late previous-product response cannot overwrite a new current row # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.139
+  ...
+# Subtest: BOM submission uses the material branch and fills basis identity without formula unit fields
+ok 12 - BOM submission uses the material branch and fills basis identity without formula unit fields # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.1181
+  ...
+# Subtest: initialization restores income pricing for a preselected department and production unit
+not ok 13 - initialization restores income pricing for a preselected department and production unit
+  ---
+  duration_ms: 297.9782
+  location: 'C:\\Users\\Public\\Documents\\Wondershare\\CreatorTemp\\returnOrder-before-move-1ztsp039\\production\\front\\views\\dispatch_order_manage\\__tests__\\material-demand-by-bom.test.cjs:414:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    undefined !== 88
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 88
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (C:\Users\Public\Documents\Wondershare\CreatorTemp\returnOrder-before-move-1ztsp039\production\front\views\dispatch_order_manage\__tests__\material-demand-by-bom.test.cjs:430:10)
+    async Test.run (node:internal/test_runner/test:632:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:374:7)
+  ...
+# Subtest: income validation distinguishes missing pricing unit from invalid converted quantity
+not ok 14 - income validation distinguishes missing pricing unit from invalid converted quantity
+  ---
+  duration_ms: 104.2677
+  location: 'C:\\Users\\Public\\Documents\\Wondershare\\CreatorTemp\\returnOrder-before-move-1ztsp039\\production\\front\\views\\dispatch_order_manage\\__tests__\\material-demand-by-bom.test.cjs:437:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /收入计价数量无效/. Input:
+    
+    '请在【加工单价管理】功能输入第1条记录的收入计价单位'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: '请在【加工单价管理】功能输入第1条记录的收入计价单位'
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (C:\Users\Public\Documents\Wondershare\CreatorTemp\returnOrder-before-move-1ztsp039\production\front\views\dispatch_order_manage\__tests__\material-demand-by-bom.test.cjs:447:12)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:631:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:374:18)
+    Test.postRun (node:internal/test_runner/test:715:19)
+    Test.run (node:internal/test_runner/test:673:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:374:7)
+  ...
+# Subtest: formula submission keeps its original unit fields and fills formula basis identity
+ok 15 - formula submission keeps its original unit fields and fills formula basis identity # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.9089
+  ...
+# Subtest: manual materials from BOM editor submit without a BOM version or formula fields
+ok 16 - manual materials from BOM editor submit without a BOM version or formula fields # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.1585
+  ...
+# Subtest: version conversion wins and zero/stale parent mainQuantity is ignored
+ok 17 - version conversion wins and zero/stale parent mainQuantity is ignored # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.3211
+  ...
+# Subtest: missing version relationship falls back to a fresh product/specification unit pair without mixing ratios
+ok 18 - missing version relationship falls back to a fresh product/specification unit pair without mixing ratios # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.5685
+  ...
+# Subtest: latest units support an empty version unit snapshot and use the matching package conversion ID
+ok 19 - latest units support an empty version unit snapshot and use the matching package conversion ID # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.1513
+  ...
+# Subtest: legacy duplicate zero IDs preserve the specification output and convert boxes using latest units
+ok 20 - legacy duplicate zero IDs preserve the specification output and convert boxes using latest units # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.2093
+  ...
+# Subtest: legacy main unit ID zero resolves to latest main unit and uses both latest ratios
+ok 21 - legacy main unit ID zero resolves to latest main unit and uses both latest ratios # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.2782
+  ...
+# Subtest: specification snapshot and latest list can use a conversion ID for opposite units
+ok 22 - specification snapshot and latest list can use a conversion ID for opposite units # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.0819
+  ...
+# Subtest: missing box conversion cannot fall back to another package with the same unit ID
+ok 23 - missing box conversion cannot fall back to another package with the same unit ID # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.0928
+  ...
+# Subtest: invalid quantities or unavailable conversions never submit a false zero or infinity
+ok 24 - invalid quantities or unavailable conversions never submit a false zero or infinity # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.0729
+  ...
+# Subtest: failed latest-unit request prevents querying and submitting BOM details
+ok 25 - failed latest-unit request prevents querying and submitting BOM details # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.0597
+  ...
+# Subtest: reopening a draft refreshes changed latest conversion before accepting old material quantities
+ok 26 - reopening a draft refreshes changed latest conversion before accepting old material quantities # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.1091
+  ...
+# Subtest: query and submit use the same rounding and current dispatch inputs
+ok 27 - query and submit use the same rounding and current dispatch inputs # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.1255
+  ...
+# Subtest: missing selected unit or quantity blocks posting instead of filling required values with zero
+ok 28 - missing selected unit or quantity blocks posting instead of filling required values with zero # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.1094
+  ...
+# Subtest: dispatch quantity scales BOM tree, selected materials and unit snapshots before reopening
+ok 29 - dispatch quantity scales BOM tree, selected materials and unit snapshots before reopening # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.0592
+  ...
+# Subtest: quantity scaling preserves substitute choice, other materials and independent drafts per dispatch row
+ok 30 - quantity scaling preserves substitute choice, other materials and independent drafts per dispatch row # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.0772
+  ...
+1..30
+# tests 30
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 28
+# todo 0
+# duration_ms 1667.6666

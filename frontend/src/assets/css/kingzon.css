@@ -1,0 +1,301 @@
+/*全局样式控制*/
+.kingzon-page {
+  /*position: fixed;*/
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  padding: 5px 0;
+}
+
+.kingzon-page .kingzon-page-title {
+  display: inline-block;
+  border: none;
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+  font-weight: 800;
+  text-align: left;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+}
+
+.kingzon-page .kingzon-page-title > span:first-of-type {
+  padding-left: 12px;
+  font-size: 16px;
+  height: 22px;
+  line-height: 22px;
+  display: inline-block;
+  border-left: solid 2px var(--color-blue) !important;
+}
+
+.kingzon-page .kingzon-page-body {
+  height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+}
+
+.kingzon-page-panel {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 2px 0;
+}
+
+.kingzon-page-panel > div {
+  margin-right: 20px;
+  margin-bottom: 5px;
+}
+
+.kingzon-page-panel > div > label {
+  width: auto;
+}
+
+.kingzon-page-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.kingzon-page-content .kingzon-page-fill {
+  width: 100%;
+  flex: 1 1 auto;
+  height: 0;
+  overflow-y: scroll;
+}
+
+.kingzon-page-form {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 5px;
+}
+
+.kingzon-page-footer {
+  text-align: center;
+  margin: 5px;
+}
+
+.kingzon-btn-group > a {
+  min-width: 60px;
+  margin-right: 10px;
+}
+.kingzon-btn-group > div {
+  display: inline-block;
+}
+
+.Kingzon-Red-Switch .switchbutton-on {
+  background: var(--color-red) !important;
+}
+
+
+.Kingzon-Delete-Switch .switchbutton-on {
+  background: var(--color-red) !important;
+}
+
+.Kingzon-Delete-Switch .switchbutton-off {
+  background: var(--color-blue) !important;
+  color: var(--color-white);
+}
+
+.kingzon-textEllipsis {
+  overflow: hidden;
+  /*不允许滚动条*/
+  white-space: nowrap;
+  /*不允许文本换行*/
+  text-overflow: ellipsis;
+  /*文本超长显示省略号*/
+}
+
+.combo-panel {
+  height: auto !important;
+  max-height: 200px !important;
+  min-height: 30px !important;
+}
+
+.kingzon-tag {
+  background-color: var(--color-blue-bg);
+  display: inline-block;
+  height: 26px;
+  padding: 0 10px;
+  line-height: 24px;
+  /* color: #409eff; */
+  color: var(--color-blue);
+  border: 1px solid var(--color-blue-border);
+  border-radius: 4px;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.kingzon-tag-success {
+  background-color: var(--color-green-bg);
+  border-color: var(--color-green-border);
+  color: var(--color-green-tag);
+  /* color: #67c23a; */
+}
+
+.kingzon-tag-info {
+  background-color: var(--color-grey-bg);
+  border-color: var(--color-grey-border);
+  color: var(--color-grey);
+}
+
+.kingzon-tag-warning {
+  background-color: var(--color-yellow-bg);
+  border-color: var(--color-yellow-border);
+  color: var(--color-yellow);
+  /* color: #e6a23c; */
+}
+
+.kingzon-tag-danger {
+  /* background-color: #fef0f0;
+  border-color: #fde2e2; */
+  background-color: var(--color-red-bg);
+  border-color: var(--color-red-border);
+  color: var(--color-red);
+  /* color: #f56c6c; */
+}
+
+.kingzon-fileitem {
+  height: 70px;
+  padding: 10px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.kingzon-fileitem img {
+  width: 50px;
+  height: 50px;
+}
+
+.kingzon-fileitem .name {
+  margin: 0 20px;
+  flex: 1;
+}
+
+.kingzon-fileitem .size {
+  margin: 0 20px;
+  text-align: right;
+}
+
+.kingzon-detail-text {
+  color: var(--color-blue);
+}
+
+.kingzon-detail-text:hover {
+  text-decoration: underline;
+  color: var(--color-deep-blue);
+  cursor: pointer;
+}
+.datagrid-row-selected .kingzon-detail-text {
+  color: #fff;
+}
+
+.kingzon-pointer:hover {
+  cursor: pointer;
+}
+
+.kingzon-cell-editable {
+  border-bottom: 2px solid var(--color-blue) !important;
+}
+
+.kingzon-cell-change {
+  background-color: var(--color-red-modify);
+}
+
+.kingzon-cell-tips {
+  position: relative;
+}
+
+.kingzon-cell-tips:hover:after {
+  position: absolute;
+  left: 15px;
+  top: -7px;
+  padding: 5px 2px;
+  background-color: var(--color-blue);
+  border-radius: 5px;
+  color: #fff;
+  /*这里显示的内容为表格中自定义的labelTooltip属性对应的值*/
+  content: attr(labelTooltip);
+  z-index: 2;
+  width: auto;
+}
+
+.amoeba-board-time {
+  color: var(--color-white);
+  text-align: right;
+  margin-right: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.amoeba-board-content {
+  height: calc(100% - 4.2rem);
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  margin-top: 0.3rem;
+  width: calc(100% - 1.2rem);
+  margin-left: 0.6rem;
+}
+
+/* .addition_borad div:nth-child(2n+1) {
+  height: 20px;
+  line-height: 20px;
+} */
+
+.addition_borad div:nth-child(1) {
+  margin-top: 4px;
+}
+
+/* .addition_borad div:nth-child(3) {
+  margin-top: -2px;
+} */
+
+.addition_borad div:nth-child(2n) {
+  /* height: calc(50% - 22px); */
+  font-weight: bold;
+}
+
+.kingzon-cell-change {
+  background-color: var(--color-error-bg);
+}
+
+.kingzon-input-addon {
+  background: var(--color-grey-bg);
+  height: 100%;
+  line-height: 28px;
+  text-align: right;
+  padding: 0 3px;
+}
+
+.amoeba_blod_text > div {
+  font-weight: bolder;
+}
+
+.amoeba_summarty_text {
+  border-left: none !important;
+  border-right: none !important;
+}
+
+.kingzon-text-grey {
+  color: var(--color-grey);
+  font-style: italic;
+}
+
+.kingzon-grey-row {
+  background-color: var(--color-grey-icon);
+}
+.kingzon-grey-row div {
+  font-weight: 700;
+}

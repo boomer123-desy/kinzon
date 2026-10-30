@@ -1,0 +1,25 @@
+-- Restore only this test-data adjustment. Conditions protect subsequently changed amounts.
+USE `test_qibiao`;
+START TRANSACTION;
+UPDATE `SaleOrderDetail` SET `Price`=10.0000,`PriceHaveTax`=0.0000,`TaxRate`=0E-30,`TotalPrice`=60000.000000000000000000000000000000,`TotalPriceHaveTax`=0E-30,`UpdateTime`='2026-03-26 09:00:00' WHERE Id=18053 AND `Price` <=> 1.00 AND `PriceHaveTax` <=> 1.1300 AND `TaxRate` <=> 13 AND `TotalPrice` <=> 6000.0000 AND `TotalPriceHaveTax` <=> 6780.0000;
+UPDATE `SaleOrderDetail` SET `Price`=10.0000,`PriceHaveTax`=0.0000,`TaxRate`=0E-30,`TotalPrice`=68500.000000000000000000000000000000,`TotalPriceHaveTax`=0E-30,`UpdateTime`='2026-03-28 09:00:00' WHERE Id=18054 AND `Price` <=> 1.00 AND `PriceHaveTax` <=> 1.1300 AND `TaxRate` <=> 13 AND `TotalPrice` <=> 6850.0000 AND `TotalPriceHaveTax` <=> 7740.5000;
+UPDATE `SaleOrderDetail` SET `Price`=10.0000,`PriceHaveTax`=0.0000,`TaxRate`=0E-30,`TotalPrice`=77000.000000000000000000000000000000,`TotalPriceHaveTax`=0E-30,`UpdateTime`='2026-04-04 09:00:00' WHERE Id=18055 AND `Price` <=> 1.00 AND `PriceHaveTax` <=> 1.1300 AND `TaxRate` <=> 13 AND `TotalPrice` <=> 7700.0000 AND `TotalPriceHaveTax` <=> 8701.0000;
+UPDATE `SaleOrderDetail` SET `Price`=10.0000,`PriceHaveTax`=0.0000,`TaxRate`=0E-30,`TotalPrice`=85500.000000000000000000000000000000,`TotalPriceHaveTax`=0E-30,`UpdateTime`='2026-04-11 09:00:00' WHERE Id=18056 AND `Price` <=> 1.00 AND `PriceHaveTax` <=> 1.1300 AND `TaxRate` <=> 13 AND `TotalPrice` <=> 8550.0000 AND `TotalPriceHaveTax` <=> 9661.5000;
+UPDATE `SaleOrderDetail` SET `Price`=10.0000,`PriceHaveTax`=0.0000,`TaxRate`=0E-30,`TotalPrice`=94000.000000000000000000000000000000,`TotalPriceHaveTax`=0E-30,`UpdateTime`='2026-04-18 09:00:00' WHERE Id=18057 AND `Price` <=> 1.00 AND `PriceHaveTax` <=> 1.1300 AND `TaxRate` <=> 13 AND `TotalPrice` <=> 9400.0000 AND `TotalPriceHaveTax` <=> 10622.0000;
+UPDATE `SaleOrderDetail` SET `Price`=10.0000,`PriceHaveTax`=0.0000,`TaxRate`=0E-30,`TotalPrice`=102500.000000000000000000000000000000,`TotalPriceHaveTax`=0E-30,`UpdateTime`='2026-04-25 09:00:00' WHERE Id=18058 AND `Price` <=> 1.00 AND `PriceHaveTax` <=> 1.1300 AND `TaxRate` <=> 13 AND `TotalPrice` <=> 10250.0000 AND `TotalPriceHaveTax` <=> 11582.5000;
+UPDATE `SaleOrderDetail` SET `Price`=10.0000,`PriceHaveTax`=0.0000,`TaxRate`=0E-30,`TotalPrice`=316870.000000000000000000000000000000,`TotalPriceHaveTax`=0E-30,`UpdateTime`='2025-03-26 09:00:00' WHERE Id=18109 AND `Price` <=> 0.80 AND `PriceHaveTax` <=> 0.9040 AND `TaxRate` <=> 13 AND `TotalPrice` <=> 25349.6000 AND `TotalPriceHaveTax` <=> 28645.0480;
+UPDATE `SaleOrder` SET `OrderTotalPrice`=60000.0000,`OrderTotalPriceHaveTax`=0.0000,`UpdateTime`='2026-03-26 09:00:00' WHERE Id=2690 AND `OrderTotalPrice` <=> 6000.0000 AND `OrderTotalPriceHaveTax` <=> 6780.0000;
+UPDATE `SaleOrder` SET `OrderTotalPrice`=68500.0000,`OrderTotalPriceHaveTax`=0.0000,`UpdateTime`='2026-03-28 09:00:00' WHERE Id=2691 AND `OrderTotalPrice` <=> 6850.0000 AND `OrderTotalPriceHaveTax` <=> 7740.5000;
+UPDATE `SaleOrder` SET `OrderTotalPrice`=77000.0000,`OrderTotalPriceHaveTax`=0.0000,`UpdateTime`='2026-04-04 09:00:00' WHERE Id=2692 AND `OrderTotalPrice` <=> 7700.0000 AND `OrderTotalPriceHaveTax` <=> 8701.0000;
+UPDATE `SaleOrder` SET `OrderTotalPrice`=85500.0000,`OrderTotalPriceHaveTax`=0.0000,`UpdateTime`='2026-04-11 09:00:00' WHERE Id=2693 AND `OrderTotalPrice` <=> 8550.0000 AND `OrderTotalPriceHaveTax` <=> 9661.5000;
+UPDATE `SaleOrder` SET `OrderTotalPrice`=94000.0000,`OrderTotalPriceHaveTax`=0.0000,`UpdateTime`='2026-04-18 09:00:00' WHERE Id=2694 AND `OrderTotalPrice` <=> 9400.0000 AND `OrderTotalPriceHaveTax` <=> 10622.0000;
+UPDATE `SaleOrder` SET `OrderTotalPrice`=102500.0000,`OrderTotalPriceHaveTax`=0.0000,`UpdateTime`='2026-04-25 09:00:00' WHERE Id=2695 AND `OrderTotalPrice` <=> 10250.0000 AND `OrderTotalPriceHaveTax` <=> 11582.5000;
+UPDATE `SaleOrder` SET `OrderTotalPrice`=316870.0000,`OrderTotalPriceHaveTax`=0.0000,`UpdateTime`='2025-03-26 09:00:00' WHERE Id=2746 AND `OrderTotalPrice` <=> 25349.6000 AND `OrderTotalPriceHaveTax` <=> 28645.0480;
+UPDATE `DeliveryOrderDetail` SET `SalePrice`=10.0000,`UpdateTime`='2026-03-26 09:00:00' WHERE Id=18590 AND `SalePrice` <=> 1.00;
+UPDATE `DeliveryOrderDetail` SET `SalePrice`=10.0000,`UpdateTime`='2026-03-28 09:00:00' WHERE Id=18591 AND `SalePrice` <=> 1.00;
+UPDATE `DeliveryOrderDetail` SET `SalePrice`=10.0000,`UpdateTime`='2026-04-04 09:00:00' WHERE Id=18592 AND `SalePrice` <=> 1.00;
+UPDATE `DeliveryOrderDetail` SET `SalePrice`=10.0000,`UpdateTime`='2026-04-11 09:00:00' WHERE Id=18593 AND `SalePrice` <=> 1.00;
+UPDATE `DeliveryOrderDetail` SET `SalePrice`=10.0000,`UpdateTime`='2026-04-18 09:00:00' WHERE Id=18594 AND `SalePrice` <=> 1.00;
+UPDATE `DeliveryOrderDetail` SET `SalePrice`=10.0000,`UpdateTime`='2026-04-25 09:00:00' WHERE Id=18595 AND `SalePrice` <=> 1.00;
+UPDATE `DeliveryOrderDetail` SET `SalePrice`=10.0000,`UpdateTime`='2025-03-26 09:00:00' WHERE Id=18646 AND `SalePrice` <=> 0.80;
+COMMIT;

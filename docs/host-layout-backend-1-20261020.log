@@ -1,0 +1,6 @@
+BOM isolated checks: C:\Users\Public\Documents\Wondershare\CreatorTemp\bom-demand-query-ytaee5ij
+C:\Users\Public\Documents\Wondershare\CreatorTemp\bom-demand-query-ytaee5ij\Support.cs(261,132): warning CS8602: 解引用可能出现空引用。 [C:\Users\Public\Documents\Wondershare\CreatorTemp\bom-demand-query-ytaee5ij\Checks.csproj]
+C:\Users\Public\Documents\Wondershare\CreatorTemp\bom-demand-query-ytaee5ij\Support.cs(263,101): warning CS8602: 解引用可能出现空引用。 [C:\Users\Public\Documents\Wondershare\CreatorTemp\bom-demand-query-ytaee5ij\Checks.csproj]
+C:\Users\Public\Documents\Wondershare\CreatorTemp\bom-demand-query-ytaee5ij\Support.cs(264,93): warning CS8602: 解引用可能出现空引用。 [C:\Users\Public\Documents\Wondershare\CreatorTemp\bom-demand-query-ytaee5ij\Checks.csproj]
+C:\Users\Public\Documents\Wondershare\CreatorTemp\bom-demand-query-ytaee5ij\Support.cs(265,93): warning CS8602: 解引用可能出现空引用。 [C:\Users\Public\Documents\Wondershare\CreatorTemp\bom-demand-query-ytaee5ij\Checks.csproj]
+BOM queries passed: option filters/units, safe formula lifting, first-level output, specification identity and consumption units.

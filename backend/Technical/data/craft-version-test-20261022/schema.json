@@ -1,0 +1,3727 @@
+{
+  "Technical_CraftOrder": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Code",
+        "Type": "varchar(50)",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Name",
+        "Type": "varchar(100)",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "ProductId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "SpecificationId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Description",
+        "Type": "varchar(500)",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "IsDeleted",
+        "Type": "tinyint(1)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `Technical_CraftOrder` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `Code` varchar(50) NOT NULL,\n  `Name` varchar(100) NOT NULL,\n  `ProductId` bigint(20) NOT NULL,\n  `SpecificationId` bigint(20) DEFAULT NULL,\n  `Description` varchar(500) DEFAULT NULL,\n  `IsDeleted` tinyint(1) NOT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  PRIMARY KEY (`Id`),\n  KEY `IX_Technical_CraftOrder_ProductId` (`ProductId`),\n  KEY `IX_Technical_CraftOrder_SpecificationId` (`SpecificationId`),\n  CONSTRAINT `FK_Technical_CraftOrder_Base_ProductSpecification_Specification~` FOREIGN KEY (`SpecificationId`) REFERENCES `Base_ProductSpecification` (`Id`) ON DELETE CASCADE,\n  CONSTRAINT `FK_Technical_CraftOrder_Base_Product_ProductId` FOREIGN KEY (`ProductId`) REFERENCES `Base_Product` (`Id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=9026 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "Technical_CraftOrderVersion": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CraftOrderId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "SequenceNo",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Version",
+        "Type": "varchar(20)",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "IsMain",
+        "Type": "tinyint(1)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Status",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Remark",
+        "Type": "varchar(500)",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "IsDeleted",
+        "Type": "tinyint(1)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "WorkflowTemplateId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "UNI",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "BomVersionId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `Technical_CraftOrderVersion` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `CraftOrderId` bigint(20) NOT NULL,\n  `SequenceNo` int(11) NOT NULL,\n  `Version` varchar(20) NOT NULL,\n  `IsMain` tinyint(1) NOT NULL,\n  `Status` int(11) NOT NULL,\n  `Remark` varchar(500) DEFAULT NULL,\n  `IsDeleted` tinyint(1) NOT NULL,\n  `WorkflowTemplateId` bigint(20) NOT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  `BomVersionId` bigint(20) DEFAULT NULL,\n  PRIMARY KEY (`Id`),\n  UNIQUE KEY `IX_Technical_CraftOrderVersion_CraftOrderId_SequenceNo` (`CraftOrderId`,`SequenceNo`),\n  UNIQUE KEY `IX_Technical_CraftOrderVersion_WorkflowTemplateId` (`WorkflowTemplateId`),\n  CONSTRAINT `FK_Technical_CraftOrderVersion_Technical_CraftOrder_CraftOrderId` FOREIGN KEY (`CraftOrderId`) REFERENCES `Technical_CraftOrder` (`Id`),\n  CONSTRAINT `FK_Technical_CraftOrderVersion_WF_WorkflowTemplate_WorkflowTemp~` FOREIGN KEY (`WorkflowTemplateId`) REFERENCES `WF_WorkflowTemplate` (`Id`)\n) ENGINE=InnoDB AUTO_INCREMENT=9144 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "Technical_NodeSettingTemplate": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CraftOrderVersionId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Sequence",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Code",
+        "Type": "varchar(50)",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Name",
+        "Type": "varchar(100)",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "IsOutsource",
+        "Type": "tinyint(1)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "IsInbound",
+        "Type": "tinyint(1)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Description",
+        "Type": "varchar(500)",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "IsDeleted",
+        "Type": "tinyint(1)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "NodeTemplateId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "UNI",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CraftId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "IsReport",
+        "Type": "tinyint(1)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "WorkHours",
+        "Type": "decimal(18,6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0.000000",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `Technical_NodeSettingTemplate` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `CraftOrderVersionId` bigint(20) NOT NULL,\n  `Sequence` int(11) NOT NULL,\n  `Code` varchar(50) NOT NULL,\n  `Name` varchar(100) NOT NULL,\n  `IsOutsource` tinyint(1) NOT NULL,\n  `IsInbound` tinyint(1) NOT NULL,\n  `Description` varchar(500) DEFAULT NULL,\n  `IsDeleted` tinyint(1) NOT NULL,\n  `NodeTemplateId` bigint(20) NOT NULL,\n  `CraftId` bigint(20) DEFAULT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  `IsReport` tinyint(1) NOT NULL DEFAULT 0,\n  `WorkHours` decimal(18,6) NOT NULL DEFAULT 0.000000,\n  PRIMARY KEY (`Id`),\n  UNIQUE KEY `IX_Technical_NodeSettingTemplate_NodeTemplateId` (`NodeTemplateId`),\n  KEY `IX_Technical_NodeSettingTemplate_CraftId` (`CraftId`),\n  KEY `IX_Technical_NodeSettingTemplate_CraftOrderVersionId_Sequence` (`CraftOrderVersionId`,`Sequence`),\n  CONSTRAINT `FK_Technical_NodeSettingTemplate_Base_Craft_CraftId` FOREIGN KEY (`CraftId`) REFERENCES `Base_Craft` (`Id`) ON DELETE CASCADE,\n  CONSTRAINT `FK_Technical_NodeSettingTemplate_Technical_CraftOrderVersion_Cr~` FOREIGN KEY (`CraftOrderVersionId`) REFERENCES `Technical_CraftOrderVersion` (`Id`) ON DELETE CASCADE,\n  CONSTRAINT `FK_Technical_NodeSettingTemplate_WF_NodeTemplate_NodeTemplateId` FOREIGN KEY (`NodeTemplateId`) REFERENCES `WF_NodeTemplate` (`Id`)\n) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "Technical_NodeSettingTemplate_Machine_RL": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "MachineId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "NodeSettingTemplateId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "IsDeleted",
+        "Type": "tinyint(1)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "WorkHours",
+        "Type": "decimal(18,6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0.000000",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `Technical_NodeSettingTemplate_Machine_RL` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `MachineId` bigint(20) NOT NULL,\n  `NodeSettingTemplateId` bigint(20) NOT NULL,\n  `IsDeleted` tinyint(1) NOT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  `WorkHours` decimal(18,6) NOT NULL DEFAULT 0.000000,\n  PRIMARY KEY (`Id`),\n  KEY `IX_Technical_NodeSettingTemplate_Machine_RL_MachineId` (`MachineId`),\n  KEY `IX_Technical_NodeSettingTemplate_Machine_RL_NodeSettingTemplate~` (`NodeSettingTemplateId`),\n  CONSTRAINT `FK_Technical_NodeSettingTemplate_Machine_RL_Base_Machine_Machin~` FOREIGN KEY (`MachineId`) REFERENCES `Base_Machine` (`Id`) ON DELETE CASCADE,\n  CONSTRAINT `FK_Technical_NodeSettingTemplate_Machine_RL_Technical_NodeSetti~` FOREIGN KEY (`NodeSettingTemplateId`) REFERENCES `Technical_NodeSettingTemplate` (`Id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "Technical_NodeSettingTemplate_Material_RL": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "NodeSettingTemplateId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "DataType",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "DataId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "IOType",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "InsteadSourceId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Quantity",
+        "Type": "decimal(18,6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UnitId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UnitConversionId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UnitListInfo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "LossRate",
+        "Type": "decimal(9,6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "SortNo",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "RefCraftOrderVersionId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Remark",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `Technical_NodeSettingTemplate_Material_RL` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `NodeSettingTemplateId` bigint(20) NOT NULL,\n  `DataType` int(11) NOT NULL,\n  `DataId` bigint(20) NOT NULL,\n  `IOType` int(11) NOT NULL,\n  `InsteadSourceId` bigint(20) DEFAULT NULL,\n  `Quantity` decimal(18,6) NOT NULL,\n  `UnitId` bigint(20) NOT NULL,\n  `UnitConversionId` bigint(20) NOT NULL,\n  `UnitListInfo` longtext NOT NULL,\n  `LossRate` decimal(9,6) NOT NULL,\n  `SortNo` int(11) NOT NULL,\n  `RefCraftOrderVersionId` bigint(20) DEFAULT NULL,\n  `Remark` longtext DEFAULT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  PRIMARY KEY (`Id`),\n  KEY `IX_Technical_NodeSettingTemplate_Material_RL_NodeSettingTemplat~` (`NodeSettingTemplateId`),\n  KEY `IX_Technical_NodeSettingTemplate_Material_RL_RefCraftOrderVersi~` (`RefCraftOrderVersionId`),\n  KEY `IX_Technical_NodeSettingTemplate_Material_RL_InsteadSourceId` (`InsteadSourceId`),\n  KEY `IX_Technical_NodeSettingTemplate_Material_RL_UnitId` (`UnitId`),\n  CONSTRAINT `FK_Technical_NodeSettingTemplate_Material_RL_Base_Unit_UnitId` FOREIGN KEY (`UnitId`) REFERENCES `Base_Unit` (`Id`),\n  CONSTRAINT `FK_Technical_NodeSettingTemplate_Material_RL_InsteadSource` FOREIGN KEY (`InsteadSourceId`) REFERENCES `Technical_NodeSettingTemplate_Material_RL` (`Id`),\n  CONSTRAINT `FK_Technical_NodeSettingTemplate_Material_RL_NodeSettingTemplate` FOREIGN KEY (`NodeSettingTemplateId`) REFERENCES `Technical_NodeSettingTemplate` (`Id`),\n  CONSTRAINT `FK_Technical_NodeSettingTemplate_Material_RL_RefCraftOrderVersio` FOREIGN KEY (`RefCraftOrderVersionId`) REFERENCES `Technical_CraftOrderVersion` (`Id`)\n) ENGINE=InnoDB AUTO_INCREMENT=232 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "WF_WorkflowTemplate": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Name",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "WorkflowTypeId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `WF_WorkflowTemplate` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `Name` longtext DEFAULT NULL,\n  `WorkflowTypeId` bigint(20) NOT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  PRIMARY KEY (`Id`),\n  KEY `IX_WF_WorkflowTemplate_WorkflowTypeId` (`WorkflowTypeId`),\n  CONSTRAINT `FK_WF_WorkflowTemplate_WF_WorkflowType_WorkflowTypeId` FOREIGN KEY (`WorkflowTypeId`) REFERENCES `WF_WorkflowType` (`Id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "WF_NodeTemplate": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Name",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Type",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Left",
+        "Type": "decimal(65,30)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Top",
+        "Type": "decimal(65,30)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Width",
+        "Type": "decimal(65,30)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Height",
+        "Type": "decimal(65,30)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "NodeTypeId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "DataId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "WorkflowTemplateId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `WF_NodeTemplate` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `Name` longtext DEFAULT NULL,\n  `Type` longtext DEFAULT NULL,\n  `Left` decimal(65,30) NOT NULL,\n  `Top` decimal(65,30) NOT NULL,\n  `Width` decimal(65,30) NOT NULL,\n  `Height` decimal(65,30) NOT NULL,\n  `NodeTypeId` bigint(20) NOT NULL,\n  `DataId` bigint(20) NOT NULL,\n  `WorkflowTemplateId` bigint(20) NOT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  PRIMARY KEY (`Id`),\n  KEY `IX_WF_NodeTemplate_NodeTypeId` (`NodeTypeId`),\n  KEY `IX_WF_NodeTemplate_WorkflowTemplateId` (`WorkflowTemplateId`),\n  CONSTRAINT `FK_WF_NodeTemplate_WF_NodeType_NodeTypeId` FOREIGN KEY (`NodeTypeId`) REFERENCES `WF_NodeType` (`Id`) ON DELETE CASCADE,\n  CONSTRAINT `FK_WF_NodeTemplate_WF_WorkflowTemplate_WorkflowTemplateId` FOREIGN KEY (`WorkflowTemplateId`) REFERENCES `WF_WorkflowTemplate` (`Id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=111 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "WF_NodeTemplateLink": {
+    "columns": [
+      {
+        "Field": "NextId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "PreviousId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "WorkflowTemplateId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `WF_NodeTemplateLink` (\n  `NextId` bigint(20) NOT NULL,\n  `PreviousId` bigint(20) NOT NULL,\n  `WorkflowTemplateId` bigint(20) NOT NULL,\n  PRIMARY KEY (`PreviousId`,`NextId`,`WorkflowTemplateId`),\n  KEY `IX_WF_NodeTemplateLink_NextId` (`NextId`),\n  KEY `IX_WF_NodeTemplateLink_WorkflowTemplateId` (`WorkflowTemplateId`),\n  CONSTRAINT `FK_WF_NodeTemplateLink_WF_NodeTemplate_NextId` FOREIGN KEY (`NextId`) REFERENCES `WF_NodeTemplate` (`Id`),\n  CONSTRAINT `FK_WF_NodeTemplateLink_WF_NodeTemplate_PreviousId` FOREIGN KEY (`PreviousId`) REFERENCES `WF_NodeTemplate` (`Id`) ON DELETE CASCADE,\n  CONSTRAINT `FK_WF_NodeTemplateLink_WF_WorkflowTemplate_WorkflowTemplateId` FOREIGN KEY (`WorkflowTemplateId`) REFERENCES `WF_WorkflowTemplate` (`Id`) ON DELETE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "WF_WorkflowTemplateLink": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "PreviousId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "NextId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `WF_WorkflowTemplateLink` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `PreviousId` bigint(20) NOT NULL,\n  `NextId` bigint(20) NOT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  PRIMARY KEY (`Id`),\n  KEY `IX_WF_WorkflowTemplateLink_NextId` (`NextId`),\n  KEY `IX_WF_WorkflowTemplateLink_PreviousId` (`PreviousId`),\n  CONSTRAINT `FK_WF_WorkflowTemplateLink_WF_WorkflowTemplate_NextId` FOREIGN KEY (`NextId`) REFERENCES `WF_WorkflowTemplate` (`Id`),\n  CONSTRAINT `FK_WF_WorkflowTemplateLink_WF_WorkflowTemplate_PreviousId` FOREIGN KEY (`PreviousId`) REFERENCES `WF_WorkflowTemplate` (`Id`) ON DELETE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "WF_NodeType": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Name",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Area",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Action",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Controller",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "NodeTypeEnum",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "WorkflowTypeId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `WF_NodeType` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `Name` longtext DEFAULT NULL,\n  `Area` longtext DEFAULT NULL,\n  `Action` longtext DEFAULT NULL,\n  `Controller` longtext DEFAULT NULL,\n  `NodeTypeEnum` int(11) NOT NULL,\n  `WorkflowTypeId` bigint(20) NOT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  PRIMARY KEY (`Id`),\n  KEY `IX_WF_NodeType_WorkflowTypeId` (`WorkflowTypeId`),\n  CONSTRAINT `FK_WF_NodeType_WF_WorkflowType_WorkflowTypeId` FOREIGN KEY (`WorkflowTypeId`) REFERENCES `WF_WorkflowType` (`Id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "WF_WorkflowType": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Name",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `WF_WorkflowType` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `Name` longtext DEFAULT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  PRIMARY KEY (`Id`)\n) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "Production_MBom": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "ProductId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "ProductSpecificationId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Status",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "IsDeleted",
+        "Type": "tinyint(1)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `Production_MBom` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `ProductId` bigint(20) DEFAULT NULL,\n  `ProductSpecificationId` bigint(20) DEFAULT NULL,\n  `Status` int(11) NOT NULL,\n  `IsDeleted` tinyint(1) NOT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  PRIMARY KEY (`Id`),\n  KEY `IX_Production_MBom_ProductId` (`ProductId`),\n  KEY `IX_Production_MBom_ProductSpecificationId` (`ProductSpecificationId`),\n  CONSTRAINT `FK_Production_MBom_Base_ProductSpecification_ProductSpecificati~` FOREIGN KEY (`ProductSpecificationId`) REFERENCES `Base_ProductSpecification` (`Id`),\n  CONSTRAINT `FK_Production_MBom_Base_Product_ProductId` FOREIGN KEY (`ProductId`) REFERENCES `Base_Product` (`Id`)\n) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "Production_MBom_Version": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Version",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "IsMain",
+        "Type": "tinyint(1)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "MBomId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Status",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "TotalQuantity",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UnitConversionId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UnitInfo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_bin",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Remark",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CustomAttribute",
+        "Type": "longtext",
+        "Collation": "utf8mb4_bin",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "IsDeleted",
+        "Type": "tinyint(1)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `Production_MBom_Version` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `Version` longtext NOT NULL,\n  `IsMain` tinyint(1) NOT NULL,\n  `MBomId` bigint(20) NOT NULL,\n  `Status` int(11) NOT NULL,\n  `TotalQuantity` decimal(12,4) NOT NULL,\n  `UnitConversionId` bigint(20) NOT NULL,\n  `UnitInfo` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`UnitInfo`)),\n  `Remark` longtext DEFAULT NULL,\n  `CustomAttribute` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`CustomAttribute`)),\n  `IsDeleted` tinyint(1) NOT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  PRIMARY KEY (`Id`),\n  KEY `IX_Production_MBom_Version_MBomId` (`MBomId`),\n  CONSTRAINT `FK_Production_MBom_Version_Production_MBom_MBomId` FOREIGN KEY (`MBomId`) REFERENCES `Production_MBom` (`Id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "Production_MBom_Detail": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "DetailType",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "DetailId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "FormulaDetailInfo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_bin",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Quantity",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UnitConversionId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UnitInfo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_bin",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Ratio",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpperTolerance",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "LowerTolerance",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "QuantityDiff2MainVersion",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "RatioDiff2MainVersion",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "IsSubstitute",
+        "Type": "tinyint(1)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "MainDetailId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Order",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "VersionId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "MBomId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "MainFormulaDetailId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `Production_MBom_Detail` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `DetailType` int(11) NOT NULL,\n  `DetailId` bigint(20) NOT NULL,\n  `FormulaDetailInfo` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`FormulaDetailInfo`)),\n  `Quantity` decimal(12,4) NOT NULL,\n  `UnitConversionId` bigint(20) NOT NULL,\n  `UnitInfo` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`UnitInfo`)),\n  `Ratio` decimal(12,4) NOT NULL,\n  `UpperTolerance` decimal(12,4) NOT NULL,\n  `LowerTolerance` decimal(12,4) NOT NULL,\n  `QuantityDiff2MainVersion` decimal(12,4) DEFAULT NULL,\n  `RatioDiff2MainVersion` decimal(12,4) DEFAULT NULL,\n  `IsSubstitute` tinyint(1) NOT NULL,\n  `MainDetailId` bigint(20) DEFAULT NULL,\n  `Order` int(11) NOT NULL,\n  `VersionId` bigint(20) NOT NULL,\n  `MBomId` bigint(20) NOT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  `MainFormulaDetailId` bigint(20) DEFAULT NULL,\n  PRIMARY KEY (`Id`),\n  KEY `IX_Production_MBom_Detail_MBomId` (`MBomId`),\n  KEY `IX_Production_MBom_Detail_VersionId` (`VersionId`),\n  CONSTRAINT `FK_Production_MBom_Detail_Production_MBom_MBomId` FOREIGN KEY (`MBomId`) REFERENCES `Production_MBom` (`Id`) ON DELETE CASCADE,\n  CONSTRAINT `FK_Production_MBom_Detail_Production_MBom_Version_VersionId` FOREIGN KEY (`VersionId`) REFERENCES `Production_MBom_Version` (`Id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=171 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "Base_Product": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "ProductNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "ProductName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "MaterialGrade",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Remark",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "ProductType",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "IsDeleted",
+        "Type": "tinyint(1)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "BaseUnitId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": "0",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "ProductCategoryId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": "0",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "TechnicalCode",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Discriminator",
+        "Type": "varchar(21)",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": "",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "ReviewStatus",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "InventoryQuantity",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0.0000",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "PackageQuantity",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0.0000",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UnPackageQuantity",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0.0000",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "NoSuffix",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "MaterialSpecification",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CategoryAttribute",
+        "Type": "longtext",
+        "Collation": "utf8mb4_bin",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "MatureTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "ProductProperty",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CustomAttribute",
+        "Type": "longtext",
+        "Collation": "utf8mb4_bin",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "NearExpiryThreshold",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "NearExpiryUnit",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "SafetyStock",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0.0000",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "ShelfLifeUnit",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "ShelfLifeValue",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "MaxStock",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0.0000",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "PurchaseOrderDetailId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "OccupyInventory",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0.0000",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "DefPurchaseUnitConversionId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "DefSaleUnitConversionId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "AbnormalQuantity",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0.0000",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `Base_Product` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `ProductNo` longtext NOT NULL,\n  `ProductName` longtext NOT NULL,\n  `MaterialGrade` longtext DEFAULT NULL,\n  `Remark` longtext DEFAULT NULL,\n  `ProductType` int(11) NOT NULL DEFAULT 0,\n  `IsDeleted` tinyint(1) NOT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  `BaseUnitId` bigint(20) NOT NULL DEFAULT 0,\n  `ProductCategoryId` bigint(20) NOT NULL DEFAULT 0,\n  `TechnicalCode` longtext DEFAULT NULL,\n  `Discriminator` varchar(21) NOT NULL DEFAULT '',\n  `ReviewStatus` int(11) NOT NULL,\n  `InventoryQuantity` decimal(12,4) NOT NULL DEFAULT 0.0000,\n  `PackageQuantity` decimal(12,4) NOT NULL DEFAULT 0.0000,\n  `UnPackageQuantity` decimal(12,4) NOT NULL DEFAULT 0.0000,\n  `NoSuffix` longtext NOT NULL,\n  `MaterialSpecification` longtext DEFAULT NULL,\n  `CategoryAttribute` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`CategoryAttribute`)),\n  `MatureTime` datetime(6) DEFAULT NULL,\n  `ProductProperty` int(11) NOT NULL DEFAULT 0,\n  `CustomAttribute` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`CustomAttribute`)),\n  `NearExpiryThreshold` int(11) DEFAULT NULL,\n  `NearExpiryUnit` int(11) DEFAULT NULL,\n  `SafetyStock` decimal(12,4) NOT NULL DEFAULT 0.0000,\n  `ShelfLifeUnit` int(11) DEFAULT NULL,\n  `ShelfLifeValue` int(11) DEFAULT NULL,\n  `MaxStock` decimal(12,4) NOT NULL DEFAULT 0.0000,\n  `PurchaseOrderDetailId` bigint(20) DEFAULT NULL,\n  `OccupyInventory` decimal(12,4) NOT NULL DEFAULT 0.0000,\n  `DefPurchaseUnitConversionId` bigint(20) DEFAULT NULL,\n  `DefSaleUnitConversionId` bigint(20) DEFAULT NULL,\n  `AbnormalQuantity` decimal(12,4) NOT NULL DEFAULT 0.0000,\n  PRIMARY KEY (`Id`),\n  KEY `IX_Base_Product_BaseUnitId` (`BaseUnitId`),\n  KEY `IX_Base_Product_ProductCategoryId` (`ProductCategoryId`),\n  CONSTRAINT `FK_Base_Product_Base_Category_ProductCategoryId` FOREIGN KEY (`ProductCategoryId`) REFERENCES `Base_Category` (`Id`),\n  CONSTRAINT `FK_Base_Product_Base_Unit_BaseUnitId` FOREIGN KEY (`BaseUnitId`) REFERENCES `Base_Unit` (`Id`)\n) ENGINE=InnoDB AUTO_INCREMENT=3683 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "Base_ProductSpecification": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "ProductId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Specification",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Name",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "SpecificationUnitId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Code",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "ContainerModelId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "ProductCategoryId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Remark",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "SpecificationInventoryQuantity",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0.0000",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "NoSuffix",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CategoryAttribute",
+        "Type": "longtext",
+        "Collation": "utf8mb4_bin",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "IsDeleted",
+        "Type": "tinyint(1)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CustomAttribute",
+        "Type": "longtext",
+        "Collation": "utf8mb4_bin",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "NearExpiryThreshold",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "NearExpiryUnit",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "SafetyStock",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0.0000",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "ShelfLifeUnit",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "ShelfLifeValue",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "MaxStock",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0.0000",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "OccupyInventory",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0.0000",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "PurchaseOrderDetailId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "DefPurchaseUnitConversionId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "DefSaleUnitConversionId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "AbnormalQuantity",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0.0000",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `Base_ProductSpecification` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `ProductId` bigint(20) NOT NULL,\n  `Specification` longtext NOT NULL,\n  `Name` longtext DEFAULT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  `SpecificationUnitId` bigint(20) DEFAULT NULL,\n  `Code` longtext DEFAULT NULL,\n  `ContainerModelId` int(11) DEFAULT NULL,\n  `ProductCategoryId` bigint(20) DEFAULT NULL,\n  `Remark` longtext DEFAULT NULL,\n  `SpecificationInventoryQuantity` decimal(12,4) NOT NULL DEFAULT 0.0000,\n  `NoSuffix` longtext NOT NULL,\n  `CategoryAttribute` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`CategoryAttribute`)),\n  `IsDeleted` tinyint(1) NOT NULL DEFAULT 0,\n  `CustomAttribute` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`CustomAttribute`)),\n  `NearExpiryThreshold` int(11) DEFAULT NULL,\n  `NearExpiryUnit` int(11) DEFAULT NULL,\n  `SafetyStock` decimal(12,4) NOT NULL DEFAULT 0.0000,\n  `ShelfLifeUnit` int(11) DEFAULT NULL,\n  `ShelfLifeValue` int(11) DEFAULT NULL,\n  `MaxStock` decimal(12,4) NOT NULL DEFAULT 0.0000,\n  `OccupyInventory` decimal(12,4) NOT NULL DEFAULT 0.0000,\n  `PurchaseOrderDetailId` bigint(20) DEFAULT NULL,\n  `DefPurchaseUnitConversionId` bigint(20) DEFAULT NULL,\n  `DefSaleUnitConversionId` bigint(20) DEFAULT NULL,\n  `AbnormalQuantity` decimal(12,4) NOT NULL DEFAULT 0.0000,\n  PRIMARY KEY (`Id`),\n  KEY `IX_Base_ProductSpecification_ProductId` (`ProductId`),\n  KEY `IX_Base_ProductSpecification_SpecificationUnitId` (`SpecificationUnitId`),\n  KEY `IX_Base_ProductSpecification_ContainerModelId` (`ContainerModelId`),\n  KEY `IX_Base_ProductSpecification_ProductCategoryId` (`ProductCategoryId`),\n  CONSTRAINT `FK_Base_ProductSpecification_Base_Category_ProductCategoryId` FOREIGN KEY (`ProductCategoryId`) REFERENCES `Base_Category` (`Id`) ON DELETE SET NULL,\n  CONSTRAINT `FK_Base_ProductSpecification_Base_Product_ProductId` FOREIGN KEY (`ProductId`) REFERENCES `Base_Product` (`Id`) ON DELETE CASCADE,\n  CONSTRAINT `FK_Base_ProductSpecification_Base_SystemPara_ContainerModelId` FOREIGN KEY (`ContainerModelId`) REFERENCES `Base_SystemPara` (`Id`) ON DELETE SET NULL,\n  CONSTRAINT `FK_Base_ProductSpecification_Base_Unit_SpecificationUnitId` FOREIGN KEY (`SpecificationUnitId`) REFERENCES `Base_Unit` (`Id`) ON DELETE SET NULL\n) ENGINE=InnoDB AUTO_INCREMENT=2358 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "Base_UnitConversion": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "SourceId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "ConversionType",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "FromUnitId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "ToUnitId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Ratio",
+        "Type": "decimal(65,30)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "TargetId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `Base_UnitConversion` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `SourceId` bigint(20) NOT NULL,\n  `ConversionType` int(11) NOT NULL,\n  `FromUnitId` bigint(20) NOT NULL,\n  `ToUnitId` bigint(20) NOT NULL,\n  `Ratio` decimal(65,30) NOT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  `TargetId` bigint(20) NOT NULL DEFAULT 0,\n  PRIMARY KEY (`Id`),\n  KEY `IX_Base_UnitConversion_FromUnitId` (`FromUnitId`),\n  KEY `IX_Base_UnitConversion_ToUnitId` (`ToUnitId`),\n  CONSTRAINT `FK_Base_UnitConversion_Base_Unit_FromUnitId` FOREIGN KEY (`FromUnitId`) REFERENCES `Base_Unit` (`Id`) ON DELETE CASCADE,\n  CONSTRAINT `FK_Base_UnitConversion_Base_Unit_ToUnitId` FOREIGN KEY (`ToUnitId`) REFERENCES `Base_Unit` (`Id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=138 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "Base_Craft": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Name",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Code",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Remark",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `Base_Craft` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `Name` longtext NOT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  `Code` longtext NOT NULL,\n  `Remark` longtext DEFAULT NULL,\n  PRIMARY KEY (`Id`)\n) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "Base_Machine": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Code",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Name",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Model",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Capacity",
+        "Type": "decimal(12,4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Remark",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "IsStop",
+        "Type": "tinyint(1)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "IsDeleted",
+        "Type": "tinyint(4)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CategoryId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "MUL",
+        "Default": "0",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "MachineType",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": "0",
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `Base_Machine` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `Code` longtext NOT NULL,\n  `Name` longtext NOT NULL,\n  `Model` longtext NOT NULL,\n  `Capacity` decimal(12,4) NOT NULL,\n  `Remark` longtext DEFAULT NULL,\n  `IsStop` tinyint(1) NOT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  `IsDeleted` tinyint(4) NOT NULL DEFAULT 0,\n  `CategoryId` bigint(20) NOT NULL DEFAULT 0,\n  `MachineType` int(11) NOT NULL DEFAULT 0,\n  PRIMARY KEY (`Id`),\n  KEY `IX_Base_Machine_CategoryId` (`CategoryId`),\n  CONSTRAINT `FK_Base_Machine_Base_Category_CategoryId` FOREIGN KEY (`CategoryId`) REFERENCES `Base_Category` (`Id`)\n) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "Base_Machine_Craft_RL": {
+    "columns": [
+      {
+        "Field": "MachineId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CraftId",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `Base_Machine_Craft_RL` (\n  `MachineId` bigint(20) NOT NULL,\n  `CraftId` bigint(20) NOT NULL,\n  PRIMARY KEY (`MachineId`,`CraftId`),\n  KEY `IX_Base_Machine_Craft_RL_CraftId` (`CraftId`),\n  CONSTRAINT `FK_Base_Machine_Craft_RL_Base_Craft_CraftId` FOREIGN KEY (`CraftId`) REFERENCES `Base_Craft` (`Id`),\n  CONSTRAINT `FK_Base_Machine_Craft_RL_Base_Machine_MachineId` FOREIGN KEY (`MachineId`) REFERENCES `Base_Machine` (`Id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "Base_Unit": {
+    "columns": [
+      {
+        "Field": "Id",
+        "Type": "bigint(20)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "PRI",
+        "Default": null,
+        "Extra": "auto_increment",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Name",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UnitType",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "IsDeleted",
+        "Type": "tinyint(1)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "EnterpriseId",
+        "Type": "int(11)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "CreateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserNo",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateUserName",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "UpdateTime",
+        "Type": "datetime(6)",
+        "Collation": null,
+        "Null": "NO",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      },
+      {
+        "Field": "Code",
+        "Type": "longtext",
+        "Collation": "utf8mb4_uca1400_ai_ci",
+        "Null": "YES",
+        "Key": "",
+        "Default": null,
+        "Extra": "",
+        "Privileges": "select,insert,update,references",
+        "Comment": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `Base_Unit` (\n  `Id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `Name` longtext NOT NULL,\n  `UnitType` int(11) NOT NULL,\n  `IsDeleted` tinyint(1) NOT NULL,\n  `EnterpriseId` int(11) NOT NULL,\n  `CreateUserNo` longtext DEFAULT NULL,\n  `CreateUserName` longtext DEFAULT NULL,\n  `CreateTime` datetime(6) NOT NULL,\n  `UpdateUserNo` longtext DEFAULT NULL,\n  `UpdateUserName` longtext DEFAULT NULL,\n  `UpdateTime` datetime(6) NOT NULL,\n  `Code` longtext DEFAULT NULL,\n  PRIMARY KEY (`Id`)\n) ENGINE=InnoDB AUTO_INCREMENT=192 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci"
+  },
+  "triggers": []
+}

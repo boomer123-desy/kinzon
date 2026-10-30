@@ -1,0 +1,297 @@
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using KingZon.Core;
+using KingZon.Core.DataBase;
+using Kingzon.OLCM.Base.Services;
+using KingZon.OLCM.Base.Service.Dto;
+using KingZon.OLCM.Base.Shared.DataBase.Enum;
+using KingZon.OLCM.Base.Shared.DataBase.JsonStructure;
+using KingZon.OLCM.Production.Shared.DataBase.Entities;
+using KingZon.OLCM.Production.Shared.DataBase.Enum;
+using KingZon.OLCM.Technical.Shared.DataBase.Entities;
+using KingZon.OLCM.Technical.Shared.DataBase.Enum;
+using Microsoft.Data.Sqlite;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using KingZon.OLCM.Base.Shared.DataBase.Entities;
+using KingZon.Mes.Workflow.Entity;
+using KingZon.OLCM.Technical.WebApi.Dto;
+var syntax=CSharpSyntaxTree.ParseText(File.ReadAllText(args[0]));
+var syntaxErrors=syntax.GetDiagnostics().Where(x=>x.Severity==DiagnosticSeverity.Error).ToArray();
+if(syntaxErrors.Length>0)throw new Exception(string.Join("\n",syntaxErrors.Select(x=>x.ToString())));
+Console.WriteLine("PASS complete controller C# syntax");
+var checks=0;
+void Assert(bool condition,string message) {if(!condition)throw new Exception(message);checks++;}
+async Task Scenario(string name,Func<CheckDb,SyncController,Utils,Task> run) {
+ if(args.Length>1&&!string.IsNullOrEmpty(args[1])&&!System.Text.RegularExpressions.Regex.IsMatch(name,args[1])) return;
+ await using var connection=new SqliteConnection("Data Source=:memory:");await connection.OpenAsync();
+ // SQLite cannot enlist in TransactionScope; these cases verify lifecycle data, not host transaction enlistment.
+ var options=new DbContextOptionsBuilder<CheckDb>().UseSqlite(connection)
+  .ConfigureWarnings(w=>w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.AmbientTransactionWarning)).Options;
+ await using var db=new CheckDb(options);await db.Database.EnsureCreatedAsync();
+ await db.Database.ExecuteSqlRawAsync("CREATE TABLE WF_NodeTemplate (Id INTEGER PRIMARY KEY,WorkflowTemplateId INTEGER NOT NULL)");
+ await db.Database.ExecuteSqlRawAsync("CREATE TABLE WF_NodeTemplateLink (PreviousId INTEGER NOT NULL REFERENCES WF_NodeTemplate(Id) ON DELETE CASCADE,NextId INTEGER NOT NULL REFERENCES WF_NodeTemplate(Id) ON DELETE RESTRICT,WorkflowTemplateId INTEGER NOT NULL,PRIMARY KEY(PreviousId,NextId,WorkflowTemplateId))");
+ await db.Database.ExecuteSqlRawAsync("CREATE TABLE WF_WorkflowTemplateLink (Id INTEGER PRIMARY KEY,PreviousId INTEGER NOT NULL,NextId INTEGER NOT NULL)");
+ var utils=new Utils();foreach(var id in new long[]{100,101,102,103,104}) {db.Add(new Base_Product{Id=id});utils.Infos.Add((InventoryDataType.Product,id),new DataInfo{DataName=$"Product{id}",DataUnitId=1,DataBaseUnitId=1,DataUnit="PCS"});}
+ db.Add(new Base_ProductSpecification{Id=201});utils.Infos.Add((InventoryDataType.Specification,201),new DataInfo{DataName="Spec201",DataUnitId=2,DataBaseUnitId=1,DataUnit="BOX",DataBaseUnitName="PCS",ToBaseUnitRatio=10,ToBaseUnitConversionId=9});
+ foreach(var id in new long[]{100,101,102,103,104}) utils.ProductUnits[(id,null)]=new(){new(){Code="-1",UnitId=1,Value="1",Text="PCS"}};
+ utils.ProductUnits[(100,201)]=new(){new(){Code="-1",UnitId=2,Value="1",Text="BOX"},new(){Code="9",UnitId=1,Value="0.1",Text="PCS",IsMainUnit=true}};
+ db.Add(new WF_WorkflowTemplate{Id=1});db.Add(new Technical_CraftOrder{Id=1,ProductId=100,Code="CO",Name="Product100"});
+ db.Add(new Technical_CraftOrderVersion{Id=1,CraftOrderId=1,WorkflowTemplateId=1,SequenceNo=1,Version="V1",IsMain=true});
+ db.Add(new Technical_NodeSettingTemplate{Id=1,CraftOrderVersionId=1,Sequence=10});db.Add(new Technical_NodeSettingTemplate{Id=2,CraftOrderVersionId=1,Sequence=20});db.Add(new Technical_NodeSettingTemplate{Id=3,CraftOrderVersionId=1,Sequence=30,IsDeleted=true});
+ await db.SaveChangesAsync();await run(db,new SyncController(db,utils),utils);Console.WriteLine("PASS "+name);
+}
+Technical_NodeSettingTemplate_Material_RL Material(long id,long node,long product,decimal quantity,long? main=null,NodeIOType io=NodeIOType.输入)=>new(){Id=id,NodeSettingTemplateId=node,DataId=product,DataType=InventoryDataType.Product,UnitId=1,Quantity=quantity,InsteadSourceId=main,IOType=io,UnitListInfo="[]"};
+async Task SeedMaterials(CheckDb db) {
+ db.Add(Material(1,1,101,2));db.Add(Material(2,1,102,1,1));db.Add(Material(3,2,101,1));db.Add(Material(4,2,102,2,3));
+ db.Add(Material(5,1,103,99,io:NodeIOType.输出));db.Add(Material(6,3,104,88));await db.SaveChangesAsync();
+ var boxed=await db.Set<Technical_NodeSettingTemplate_Material_RL>().FindAsync(3L);boxed!.UnitId=2;boxed.UnitConversionId=9;boxed.UnitListInfo="[{\"id\":9,\"unitId\":2,\"ratio\":10,\"quantity\":999}]";await db.SaveChangesAsync();
+}
+await Scenario("aggregation, units, substitutes, excluded output/deleted nodes, stable IDs",async(db,controller,utils)=>{
+ await SeedMaterials(db);var craft=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;
+ await controller.Sync(craft);var linkedId=craft.BomVersionId;Assert(linkedId>0,"ID backfill");
+ var details=await db.Set<Production_MBom_Detail>().ToListAsync();Assert(details.Count==2,"only one main and one substitute");var main=details.Single(x=>!x.IsSubstitute);var sub=details.Single(x=>x.IsSubstitute);
+ Assert(main.Quantity==12&&sub.Quantity==3,"mixed-unit aggregation");Assert(sub.MainDetailId==main.Id&&sub.QuantityDiff2MainVersion==null,"substitute uses BOM main ID");
+ Assert(JsonSerializer.Deserialize<List<InventoryUnitInboundDto>>(main.UnitInfo,JsonHelper.DefaultJsonSerializerOptions)!.Single().Quantity==12,"unit quantities recalculated");
+ var detailIds=details.Select(x=>x.Id).Order().ToArray();await controller.Sync(craft);Assert(craft.BomVersionId==linkedId,"same linked version");Assert((await db.Set<Production_MBom_Detail>().Select(x=>x.Id).OrderBy(x=>x).ToArrayAsync()).SequenceEqual(detailIds),"stable detail IDs");Assert(await db.Set<Production_MBom>().CountAsync()==1&&await db.Set<Production_MBom_Version>().CountAsync()==1,"idempotent headers");
+ var first=(await db.Set<Technical_NodeSettingTemplate_Material_RL>().FindAsync(1L))!;first.Quantity=5;await db.SaveChangesAsync();await controller.Sync(craft);Assert(main.Quantity==15,"quantity updates");
+ db.RemoveRange(db.Set<Technical_NodeSettingTemplate_Material_RL>().Where(x=>x.Id<=4));await db.SaveChangesAsync();await controller.Sync(craft);Assert(await db.Set<Production_MBom_Detail>().CountAsync()==0,"removed inputs clear old main and substitutes");Assert(craft.BomVersionId==linkedId,"empty BOM remains associated");
+});
+await Scenario("version isolation, main-version differences and lifecycle",async(db,controller,utils)=>{
+ db.Add(Material(1,1,101,2));await db.SaveChangesAsync();var first=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;await controller.Sync(first);
+ var second=new Technical_CraftOrderVersion{Id=2,CraftOrderId=1,WorkflowTemplateId=1,SequenceNo=2,Version="V2"};db.Add(second);db.Add(new Technical_NodeSettingTemplate{Id=4,CraftOrderVersionId=2,Sequence=10});db.Add(Material(2,4,101,5));await db.SaveChangesAsync();await controller.Sync(second);
+ Assert(first.BomVersionId!=second.BomVersionId,"each version has its own BOM version");Assert(await db.Set<Production_MBom>().CountAsync()==1,"same product shares BOM header");
+ var a=await db.Set<Production_MBom_Detail>().SingleAsync(x=>x.VersionId==first.BomVersionId);var b=await db.Set<Production_MBom_Detail>().SingleAsync(x=>x.VersionId==second.BomVersionId);Assert(a.Quantity==2&&b.Quantity==5&&b.QuantityDiff2MainVersion==3,"version material isolation and baseline");
+ first.IsMain=false;await controller.Metadata(first);second.IsMain=true;await controller.Metadata(second);Assert(a.QuantityDiff2MainVersion==-3&&b.QuantityDiff2MainVersion==0,"switch recalculates all differences");
+ second.Status=CraftOrderVersionStatus.已发布;await controller.Metadata(second);Assert((await db.Set<Production_MBom_Version>().FindAsync(second.BomVersionId))!.Status==BomStatus.已生效,"published mapping");Assert((await db.Set<Production_MBom>().SingleAsync()).Status==BomStatus.已生效,"header active status");
+ second.Status=CraftOrderVersionStatus.待审核;second.IsMain=false;await controller.Metadata(second);Assert(a.QuantityDiff2MainVersion==null&&b.QuantityDiff2MainVersion==null,"unpublish clears baseline");
+ second.Status=CraftOrderVersionStatus.已废弃;await controller.Metadata(second);Assert((await db.Set<Production_MBom_Version>().FindAsync(second.BomVersionId))!.Status==BomStatus.淘汰,"obsolete mapping");
+ await controller.Archive(first);Assert(!(await db.Set<Production_MBom>().SingleAsync()).IsDeleted,"another version keeps header");await controller.Archive(second);Assert((await db.Set<Production_MBom>().SingleAsync()).IsDeleted,"last archive disables header");Assert(await db.Set<Production_MBom_Detail>().CountAsync()==2,"archive preserves historical details");
+});
+await Scenario("BOM linkage and all staged writes roll back on invalid material",async(db,controller,utils)=>{
+ db.Add(Material(1,1,101,-1));await db.SaveChangesAsync();var craft=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;
+ await using(var transaction=await db.Database.BeginTransactionAsync()) {try{await controller.Sync(craft);throw new Exception("must reject");}catch(Exception error)when(error.Message.Contains("负数")){checks++;await transaction.RollbackAsync();}}
+ db.ChangeTracker.Clear();Assert(await db.Set<Production_MBom>().CountAsync()==0&&await db.Set<Production_MBom_Version>().CountAsync()==0,"staged header/version rollback");Assert((await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!.BomVersionId==null,"link rollback");
+});
+await Scenario("specification type, final rounding and invalid conversion",async(db,controller,utils)=>{
+ var a=Material(1,1,201,0.1m);a.DataType=InventoryDataType.Specification;a.UnitId=2;db.Add(a);db.Add(Material(2,1,101,0.00003m));db.Add(Material(3,2,101,0.00003m));await db.SaveChangesAsync();var craft=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;await controller.Sync(craft);
+ Assert((await db.Set<Production_MBom_Detail>().SingleAsync(x=>x.DetailType==BomDetailType.Specication)).Quantity==1,"spec quantity uses persisted base conversion even if request ID is omitted");Assert((await db.Set<Production_MBom_Detail>().SingleAsync(x=>x.DetailType==BomDetailType.Product)).Quantity==0.0001m,"round only after summing");
+ var row=(await db.Set<Technical_NodeSettingTemplate_Material_RL>().FindAsync(2L))!;row.UnitId=99;row.Quantity=1;await db.SaveChangesAsync();await using(var tx=await db.Database.BeginTransactionAsync()){try{await controller.Sync(craft);throw new Exception("must reject");}catch(Exception e)when(e.Message.Contains("转换")){checks++;await tx.RollbackAsync();}}
+});
+await Scenario("product/specification BOM headers and output-unit basis",async(db,controller,utils)=>{
+ var first=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;await controller.Sync(first);db.Add(new Technical_CraftOrder{Id=2,ProductId=100,SpecificationId=201,Code="COS",Name="Spec"});var second=new Technical_CraftOrderVersion{Id=2,CraftOrderId=2,WorkflowTemplateId=1,SequenceNo=1,Version="V1",IsMain=true};db.Add(second);await db.SaveChangesAsync();await controller.Sync(second);Assert(await db.Set<Production_MBom>().CountAsync()==2,"different specification has different header");var bom=(await db.Set<Production_MBom_Version>().FindAsync(second.BomVersionId))!;var units=JsonSerializer.Deserialize<List<InventoryUnitInboundDto>>(bom.UnitInfo,JsonHelper.DefaultJsonSerializerOptions)!;Assert(bom.TotalQuantity==1&&bom.UnitConversionId==-1&&units.Count==2,"one specification output remains the BOM basis");
+ var output=units.Single(x=>x.Id==-1);var main=units.Single(x=>x.Id==9);
+ Assert(output.UnitId==2&&output.Ratio==1&&output.Quantity==1,"default specification unit agrees with GetProductUnitList");
+ Assert(main.UnitId==1&&main.Ratio==0.1m&&main.Quantity==10,"real conversion ID belongs to main unit with reciprocal ratio");
+ Assert(units.All(x=>x.Quantity*x.Ratio==1),"every snapshot represents the same one-unit output");
+ var productBom=(await db.Set<Production_MBom_Version>().FindAsync(first.BomVersionId))!;
+ var productUnits=JsonSerializer.Deserialize<List<InventoryUnitInboundDto>>(productBom.UnitInfo,JsonHelper.DefaultJsonSerializerOptions)!;
+ Assert(productBom.UnitConversionId==-1&&productUnits.Single().Id==-1&&productUnits[0].Ratio==1&&productUnits[0].Quantity==1,"product output has one default unit");
+ // Emulate an old snapshot; saving the same craft version repairs it using the current relation.
+ var linkedId=second.BomVersionId; bom.UnitConversionId=0;
+ bom.UnitInfo="[{\"id\":0,\"unitId\":2,\"ratio\":1,\"quantity\":1},{\"id\":0,\"unitId\":1,\"ratio\":1,\"quantity\":1}]";
+ utils.ProductUnits[(100,201)][1].Value="0.2";
+ utils.ProductUnits[(100,201)][1].Code="137";
+ await db.SaveChangesAsync();await controller.Sync(second);
+ units=JsonSerializer.Deserialize<List<InventoryUnitInboundDto>>(bom.UnitInfo,JsonHelper.DefaultJsonSerializerOptions)!;
+ Assert(second.BomVersionId==linkedId&&bom.UnitConversionId==-1&&units.Select(x=>x.Id).Distinct().Count()==2,"existing version is repaired without creating another version");
+ Assert(units.Single(x=>x.Id==137).Ratio==0.2m&&units.Single(x=>x.Id==137).Quantity==5,"updated five-to-one conversion is persisted");
+});
+await Scenario("invalid output conversion never persists duplicate zero IDs or assumed one-to-one rates",async(db,controller,utils)=>{
+ var order=(await db.Set<Technical_CraftOrder>().FindAsync(1L))!;order.SpecificationId=201;await db.SaveChangesAsync();
+ foreach(var invalid in new (string? Id,string? Ratio)[]{(null,"1"),("0","1"),("-1","5"),("9",null),("9","0"),("9","-5"),("9","NaN"),("9","bad")}) {
+  var unit=utils.ProductUnits[(100,201)][1];unit.Code=invalid.Id;unit.Value=invalid.Ratio;
+  var craft=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;
+  await using(var tx=await db.Database.BeginTransactionAsync()) {
+   try {await controller.Sync(craft);throw new Exception("must reject invalid output conversion");}
+   catch(Exception e)when(e.Message.Contains("有效转换关系")) {checks++;await tx.RollbackAsync();}
+  }
+  db.ChangeTracker.Clear();
+  Assert(await db.Set<Production_MBom_Version>().CountAsync()==0&&await db.Set<Production_MBom>().CountAsync()==0,"invalid output rolls back staged inserts");
+  Assert((await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!.BomVersionId==null,"invalid output leaves no craft linkage");
+ }
+});
+await Scenario("unit-list ratios and distinct packaging are preserved without using legacy output conversions",async(db,controller,utils)=>{
+ var order=(await db.Set<Technical_CraftOrder>().FindAsync(1L))!;order.SpecificationId=201;
+ var craft=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;
+ utils.Infos.Remove((InventoryDataType.Specification,201)); // Output must come entirely from ProductService.
+ utils.ProductUnits[(100,201)]=new(){
+  new(){Code="35",UnitId=164,Value="0.66",Text="箱",PackageId=14},
+  new(){Code="137",UnitId=147,Value="0.2",Text="米",IsMainUnit=true},
+  new(){Code="-1",UnitId=1,Value="1",Text="片"},
+  new(){Code="68",UnitId=164,Value="4",Text="箱",PackageId=27}
+ };
+ await db.SaveChangesAsync();await controller.Sync(craft);
+ var bom=(await db.Set<Production_MBom_Version>().FindAsync(craft.BomVersionId))!;
+ var units=JsonSerializer.Deserialize<List<InventoryUnitInboundDto>>(bom.UnitInfo,JsonHelper.DefaultJsonSerializerOptions)!;
+ Assert(bom.TotalQuantity==1&&bom.UnitConversionId==-1,"default selected by code rather than list order");
+ Assert(units.Count==4&&units.Count(x=>x.UnitId==164)==2,"same physical packaging unit retains distinct conversion IDs");
+ Assert(units.Single(x=>x.Id==137).Ratio==0.2m&&units.Single(x=>x.Id==137).Quantity==5,"service ratio not inverted a second time");
+ Assert(units.Single(x=>x.Id==35).Ratio==0.66m&&units.Single(x=>x.Id==35).Quantity==1m/0.66m,"first package quantity represents one output");
+ Assert(units.Single(x=>x.Id==68).Ratio==4&&units.Single(x=>x.Id==68).Quantity==0.25m,"second package uses its own ratio");
+ var culture=System.Globalization.CultureInfo.CurrentCulture;
+ try {
+  System.Globalization.CultureInfo.CurrentCulture=System.Globalization.CultureInfo.GetCultureInfo("de-DE");
+  utils.ProductUnits[(100,201)][0].Value="0,66";
+  await controller.Sync(craft);
+  units=JsonSerializer.Deserialize<List<InventoryUnitInboundDto>>(bom.UnitInfo,JsonHelper.DefaultJsonSerializerOptions)!;
+  Assert(units.Single(x=>x.Id==35).Ratio==0.66m&&units.Single(x=>x.Id==137).Ratio==0.2m,"current-culture and invariant decimal strings cannot be mistaken for thousands");
+ } finally {System.Globalization.CultureInfo.CurrentCulture=culture;}
+});
+await Scenario("missing defaults, main-unit relations and malformed unit lists reject before persistence",async(db,controller,utils)=>{
+ var order=(await db.Set<Technical_CraftOrder>().FindAsync(1L))!;order.SpecificationId=201;await db.SaveChangesAsync();
+ var defaultUnit=new GetProductUnitDto{Code="-1",UnitId=2,Value="1",Text="BOX"};
+ var main=new GetProductUnitDto{Code="9",UnitId=1,Value="0.1",Text="PCS",IsMainUnit=true};
+ foreach(var invalid in new List<GetProductUnitDto>[] {
+  new(), new(){main}, new(){defaultUnit}, new(){defaultUnit,main,main},
+  new(){new(){Code="-1",UnitId=2,Value="2"},main},
+  new(){defaultUnit,new(){Code="9",Value="0.1",IsMainUnit=true}}
+ }) {
+  utils.ProductUnits[(100,201)]=invalid;
+  var craft=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;
+  await using(var tx=await db.Database.BeginTransactionAsync()) {
+   var rejected=false;
+   try {await controller.Sync(craft);} catch(Exception e)when(e.Message.Contains("工艺")) {rejected=true;}
+   Assert(rejected,"invalid unit list must be rejected");await tx.RollbackAsync();
+  }
+  db.ChangeTracker.Clear();
+  Assert(await db.Set<Production_MBom_Version>().CountAsync()==0&&(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!.BomVersionId==null,"no invalid version/link persists");
+ }
+});
+await Scenario("nullable one-to-one association is enforced",async(db,controller,utils)=>{
+ var first=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;
+ var second=new Technical_CraftOrderVersion{Id=2,CraftOrderId=1,WorkflowTemplateId=1,SequenceNo=2,Version="V2"};db.Add(second);await db.SaveChangesAsync();Assert(first.BomVersionId==null&&second.BomVersionId==null,"multiple legacy NULL links allowed");await controller.Sync(first);
+ await using(var tx=await db.Database.BeginTransactionAsync()){second.BomVersionId=first.BomVersionId;try{await db.SaveChangesAsync();throw new Exception("must reject shared BOM version");}catch(DbUpdateException){checks++;await tx.RollbackAsync();}}
+});
+await Scenario("referenced BOM versions, substitute references, aggregation and stable IDs",async(db,controller,utils)=>{
+ db.Add(new Technical_CraftOrder{Id=10,ProductId=101,Code="REF101",Name="Product101"});
+ db.Add(new Technical_CraftOrder{Id=12,ProductId=102,Code="REF102",Name="Product102"});
+ var refA=new Technical_CraftOrderVersion{Id=10,CraftOrderId=10,WorkflowTemplateId=1,SequenceNo=1,Version="V1",Status=CraftOrderVersionStatus.已发布};
+ var refB=new Technical_CraftOrderVersion{Id=11,CraftOrderId=10,WorkflowTemplateId=1,SequenceNo=2,Version="V2",Status=CraftOrderVersionStatus.已发布};
+ var refSub=new Technical_CraftOrderVersion{Id=12,CraftOrderId=12,WorkflowTemplateId=1,SequenceNo=1,Version="V1",Status=CraftOrderVersionStatus.已发布};
+ db.AddRange(refA,refB,refSub);await db.SaveChangesAsync();await controller.Sync(refA);await controller.Sync(refB);await controller.Sync(refSub);
+ var a=Material(1,1,101,2);a.RefCraftOrderVersionId=refA.Id;
+ var b=Material(2,2,101,3);b.RefCraftOrderVersionId=refA.Id;
+ var c=Material(3,1,101,7);c.RefCraftOrderVersionId=refB.Id;
+ var subA=Material(4,1,102,1,1);subA.RefCraftOrderVersionId=refSub.Id;
+ var subB=Material(5,2,102,2,2);subB.RefCraftOrderVersionId=refSub.Id;
+ var sameProductSub=Material(6,1,101,0.5m,1);sameProductSub.RefCraftOrderVersionId=refB.Id;
+ db.AddRange(a,b,c,subA,subB,sameProductSub,Material(7,1,101,4));await db.SaveChangesAsync();
+ var craft=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;await controller.Sync(craft);
+ var details=await db.Set<Production_MBom_Detail>().Where(x=>x.VersionId==craft.BomVersionId).ToListAsync();
+ Assert(details.Count==5,"three main materials and two substitutes");
+ var mainA=details.Single(x=>!x.IsSubstitute&&x.DetailType==BomDetailType.Bom&&x.DetailId==refA.BomVersionId);
+ var mainB=details.Single(x=>!x.IsSubstitute&&x.DetailType==BomDetailType.Bom&&x.DetailId==refB.BomVersionId);
+ Assert(mainA.Quantity==5&&mainB.Quantity==7,"same reference sums; different craft versions stay separate");
+ Assert(details.Single(x=>x.DetailType==BomDetailType.Product).Quantity==4,"unreferenced product remains separate");
+ Assert(mainB.DetailId!=(await db.Set<Production_MBom_Version>().FindAsync(refB.BomVersionId))!.MBomId,"reference points to BOM version, not BOM header");
+ Assert(details.Single(x=>x.IsSubstitute&&x.DetailId==refSub.BomVersionId).Quantity==3,"substitute-only reference is queried and summed");
+ Assert(details.Where(x=>x.IsSubstitute).All(x=>x.MainDetailId==mainA.Id),"referenced substitutes use BOM main detail ID");
+ Assert(details.Single(x=>x.IsSubstitute&&x.DetailId==refB.BomVersionId).Quantity==0.5m,"different referenced version of same product is a distinct substitute");
+ var ids=details.Select(x=>x.Id).Order().ToArray();await controller.Sync(craft);
+ Assert((await db.Set<Production_MBom_Detail>().Where(x=>x.VersionId==craft.BomVersionId).Select(x=>x.Id).OrderBy(x=>x).ToArrayAsync()).SequenceEqual(ids),"referenced main and substitute IDs remain stable");
+ a.Quantity=6;await db.SaveChangesAsync();await controller.Sync(craft);Assert(mainA.Quantity==9,"referenced quantity updates");
+ c.RefCraftOrderVersionId=refA.Id;await db.SaveChangesAsync();await controller.Sync(craft);
+ Assert(mainA.Quantity==16&&!await db.Set<Production_MBom_Detail>().AnyAsync(x=>x.Id==mainB.Id),"switch reference merges same version and removes obsolete main");
+ a.RefCraftOrderVersionId=null;await db.SaveChangesAsync();await controller.Sync(craft);
+ Assert(mainA.Quantity==10&&(await db.Set<Production_MBom_Detail>().SingleAsync(x=>x.VersionId==craft.BomVersionId&&x.DetailType==BomDetailType.Product&&!x.IsSubstitute)).Quantity==10,"removing reference returns to raw material aggregation");
+ Assert(await db.Set<Production_MBom_Version>().CountAsync()==4,"parent saves do not rebuild referenced BOM versions");
+});
+await Scenario("missing or archived referenced BOM rejects and rolls back",async(db,controller,utils)=>{
+ db.Add(new Technical_CraftOrder{Id=10,ProductId=101,Code="REF101",Name="Product101"});
+ var referenced=new Technical_CraftOrderVersion{Id=10,CraftOrderId=10,WorkflowTemplateId=1,SequenceNo=1,Version="V1",Status=CraftOrderVersionStatus.已发布};
+ db.Add(referenced);var input=Material(1,1,101,2);input.RefCraftOrderVersionId=referenced.Id;db.Add(input);await db.SaveChangesAsync();
+ var craft=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;
+ await using(var tx=await db.Database.BeginTransactionAsync()){try{await controller.Sync(craft);throw new Exception("must reject missing BOM");}catch(Exception e)when(e.Message.Contains("未关联有效")){checks++;await tx.RollbackAsync();}}
+ db.ChangeTracker.Clear();Assert(await db.Set<Production_MBom_Version>().CountAsync()==0&&(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!.BomVersionId==null,"missing reference rolls back parent linkage");
+ referenced=(await db.Set<Technical_CraftOrderVersion>().FindAsync(10L))!;await controller.Sync(referenced);await controller.Archive(referenced);
+ craft=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;
+ await using(var tx=await db.Database.BeginTransactionAsync()){try{await controller.Sync(craft);throw new Exception("must reject archived BOM");}catch(Exception e)when(e.Message.Contains("未关联有效")){checks++;await tx.RollbackAsync();}}
+ db.ChangeTracker.Clear();Assert((await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!.BomVersionId==null,"archived reference cannot leave parent linkage");
+});
+Assert(JsonSerializer.Serialize(new CraftVersionDto{BomVersionId=7},JsonHelper.DefaultJsonSerializerOptions).Contains("\"bomVersionId\":7"),"version list returns ID");
+Assert(JsonSerializer.Serialize(new CraftVersionDetailDto{BomVersionId=7},JsonHelper.DefaultJsonSerializerOptions).Contains("\"bomVersionId\":7"),"version detail returns ID");
+await Scenario("draft publish, obsolete, restore and unpublish synchronize the linked BOM",async(db,controller,utils)=>{
+ var craft=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;
+ Assert(craft.Status==CraftOrderVersionStatus.暂存,"new entity defaults to draft");
+ await controller.Sync(craft);
+ var bom=(await db.Set<Production_MBom_Version>().FindAsync(craft.BomVersionId))!;
+ Assert(bom.Status==BomStatus.待审核,"draft maps to inactive BOM status");
+ var last=(await db.Set<Technical_NodeSettingTemplate>().FindAsync(2L))!;
+ last.IsReportWork=true;last.IsInbound=true;await db.SaveChangesAsync();
+ await controller.PublishCraftVersion(new(){Id=craft.Id});
+ Assert(craft.Status==CraftOrderVersionStatus.已发布&&bom.Status==BomStatus.已生效,"publish directly activates craft and BOM");
+ try {await controller.ObsoleteCraftVersion(new(){Id=craft.Id});throw new Exception("must reject");}catch(Exception e)when(e.Message.Contains("主版本")){checks++;}
+ craft.IsMain=false;await controller.Metadata(craft);
+ await controller.ObsoleteCraftVersion(new(){Id=craft.Id});
+ Assert(craft.Status==CraftOrderVersionStatus.已废弃&&bom.Status==BomStatus.淘汰,"obsolete synchronizes BOM");
+ await controller.RestoreCraftVersion(new(){Id=craft.Id});
+ Assert(craft.Status==CraftOrderVersionStatus.暂存&&bom.Status==BomStatus.待审核&&!craft.IsMain,"restore returns to editable draft without stealing main version");
+ await controller.PublishCraftVersion(new(){Id=craft.Id});
+ await controller.UnpublishCraftVersion(new(){Id=craft.Id});
+ Assert(craft.Status==CraftOrderVersionStatus.暂存&&bom.Status==BomStatus.待审核,"unpublish returns to draft");
+ craft.Status=CraftOrderVersionStatus.待审核;await db.SaveChangesAsync();
+ await controller.PublishCraftVersion(new(){Id=craft.Id});
+ Assert(craft.Status==CraftOrderVersionStatus.已发布,"existing pending versions can publish directly");
+});
+await Scenario("invalid state and missing final report settings cannot publish or restore",async(db,controller,utils)=>{
+ var craft=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;
+ foreach(var flags in new[]{(false,false),(true,false),(false,true)}) {
+  var last=(await db.Set<Technical_NodeSettingTemplate>().FindAsync(2L))!;
+  last.IsReportWork=flags.Item1;last.IsInbound=flags.Item2;await db.SaveChangesAsync();
+  try {await controller.PublishCraftVersion(new(){Id=1});throw new Exception("must reject");}catch(Exception e)when(e.Message.Contains("最后一道工序")){checks++;}
+  Assert(craft.Status==CraftOrderVersionStatus.暂存,"validation precedes status changes");
+ }
+ try {await controller.RestoreCraftVersion(new(){Id=1});throw new Exception("must reject");}catch(Exception e)when(e.Message.Contains("仅已废弃")){checks++;}
+ craft.Status=CraftOrderVersionStatus.已废弃;await db.SaveChangesAsync();
+ try {await controller.PublishCraftVersion(new(){Id=1});throw new Exception("must reject");}catch(Exception e)when(e.Message.Contains("已废弃")){checks++;}
+});
+await Scenario("published material options include the main marker and exclude draft and obsolete versions",async(db,controller,utils)=>{
+ var main=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;main.Status=CraftOrderVersionStatus.已发布;
+ foreach(var (id,state) in new[]{(2L,CraftOrderVersionStatus.已发布),(3L,CraftOrderVersionStatus.暂存),(4L,CraftOrderVersionStatus.已废弃)})
+  db.Add(new Technical_CraftOrderVersion{Id=id,CraftOrderId=1,WorkflowTemplateId=1,SequenceNo=(int)id,Version=$"V{id}",Status=state});
+ await db.SaveChangesAsync();
+ var result=(Microsoft.AspNetCore.Mvc.OkObjectResult)await controller.GetPublishedCraftVersionOptions(100);
+ var options=JsonSerializer.SerializeToElement(result.Value,JsonHelper.DefaultJsonSerializerOptions);
+ Assert(options.GetArrayLength()==2&&options[0].GetProperty("id").GetInt64()==1&&options[0].GetProperty("isMain").GetBoolean(),"published main is first and marked");
+});
+await Scenario("obsolete version deletion preserves referenced versions and soft-deletes unused node data",async(db,controller,utils)=>{
+ var craft=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;craft.IsMain=false;craft.Status=CraftOrderVersionStatus.已废弃;
+ var reference=Material(1,1,101,1);reference.RefCraftOrderVersionId=1;db.Add(reference);await db.SaveChangesAsync();
+ try {await controller.DeleteCraftVersion(new(){Id=1});throw new Exception("must reject");}catch(Exception e)when(e.Message.Contains("引用")){checks++;}
+ Assert(!craft.IsDeleted,"referenced obsolete version retained");
+ reference.RefCraftOrderVersionId=null;db.Add(new Technical_NodeSettingTemplate_Machine_RL{Id=1,NodeSettingTemplateId=1});await db.SaveChangesAsync();
+ await controller.Sync(craft);await controller.DeleteCraftVersion(new(){Id=1});
+ Assert(craft.IsDeleted&&!await db.Set<Technical_NodeSettingTemplate_Material_RL>().AnyAsync(x=>x.Id==reference.Id),"unused obsolete version deleted with its material rows");
+ Assert((await db.Set<Technical_NodeSettingTemplate>().FindAsync(1L))!.IsDeleted&&(await db.Set<Technical_NodeSettingTemplate_Machine_RL>().FindAsync(1L))!.IsDeleted,"processes and machines soft deleted");
+ Assert((await db.Set<Production_MBom_Version>().FindAsync(craft.BomVersionId))!.IsDeleted,"linked BOM archived");
+});
+foreach(var entireOrder in new[]{false,true})
+await Scenario(entireOrder?"whole craft soft deletion preserves workflow references under restrictive material foreign keys":"version soft deletion preserves workflow references under restrictive material foreign keys",async(db,controller,utils)=>{
+ var craft=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;
+ craft.IsMain=false;craft.Status=CraftOrderVersionStatus.已废弃;
+ (await db.Set<Technical_NodeSettingTemplate>().FindAsync(1L))!.NodeTemplateId=101;
+ (await db.Set<Technical_NodeSettingTemplate>().FindAsync(2L))!.NodeTemplateId=102;
+ await db.SaveChangesAsync();
+ await SeedMaterials(db);
+ await db.Database.ExecuteSqlRawAsync("INSERT INTO WF_NodeTemplate VALUES(100,1),(101,1),(102,1),(103,1),(200,2),(201,2)");
+ await db.Database.ExecuteSqlRawAsync("INSERT INTO WF_NodeTemplateLink VALUES(100,101,1),(101,102,1),(102,103,1),(200,201,2)");
+ await db.Database.ExecuteSqlRawAsync("INSERT INTO WF_WorkflowTemplateLink VALUES(1,2,1),(2,1,2),(3,2,3)");
+ try {await db.Database.ExecuteSqlRawAsync("DELETE FROM WF_NodeTemplate WHERE Id=101");throw new Exception("must reject linked-node deletion");}
+ catch(SqliteException e) when(e.SqliteErrorCode==19) {checks++;}
+ controller.NodeDelete=id=>throw new Exception("must not hard-delete workflow nodes referenced by soft-deleted processes");
+ controller.WorkflowDelete=id=>throw new Exception("must not hard-delete workflow templates referenced by soft-deleted versions");
+ if(entireOrder)await controller.DeleteCraftOrder(new(){Id=1});
+ else await controller.DeleteCraftVersion(new(){Id=1});
+ db.ChangeTracker.Clear();
+ Assert((await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!.IsDeleted,"version remains as a soft-deleted row");
+ Assert((await db.Set<Technical_NodeSettingTemplate>().FindAsync(1L))!.IsDeleted&&(await db.Set<Technical_NodeSettingTemplate>().FindAsync(2L))!.IsDeleted,"processes remain as soft-deleted rows");
+ Assert(!await db.Set<Technical_NodeSettingTemplate_Material_RL>().AnyAsync(x=>x.NodeSettingTemplateId==1||x.NodeSettingTemplateId==2),"main, substitute and output material rows physically removed");
+ Assert(await db.Database.SqlQueryRaw<long>("SELECT COUNT(*) AS Value FROM WF_NodeTemplateLink WHERE WorkflowTemplateId=1").SingleAsync()==3,"archived workflow links retained");
+ Assert(await db.Database.SqlQueryRaw<long>("SELECT COUNT(*) AS Value FROM WF_NodeTemplate WHERE WorkflowTemplateId=1").SingleAsync()==4,"archived workflow nodes retained");
+ Assert(await db.Set<WF_WorkflowTemplate>().AnyAsync(x=>x.Id==1),"referenced workflow template retained");
+ Assert((await db.Set<Technical_CraftOrder>().FindAsync(1L))!.IsDeleted==entireOrder,"only whole-order deletion soft deletes the craft header");
+ Assert(await db.Database.SqlQueryRaw<long>("SELECT COUNT(*) AS Value FROM WF_NodeTemplateLink WHERE WorkflowTemplateId=2").SingleAsync()==1,"unrelated workflow node link preserved");
+ Assert(await db.Database.SqlQueryRaw<long>("SELECT COUNT(*) AS Value FROM WF_WorkflowTemplateLink WHERE Id=3").SingleAsync()==1,"unrelated workflow link preserved");
+});
+Console.WriteLine($"PASS {checks} relational and response assertions");

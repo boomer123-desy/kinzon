@@ -1,0 +1,1971 @@
+{
+  "batch": "KZ-CV-20261022",
+  "database": "test_standard",
+  "committed": true,
+  "created_at": "2026-10-22T17:19:21.240371",
+  "ids": {
+    "Base_Product": [
+      3692,
+      3693,
+      3694,
+      3695,
+      3696,
+      3697,
+      3698,
+      3699,
+      3700
+    ],
+    "Base_ProductSpecification": [
+      2359
+    ],
+    "Base_UnitConversion": [
+      139
+    ],
+    "Base_Craft": [
+      25,
+      26,
+      27,
+      28
+    ],
+    "Base_Machine": [
+      114,
+      115,
+      116,
+      117
+    ],
+    "Technical_CraftOrder": [
+      9032,
+      9033,
+      9034,
+      9035,
+      9036,
+      9037
+    ],
+    "Production_MBom": [
+      34,
+      35,
+      36,
+      37,
+      38,
+      39
+    ],
+    "Production_MBom_Version": [
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108
+    ],
+    "WF_WorkflowTemplate": [
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81
+    ],
+    "Technical_CraftOrderVersion": [
+      9165,
+      9166,
+      9167,
+      9168,
+      9169,
+      9170,
+      9171,
+      9172,
+      9173,
+      9174,
+      9175,
+      9176,
+      9177,
+      9178,
+      9179,
+      9180,
+      9181,
+      9182,
+      9183,
+      9184,
+      9185
+    ],
+    "WF_NodeTemplate": [
+      233,
+      234,
+      235,
+      236,
+      237,
+      238,
+      239,
+      240,
+      241,
+      242,
+      243,
+      244,
+      245,
+      246,
+      247,
+      248,
+      249,
+      250,
+      251,
+      252,
+      253,
+      254,
+      255,
+      256,
+      257,
+      258,
+      259,
+      260,
+      261,
+      262,
+      263,
+      264,
+      265,
+      266,
+      267,
+      268,
+      269,
+      270,
+      271,
+      272,
+      273,
+      274,
+      275,
+      276,
+      277,
+      278,
+      279,
+      280,
+      281,
+      282,
+      283,
+      284,
+      285,
+      286,
+      287,
+      288,
+      289,
+      290,
+      291,
+      292,
+      293,
+      294,
+      295,
+      296,
+      297,
+      298,
+      299,
+      300,
+      301,
+      302,
+      303,
+      304,
+      305,
+      306,
+      307,
+      308,
+      309,
+      310,
+      311,
+      312,
+      313,
+      314,
+      315,
+      316,
+      317,
+      318,
+      319,
+      320,
+      321,
+      322,
+      323,
+      324,
+      325,
+      326,
+      327,
+      328,
+      329,
+      330,
+      331,
+      332,
+      333,
+      334,
+      335,
+      336,
+      337,
+      338,
+      339,
+      340,
+      341,
+      342,
+      343,
+      344,
+      345,
+      346,
+      347,
+      348,
+      349,
+      350,
+      351,
+      352,
+      353
+    ],
+    "Technical_NodeSettingTemplate": [
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127,
+      128,
+      129,
+      130,
+      131,
+      132,
+      133,
+      134,
+      135,
+      136,
+      137,
+      138,
+      139,
+      140,
+      141,
+      142,
+      143,
+      144,
+      145,
+      146,
+      147,
+      148,
+      149,
+      150,
+      151,
+      152,
+      153,
+      154,
+      155,
+      156,
+      157,
+      158,
+      159,
+      160,
+      161,
+      162,
+      163,
+      164,
+      165,
+      166,
+      167,
+      168,
+      169,
+      170,
+      171,
+      172,
+      173,
+      174,
+      175,
+      176,
+      177,
+      178,
+      179,
+      180,
+      181,
+      182,
+      183,
+      184,
+      185,
+      186,
+      187,
+      188,
+      189,
+      190,
+      191,
+      192
+    ],
+    "Technical_NodeSettingTemplate_Machine_RL": [
+      126,
+      127,
+      128,
+      129,
+      130,
+      131,
+      132,
+      133,
+      134,
+      135,
+      136,
+      137,
+      138,
+      139,
+      140,
+      141,
+      142,
+      143,
+      144,
+      145,
+      146,
+      147,
+      148,
+      149,
+      150,
+      151,
+      152,
+      153,
+      154,
+      155,
+      156,
+      157,
+      158,
+      159,
+      160,
+      161,
+      162,
+      163,
+      164,
+      165,
+      166,
+      167,
+      168,
+      169,
+      170,
+      171,
+      172,
+      173,
+      174,
+      175,
+      176,
+      177,
+      178,
+      179,
+      180,
+      181,
+      182,
+      183,
+      184,
+      185,
+      186,
+      187,
+      188,
+      189,
+      190,
+      191,
+      192,
+      193,
+      194,
+      195,
+      196,
+      197,
+      198,
+      199,
+      200,
+      201,
+      202,
+      203,
+      204,
+      205,
+      206,
+      207,
+      208,
+      209,
+      210,
+      211,
+      212,
+      213,
+      214,
+      215,
+      216,
+      217,
+      218,
+      219,
+      220,
+      221,
+      222,
+      223,
+      224,
+      225,
+      226,
+      227,
+      228,
+      229,
+      230,
+      231,
+      232,
+      233,
+      234
+    ],
+    "Technical_NodeSettingTemplate_Material_RL": [
+      368,
+      369,
+      370,
+      371,
+      372,
+      373,
+      374,
+      375,
+      376,
+      377,
+      378,
+      379,
+      380,
+      381,
+      382,
+      383,
+      384,
+      385,
+      386,
+      387,
+      388,
+      389,
+      390,
+      391,
+      392,
+      393,
+      394,
+      395,
+      396,
+      397,
+      398,
+      399,
+      400,
+      401,
+      402,
+      403,
+      404,
+      405,
+      406,
+      407,
+      408,
+      409,
+      410,
+      411,
+      412,
+      413,
+      414,
+      415,
+      416,
+      417,
+      418,
+      419,
+      420,
+      421,
+      422,
+      423,
+      424,
+      425,
+      426,
+      427,
+      428,
+      429,
+      430,
+      431,
+      432,
+      433,
+      434,
+      435,
+      436,
+      437,
+      438,
+      439,
+      440,
+      441,
+      442,
+      443,
+      444,
+      445,
+      446,
+      447,
+      448,
+      449,
+      450,
+      451,
+      452,
+      453,
+      454,
+      455,
+      456,
+      457,
+      458,
+      459,
+      460,
+      461,
+      462,
+      463,
+      464,
+      465,
+      466,
+      467,
+      468,
+      469,
+      470,
+      471,
+      472,
+      473,
+      474,
+      475,
+      476,
+      477,
+      478,
+      479,
+      480,
+      481,
+      482,
+      483,
+      484,
+      485,
+      486,
+      487,
+      488,
+      489,
+      490,
+      491
+    ],
+    "Production_MBom_Detail": [
+      250,
+      251,
+      252,
+      253,
+      254,
+      255,
+      256,
+      257,
+      258,
+      259,
+      260,
+      261,
+      262,
+      263,
+      264,
+      265,
+      266,
+      267,
+      268,
+      269,
+      270,
+      271,
+      272,
+      273,
+      274,
+      275,
+      276,
+      277,
+      278,
+      279,
+      280,
+      281,
+      282,
+      283,
+      284,
+      285,
+      286,
+      287,
+      288,
+      289,
+      290,
+      291,
+      292,
+      293,
+      294,
+      295,
+      296,
+      297,
+      298,
+      299,
+      300,
+      301,
+      302,
+      303,
+      304,
+      305,
+      306,
+      307,
+      308,
+      309,
+      310,
+      311,
+      312,
+      313,
+      314,
+      315,
+      316,
+      317,
+      318,
+      319,
+      320,
+      321,
+      322,
+      323,
+      324,
+      325,
+      326,
+      327,
+      328
+    ]
+  },
+  "relations": {
+    "Base_Machine_Craft_RL": [
+      {
+        "MachineId": 114,
+        "CraftId": 25
+      },
+      {
+        "MachineId": 115,
+        "CraftId": 26
+      },
+      {
+        "MachineId": 116,
+        "CraftId": 26
+      },
+      {
+        "MachineId": 117,
+        "CraftId": 28
+      }
+    ],
+    "WF_NodeTemplateLink": [
+      {
+        "PreviousId": 233,
+        "NextId": 234,
+        "WorkflowTemplateId": 61
+      },
+      {
+        "PreviousId": 234,
+        "NextId": 235,
+        "WorkflowTemplateId": 61
+      },
+      {
+        "PreviousId": 235,
+        "NextId": 236,
+        "WorkflowTemplateId": 61
+      },
+      {
+        "PreviousId": 236,
+        "NextId": 237,
+        "WorkflowTemplateId": 61
+      },
+      {
+        "PreviousId": 238,
+        "NextId": 239,
+        "WorkflowTemplateId": 62
+      },
+      {
+        "PreviousId": 239,
+        "NextId": 240,
+        "WorkflowTemplateId": 62
+      },
+      {
+        "PreviousId": 240,
+        "NextId": 241,
+        "WorkflowTemplateId": 62
+      },
+      {
+        "PreviousId": 241,
+        "NextId": 242,
+        "WorkflowTemplateId": 62
+      },
+      {
+        "PreviousId": 242,
+        "NextId": 243,
+        "WorkflowTemplateId": 62
+      },
+      {
+        "PreviousId": 244,
+        "NextId": 245,
+        "WorkflowTemplateId": 63
+      },
+      {
+        "PreviousId": 245,
+        "NextId": 246,
+        "WorkflowTemplateId": 63
+      },
+      {
+        "PreviousId": 246,
+        "NextId": 247,
+        "WorkflowTemplateId": 63
+      },
+      {
+        "PreviousId": 247,
+        "NextId": 248,
+        "WorkflowTemplateId": 63
+      },
+      {
+        "PreviousId": 248,
+        "NextId": 249,
+        "WorkflowTemplateId": 63
+      },
+      {
+        "PreviousId": 249,
+        "NextId": 250,
+        "WorkflowTemplateId": 63
+      },
+      {
+        "PreviousId": 251,
+        "NextId": 252,
+        "WorkflowTemplateId": 64
+      },
+      {
+        "PreviousId": 252,
+        "NextId": 253,
+        "WorkflowTemplateId": 64
+      },
+      {
+        "PreviousId": 253,
+        "NextId": 254,
+        "WorkflowTemplateId": 64
+      },
+      {
+        "PreviousId": 254,
+        "NextId": 255,
+        "WorkflowTemplateId": 64
+      },
+      {
+        "PreviousId": 255,
+        "NextId": 256,
+        "WorkflowTemplateId": 64
+      },
+      {
+        "PreviousId": 257,
+        "NextId": 258,
+        "WorkflowTemplateId": 65
+      },
+      {
+        "PreviousId": 258,
+        "NextId": 259,
+        "WorkflowTemplateId": 65
+      },
+      {
+        "PreviousId": 259,
+        "NextId": 260,
+        "WorkflowTemplateId": 65
+      },
+      {
+        "PreviousId": 260,
+        "NextId": 261,
+        "WorkflowTemplateId": 65
+      },
+      {
+        "PreviousId": 262,
+        "NextId": 263,
+        "WorkflowTemplateId": 66
+      },
+      {
+        "PreviousId": 263,
+        "NextId": 264,
+        "WorkflowTemplateId": 66
+      },
+      {
+        "PreviousId": 264,
+        "NextId": 265,
+        "WorkflowTemplateId": 66
+      },
+      {
+        "PreviousId": 265,
+        "NextId": 266,
+        "WorkflowTemplateId": 66
+      },
+      {
+        "PreviousId": 266,
+        "NextId": 267,
+        "WorkflowTemplateId": 66
+      },
+      {
+        "PreviousId": 267,
+        "NextId": 268,
+        "WorkflowTemplateId": 66
+      },
+      {
+        "PreviousId": 268,
+        "NextId": 269,
+        "WorkflowTemplateId": 66
+      },
+      {
+        "PreviousId": 270,
+        "NextId": 271,
+        "WorkflowTemplateId": 67
+      },
+      {
+        "PreviousId": 271,
+        "NextId": 272,
+        "WorkflowTemplateId": 67
+      },
+      {
+        "PreviousId": 272,
+        "NextId": 273,
+        "WorkflowTemplateId": 67
+      },
+      {
+        "PreviousId": 273,
+        "NextId": 274,
+        "WorkflowTemplateId": 67
+      },
+      {
+        "PreviousId": 275,
+        "NextId": 276,
+        "WorkflowTemplateId": 68
+      },
+      {
+        "PreviousId": 276,
+        "NextId": 277,
+        "WorkflowTemplateId": 68
+      },
+      {
+        "PreviousId": 277,
+        "NextId": 278,
+        "WorkflowTemplateId": 68
+      },
+      {
+        "PreviousId": 278,
+        "NextId": 279,
+        "WorkflowTemplateId": 68
+      },
+      {
+        "PreviousId": 279,
+        "NextId": 280,
+        "WorkflowTemplateId": 68
+      },
+      {
+        "PreviousId": 281,
+        "NextId": 282,
+        "WorkflowTemplateId": 69
+      },
+      {
+        "PreviousId": 282,
+        "NextId": 283,
+        "WorkflowTemplateId": 69
+      },
+      {
+        "PreviousId": 283,
+        "NextId": 284,
+        "WorkflowTemplateId": 69
+      },
+      {
+        "PreviousId": 284,
+        "NextId": 285,
+        "WorkflowTemplateId": 69
+      },
+      {
+        "PreviousId": 285,
+        "NextId": 286,
+        "WorkflowTemplateId": 69
+      },
+      {
+        "PreviousId": 286,
+        "NextId": 287,
+        "WorkflowTemplateId": 69
+      },
+      {
+        "PreviousId": 288,
+        "NextId": 289,
+        "WorkflowTemplateId": 70
+      },
+      {
+        "PreviousId": 289,
+        "NextId": 290,
+        "WorkflowTemplateId": 70
+      },
+      {
+        "PreviousId": 290,
+        "NextId": 291,
+        "WorkflowTemplateId": 70
+      },
+      {
+        "PreviousId": 291,
+        "NextId": 292,
+        "WorkflowTemplateId": 70
+      },
+      {
+        "PreviousId": 293,
+        "NextId": 294,
+        "WorkflowTemplateId": 71
+      },
+      {
+        "PreviousId": 294,
+        "NextId": 295,
+        "WorkflowTemplateId": 71
+      },
+      {
+        "PreviousId": 295,
+        "NextId": 296,
+        "WorkflowTemplateId": 71
+      },
+      {
+        "PreviousId": 296,
+        "NextId": 297,
+        "WorkflowTemplateId": 71
+      },
+      {
+        "PreviousId": 298,
+        "NextId": 299,
+        "WorkflowTemplateId": 72
+      },
+      {
+        "PreviousId": 299,
+        "NextId": 300,
+        "WorkflowTemplateId": 72
+      },
+      {
+        "PreviousId": 300,
+        "NextId": 301,
+        "WorkflowTemplateId": 72
+      },
+      {
+        "PreviousId": 301,
+        "NextId": 302,
+        "WorkflowTemplateId": 72
+      },
+      {
+        "PreviousId": 302,
+        "NextId": 303,
+        "WorkflowTemplateId": 72
+      },
+      {
+        "PreviousId": 304,
+        "NextId": 305,
+        "WorkflowTemplateId": 73
+      },
+      {
+        "PreviousId": 305,
+        "NextId": 306,
+        "WorkflowTemplateId": 73
+      },
+      {
+        "PreviousId": 306,
+        "NextId": 307,
+        "WorkflowTemplateId": 73
+      },
+      {
+        "PreviousId": 307,
+        "NextId": 308,
+        "WorkflowTemplateId": 73
+      },
+      {
+        "PreviousId": 309,
+        "NextId": 310,
+        "WorkflowTemplateId": 74
+      },
+      {
+        "PreviousId": 310,
+        "NextId": 311,
+        "WorkflowTemplateId": 74
+      },
+      {
+        "PreviousId": 311,
+        "NextId": 312,
+        "WorkflowTemplateId": 74
+      },
+      {
+        "PreviousId": 312,
+        "NextId": 313,
+        "WorkflowTemplateId": 74
+      },
+      {
+        "PreviousId": 314,
+        "NextId": 315,
+        "WorkflowTemplateId": 75
+      },
+      {
+        "PreviousId": 315,
+        "NextId": 316,
+        "WorkflowTemplateId": 75
+      },
+      {
+        "PreviousId": 316,
+        "NextId": 317,
+        "WorkflowTemplateId": 75
+      },
+      {
+        "PreviousId": 317,
+        "NextId": 318,
+        "WorkflowTemplateId": 75
+      },
+      {
+        "PreviousId": 318,
+        "NextId": 319,
+        "WorkflowTemplateId": 75
+      },
+      {
+        "PreviousId": 320,
+        "NextId": 321,
+        "WorkflowTemplateId": 76
+      },
+      {
+        "PreviousId": 321,
+        "NextId": 322,
+        "WorkflowTemplateId": 76
+      },
+      {
+        "PreviousId": 322,
+        "NextId": 323,
+        "WorkflowTemplateId": 76
+      },
+      {
+        "PreviousId": 323,
+        "NextId": 324,
+        "WorkflowTemplateId": 76
+      },
+      {
+        "PreviousId": 324,
+        "NextId": 325,
+        "WorkflowTemplateId": 76
+      },
+      {
+        "PreviousId": 325,
+        "NextId": 326,
+        "WorkflowTemplateId": 76
+      },
+      {
+        "PreviousId": 327,
+        "NextId": 328,
+        "WorkflowTemplateId": 77
+      },
+      {
+        "PreviousId": 328,
+        "NextId": 329,
+        "WorkflowTemplateId": 77
+      },
+      {
+        "PreviousId": 329,
+        "NextId": 330,
+        "WorkflowTemplateId": 77
+      },
+      {
+        "PreviousId": 330,
+        "NextId": 331,
+        "WorkflowTemplateId": 77
+      },
+      {
+        "PreviousId": 331,
+        "NextId": 332,
+        "WorkflowTemplateId": 77
+      },
+      {
+        "PreviousId": 333,
+        "NextId": 334,
+        "WorkflowTemplateId": 78
+      },
+      {
+        "PreviousId": 334,
+        "NextId": 335,
+        "WorkflowTemplateId": 78
+      },
+      {
+        "PreviousId": 336,
+        "NextId": 337,
+        "WorkflowTemplateId": 79
+      },
+      {
+        "PreviousId": 337,
+        "NextId": 338,
+        "WorkflowTemplateId": 79
+      },
+      {
+        "PreviousId": 338,
+        "NextId": 339,
+        "WorkflowTemplateId": 79
+      },
+      {
+        "PreviousId": 339,
+        "NextId": 340,
+        "WorkflowTemplateId": 79
+      },
+      {
+        "PreviousId": 341,
+        "NextId": 342,
+        "WorkflowTemplateId": 80
+      },
+      {
+        "PreviousId": 342,
+        "NextId": 343,
+        "WorkflowTemplateId": 80
+      },
+      {
+        "PreviousId": 343,
+        "NextId": 344,
+        "WorkflowTemplateId": 80
+      },
+      {
+        "PreviousId": 344,
+        "NextId": 345,
+        "WorkflowTemplateId": 80
+      },
+      {
+        "PreviousId": 345,
+        "NextId": 346,
+        "WorkflowTemplateId": 80
+      },
+      {
+        "PreviousId": 347,
+        "NextId": 348,
+        "WorkflowTemplateId": 81
+      },
+      {
+        "PreviousId": 348,
+        "NextId": 349,
+        "WorkflowTemplateId": 81
+      },
+      {
+        "PreviousId": 349,
+        "NextId": 350,
+        "WorkflowTemplateId": 81
+      },
+      {
+        "PreviousId": 350,
+        "NextId": 351,
+        "WorkflowTemplateId": 81
+      },
+      {
+        "PreviousId": 351,
+        "NextId": 352,
+        "WorkflowTemplateId": 81
+      },
+      {
+        "PreviousId": 352,
+        "NextId": 353,
+        "WorkflowTemplateId": 81
+      }
+    ]
+  },
+  "counts": {
+    "Base_Product": 9,
+    "Base_ProductSpecification": 1,
+    "Base_UnitConversion": 1,
+    "Base_Craft": 4,
+    "Base_Machine": 4,
+    "Technical_CraftOrder": 6,
+    "Production_MBom": 6,
+    "Production_MBom_Version": 21,
+    "WF_WorkflowTemplate": 21,
+    "Technical_CraftOrderVersion": 21,
+    "WF_NodeTemplate": 121,
+    "Technical_NodeSettingTemplate": 79,
+    "Technical_NodeSettingTemplate_Machine_RL": 109,
+    "Technical_NodeSettingTemplate_Material_RL": 124,
+    "Production_MBom_Detail": 79,
+    "Base_Machine_Craft_RL": 4,
+    "WF_NodeTemplateLink": 100
+  },
+  "orders": {
+    "A": {
+      "id": 9032,
+      "code": "KZ-CV-20261022-A",
+      "name": "版本测试-总装成品",
+      "product_id": 3692,
+      "bom_id": 34,
+      "versions": [
+        {
+          "id": 9165,
+          "number": 1,
+          "status": 3,
+          "state": "已废弃",
+          "main": false,
+          "process_count": 3,
+          "workflow_id": 61,
+          "bom_version_id": 88,
+          "nodes": [
+            114,
+            115,
+            116
+          ],
+          "material_ids": [
+            368,
+            369,
+            370,
+            371,
+            372,
+            373,
+            374
+          ],
+          "key": "A"
+        },
+        {
+          "id": 9166,
+          "number": 2,
+          "status": 2,
+          "state": "已发布",
+          "main": true,
+          "process_count": 4,
+          "workflow_id": 62,
+          "bom_version_id": 89,
+          "nodes": [
+            117,
+            118,
+            119,
+            120
+          ],
+          "material_ids": [
+            375,
+            376,
+            377,
+            378,
+            379,
+            380,
+            381
+          ],
+          "key": "A"
+        },
+        {
+          "id": 9167,
+          "number": 3,
+          "status": 0,
+          "state": "暂存",
+          "main": false,
+          "process_count": 5,
+          "workflow_id": 63,
+          "bom_version_id": 90,
+          "nodes": [
+            121,
+            122,
+            123,
+            124,
+            125
+          ],
+          "material_ids": [
+            382,
+            383,
+            384,
+            385,
+            386,
+            387,
+            388,
+            389
+          ],
+          "key": "A"
+        },
+        {
+          "id": 9168,
+          "number": 4,
+          "status": 2,
+          "state": "已发布",
+          "main": false,
+          "process_count": 4,
+          "workflow_id": 64,
+          "bom_version_id": 91,
+          "nodes": [
+            126,
+            127,
+            128,
+            129
+          ],
+          "material_ids": [
+            390,
+            391,
+            392,
+            393,
+            394,
+            395,
+            396,
+            397
+          ],
+          "key": "A"
+        },
+        {
+          "id": 9169,
+          "number": 5,
+          "status": 3,
+          "state": "已废弃",
+          "main": false,
+          "process_count": 3,
+          "workflow_id": 65,
+          "bom_version_id": 92,
+          "nodes": [
+            130,
+            131,
+            132
+          ],
+          "material_ids": [
+            398,
+            399,
+            400,
+            401,
+            402,
+            403,
+            404
+          ],
+          "key": "A"
+        },
+        {
+          "id": 9170,
+          "number": 6,
+          "status": 0,
+          "state": "暂存",
+          "main": false,
+          "process_count": 6,
+          "workflow_id": 66,
+          "bom_version_id": 93,
+          "nodes": [
+            133,
+            134,
+            135,
+            136,
+            137,
+            138
+          ],
+          "material_ids": [
+            405,
+            406,
+            407,
+            408,
+            409,
+            410,
+            411
+          ],
+          "key": "A"
+        }
+      ]
+    },
+    "B": {
+      "id": 9033,
+      "code": "KZ-CV-20261022-B",
+      "name": "版本测试-壳体半成品",
+      "product_id": 3693,
+      "bom_id": 35,
+      "versions": [
+        {
+          "id": 9171,
+          "number": 1,
+          "status": 2,
+          "state": "已发布",
+          "main": false,
+          "process_count": 3,
+          "workflow_id": 67,
+          "bom_version_id": 94,
+          "nodes": [
+            139,
+            140,
+            141
+          ],
+          "material_ids": [
+            412,
+            413,
+            414,
+            415,
+            416,
+            417
+          ],
+          "key": "B"
+        },
+        {
+          "id": 9172,
+          "number": 2,
+          "status": 2,
+          "state": "已发布",
+          "main": true,
+          "process_count": 4,
+          "workflow_id": 68,
+          "bom_version_id": 95,
+          "nodes": [
+            142,
+            143,
+            144,
+            145
+          ],
+          "material_ids": [
+            418,
+            419,
+            420,
+            421,
+            422,
+            423
+          ],
+          "key": "B"
+        },
+        {
+          "id": 9173,
+          "number": 3,
+          "status": 0,
+          "state": "暂存",
+          "main": false,
+          "process_count": 5,
+          "workflow_id": 69,
+          "bom_version_id": 96,
+          "nodes": [
+            146,
+            147,
+            148,
+            149,
+            150
+          ],
+          "material_ids": [
+            424,
+            425,
+            426,
+            427,
+            428,
+            429
+          ],
+          "key": "B"
+        },
+        {
+          "id": 9174,
+          "number": 4,
+          "status": 3,
+          "state": "已废弃",
+          "main": false,
+          "process_count": 3,
+          "workflow_id": 70,
+          "bom_version_id": 97,
+          "nodes": [
+            151,
+            152,
+            153
+          ],
+          "material_ids": [
+            430,
+            431,
+            432,
+            433,
+            434,
+            435
+          ],
+          "key": "B"
+        }
+      ]
+    },
+    "C": {
+      "id": 9034,
+      "code": "KZ-CV-20261022-C",
+      "name": "版本测试-内芯半成品",
+      "product_id": 3694,
+      "bom_id": 36,
+      "versions": [
+        {
+          "id": 9175,
+          "number": 1,
+          "status": 2,
+          "state": "已发布",
+          "main": true,
+          "process_count": 3,
+          "workflow_id": 71,
+          "bom_version_id": 98,
+          "nodes": [
+            154,
+            155,
+            156
+          ],
+          "material_ids": [
+            436,
+            437,
+            438,
+            439,
+            440
+          ],
+          "key": "C"
+        },
+        {
+          "id": 9176,
+          "number": 2,
+          "status": 0,
+          "state": "暂存",
+          "main": false,
+          "process_count": 4,
+          "workflow_id": 72,
+          "bom_version_id": 99,
+          "nodes": [
+            157,
+            158,
+            159,
+            160
+          ],
+          "material_ids": [
+            441,
+            442,
+            443,
+            444,
+            445
+          ],
+          "key": "C"
+        },
+        {
+          "id": 9177,
+          "number": 3,
+          "status": 3,
+          "state": "已废弃",
+          "main": false,
+          "process_count": 3,
+          "workflow_id": 73,
+          "bom_version_id": 100,
+          "nodes": [
+            161,
+            162,
+            163
+          ],
+          "material_ids": [
+            446,
+            447,
+            448,
+            449,
+            450
+          ],
+          "key": "C"
+        }
+      ]
+    },
+    "D": {
+      "id": 9035,
+      "code": "KZ-CV-20261022-D",
+      "name": "版本测试-独立切换成品",
+      "product_id": 3695,
+      "bom_id": 37,
+      "versions": [
+        {
+          "id": 9178,
+          "number": 1,
+          "status": 3,
+          "state": "已废弃",
+          "main": false,
+          "process_count": 3,
+          "workflow_id": 74,
+          "bom_version_id": 101,
+          "nodes": [
+            164,
+            165,
+            166
+          ],
+          "material_ids": [
+            451,
+            452,
+            453,
+            454,
+            455
+          ],
+          "key": "D"
+        },
+        {
+          "id": 9179,
+          "number": 2,
+          "status": 2,
+          "state": "已发布",
+          "main": true,
+          "process_count": 4,
+          "workflow_id": 75,
+          "bom_version_id": 102,
+          "nodes": [
+            167,
+            168,
+            169,
+            170
+          ],
+          "material_ids": [
+            456,
+            457,
+            458,
+            459,
+            460
+          ],
+          "key": "D"
+        },
+        {
+          "id": 9180,
+          "number": 3,
+          "status": 0,
+          "state": "暂存",
+          "main": false,
+          "process_count": 5,
+          "workflow_id": 76,
+          "bom_version_id": 103,
+          "nodes": [
+            171,
+            172,
+            173,
+            174,
+            175
+          ],
+          "material_ids": [
+            461,
+            462,
+            463,
+            464,
+            465,
+            466
+          ],
+          "key": "D"
+        },
+        {
+          "id": 9181,
+          "number": 4,
+          "status": 2,
+          "state": "已发布",
+          "main": false,
+          "process_count": 4,
+          "workflow_id": 77,
+          "bom_version_id": 104,
+          "nodes": [
+            176,
+            177,
+            178,
+            179
+          ],
+          "material_ids": [
+            467,
+            468,
+            469,
+            470,
+            471,
+            472
+          ],
+          "key": "D"
+        }
+      ]
+    },
+    "E": {
+      "id": 9036,
+      "code": "KZ-CV-20261022-E",
+      "name": "版本测试-单版本草稿",
+      "product_id": 3696,
+      "bom_id": 38,
+      "versions": [
+        {
+          "id": 9182,
+          "number": 1,
+          "status": 0,
+          "state": "暂存",
+          "main": true,
+          "process_count": 1,
+          "workflow_id": 78,
+          "bom_version_id": 105,
+          "nodes": [
+            180
+          ],
+          "material_ids": [
+            473,
+            474,
+            475,
+            476
+          ],
+          "key": "E"
+        }
+      ]
+    },
+    "F": {
+      "id": 9037,
+      "code": "KZ-CV-20261022-F",
+      "name": "版本测试-规格产出成品",
+      "product_id": 3697,
+      "bom_id": 39,
+      "versions": [
+        {
+          "id": 9183,
+          "number": 1,
+          "status": 3,
+          "state": "已废弃",
+          "main": false,
+          "process_count": 3,
+          "workflow_id": 79,
+          "bom_version_id": 106,
+          "nodes": [
+            181,
+            182,
+            183
+          ],
+          "material_ids": [
+            477,
+            478,
+            479,
+            480,
+            481
+          ],
+          "key": "F"
+        },
+        {
+          "id": 9184,
+          "number": 2,
+          "status": 2,
+          "state": "已发布",
+          "main": true,
+          "process_count": 4,
+          "workflow_id": 80,
+          "bom_version_id": 107,
+          "nodes": [
+            184,
+            185,
+            186,
+            187
+          ],
+          "material_ids": [
+            482,
+            483,
+            484,
+            485,
+            486
+          ],
+          "key": "F"
+        },
+        {
+          "id": 9185,
+          "number": 3,
+          "status": 0,
+          "state": "暂存",
+          "main": false,
+          "process_count": 5,
+          "workflow_id": 81,
+          "bom_version_id": 108,
+          "nodes": [
+            188,
+            189,
+            190,
+            191,
+            192
+          ],
+          "material_ids": [
+            487,
+            488,
+            489,
+            490,
+            491
+          ],
+          "key": "F"
+        }
+      ]
+    }
+  },
+  "checks": [
+    "Base_Product: 插入ID及批次一致",
+    "Base_ProductSpecification: 插入ID及批次一致",
+    "Base_UnitConversion: 插入ID及批次一致",
+    "Base_Craft: 插入ID及批次一致",
+    "Base_Machine: 插入ID及批次一致",
+    "Technical_CraftOrder: 插入ID及批次一致",
+    "Production_MBom: 插入ID及批次一致",
+    "Production_MBom_Version: 插入ID及批次一致",
+    "WF_WorkflowTemplate: 插入ID及批次一致",
+    "Technical_CraftOrderVersion: 插入ID及批次一致",
+    "WF_NodeTemplate: 插入ID及批次一致",
+    "Technical_NodeSettingTemplate: 插入ID及批次一致",
+    "Technical_NodeSettingTemplate_Machine_RL: 插入ID及批次一致",
+    "Technical_NodeSettingTemplate_Material_RL: 插入ID及批次一致",
+    "Production_MBom_Detail: 插入ID及批次一致",
+    "21个工艺版本与21个BOM版本一一对应",
+    "状态分布：暂存7/发布8/废弃6",
+    "KZ-CV-20261022-A: 唯一主版本",
+    "KZ-CV-20261022-B: 唯一主版本",
+    "KZ-CV-20261022-C: 唯一主版本",
+    "KZ-CV-20261022-D: 唯一主版本",
+    "KZ-CV-20261022-E: 唯一主版本",
+    "KZ-CV-20261022-F: 唯一主版本",
+    "BOM与工艺状态、主版本、产品规格匹配",
+    "V9165: BOM单位比例有效",
+    "V9166: BOM单位比例有效",
+    "V9167: BOM单位比例有效",
+    "V9168: BOM单位比例有效",
+    "V9169: BOM单位比例有效",
+    "V9170: BOM单位比例有效",
+    "V9171: BOM单位比例有效",
+    "V9172: BOM单位比例有效",
+    "V9173: BOM单位比例有效",
+    "V9174: BOM单位比例有效",
+    "V9175: BOM单位比例有效",
+    "V9176: BOM单位比例有效",
+    "V9177: BOM单位比例有效",
+    "V9178: BOM单位比例有效",
+    "V9179: BOM单位比例有效",
+    "V9180: BOM单位比例有效",
+    "V9181: BOM单位比例有效",
+    "V9182: BOM单位比例有效",
+    "V9183: BOM单位比例有效",
+    "V9184: BOM单位比例有效",
+    "V9185: BOM单位比例有效",
+    "A-V1: 工序顺序完整",
+    "A-V1: 外协前入库",
+    "A-V1: 末工序满足发布条件",
+    "A-V1: 工作流起止节点及连接完整",
+    "A-V2: 工序顺序完整",
+    "A-V2: 外协前入库",
+    "A-V2: 末工序满足发布条件",
+    "A-V2: 工作流起止节点及连接完整",
+    "A-V3: 工序顺序完整",
+    "A-V3: 外协前入库",
+    "A-V3: 末工序满足发布条件",
+    "A-V3: 工作流起止节点及连接完整",
+    "A-V4: 工序顺序完整",
+    "A-V4: 外协前入库",
+    "A-V4: 末工序满足发布条件",
+    "A-V4: 工作流起止节点及连接完整",
+    "A-V5: 工序顺序完整",
+    "A-V5: 外协前入库",
+    "A-V5: 末工序满足发布条件",
+    "A-V5: 工作流起止节点及连接完整",
+    "A-V6: 工序顺序完整",
+    "A-V6: 外协前入库",
+    "A-V6: 末工序满足发布条件",
+    "A-V6: 工作流起止节点及连接完整",
+    "B-V1: 工序顺序完整",
+    "B-V1: 外协前入库",
+    "B-V1: 末工序满足发布条件",
+    "B-V1: 工作流起止节点及连接完整",
+    "B-V2: 工序顺序完整",
+    "B-V2: 外协前入库",
+    "B-V2: 末工序满足发布条件",
+    "B-V2: 工作流起止节点及连接完整",
+    "B-V3: 工序顺序完整",
+    "B-V3: 外协前入库",
+    "B-V3: 末工序满足发布条件",
+    "B-V3: 工作流起止节点及连接完整",
+    "B-V4: 工序顺序完整",
+    "B-V4: 外协前入库",
+    "B-V4: 末工序满足发布条件",
+    "B-V4: 工作流起止节点及连接完整",
+    "C-V1: 工序顺序完整",
+    "C-V1: 外协前入库",
+    "C-V1: 末工序满足发布条件",
+    "C-V1: 工作流起止节点及连接完整",
+    "C-V2: 工序顺序完整",
+    "C-V2: 外协前入库",
+    "C-V2: 末工序满足发布条件",
+    "C-V2: 工作流起止节点及连接完整",
+    "C-V3: 工序顺序完整",
+    "C-V3: 外协前入库",
+    "C-V3: 末工序满足发布条件",
+    "C-V3: 工作流起止节点及连接完整",
+    "D-V1: 工序顺序完整",
+    "D-V1: 外协前入库",
+    "D-V1: 末工序满足发布条件",
+    "D-V1: 工作流起止节点及连接完整",
+    "D-V2: 工序顺序完整",
+    "D-V2: 外协前入库",
+    "D-V2: 末工序满足发布条件",
+    "D-V2: 工作流起止节点及连接完整",
+    "D-V3: 工序顺序完整",
+    "D-V3: 外协前入库",
+    "D-V3: 末工序满足发布条件",
+    "D-V3: 工作流起止节点及连接完整",
+    "D-V4: 工序顺序完整",
+    "D-V4: 外协前入库",
+    "D-V4: 末工序满足发布条件",
+    "D-V4: 工作流起止节点及连接完整",
+    "E-V1: 工序顺序完整",
+    "E-V1: 外协前入库",
+    "E-V1: 工作流起止节点及连接完整",
+    "F-V1: 工序顺序完整",
+    "F-V1: 外协前入库",
+    "F-V1: 末工序满足发布条件",
+    "F-V1: 工作流起止节点及连接完整",
+    "F-V2: 工序顺序完整",
+    "F-V2: 外协前入库",
+    "F-V2: 末工序满足发布条件",
+    "F-V2: 工作流起止节点及连接完整",
+    "F-V3: 工序顺序完整",
+    "F-V3: 外协前入库",
+    "F-V3: 末工序满足发布条件",
+    "F-V3: 工作流起止节点及连接完整",
+    "设备属于对应加工类别，设备工时有效",
+    "16个工艺引用均为同产品的已发布版本",
+    "多级工艺引用无循环",
+    "A-V1: BOM只汇总领用物料",
+    "BOM明细250: 替料关联及用量匹配",
+    "BOM明细252: 替料关联及用量匹配",
+    "BOM明细253: 替料关联及用量匹配",
+    "BOM明细254: 替料关联及用量匹配",
+    "A-V2: BOM只汇总领用物料",
+    "BOM明细255: 替料关联及用量匹配",
+    "BOM明细257: 替料关联及用量匹配",
+    "BOM明细258: 替料关联及用量匹配",
+    "BOM明细259: 替料关联及用量匹配",
+    "A-V3: BOM只汇总领用物料",
+    "BOM明细260: 替料关联及用量匹配",
+    "BOM明细262: 替料关联及用量匹配",
+    "BOM明细263: 替料关联及用量匹配",
+    "BOM明细264: 替料关联及用量匹配",
+    "A-V4: BOM只汇总领用物料",
+    "BOM明细265: 替料关联及用量匹配",
+    "BOM明细267: 替料关联及用量匹配",
+    "BOM明细268: 替料关联及用量匹配",
+    "BOM明细269: 替料关联及用量匹配",
+    "A-V5: BOM只汇总领用物料",
+    "BOM明细270: 替料关联及用量匹配",
+    "BOM明细272: 替料关联及用量匹配",
+    "BOM明细273: 替料关联及用量匹配",
+    "BOM明细274: 替料关联及用量匹配",
+    "A-V6: BOM只汇总领用物料",
+    "BOM明细275: 替料关联及用量匹配",
+    "BOM明细277: 替料关联及用量匹配",
+    "BOM明细278: 替料关联及用量匹配",
+    "BOM明细279: 替料关联及用量匹配",
+    "B-V1: BOM只汇总领用物料",
+    "BOM明细280: 替料关联及用量匹配",
+    "BOM明细282: 替料关联及用量匹配",
+    "BOM明细283: 替料关联及用量匹配",
+    "B-V2: BOM只汇总领用物料",
+    "BOM明细284: 替料关联及用量匹配",
+    "BOM明细286: 替料关联及用量匹配",
+    "BOM明细287: 替料关联及用量匹配",
+    "B-V3: BOM只汇总领用物料",
+    "BOM明细288: 替料关联及用量匹配",
+    "BOM明细290: 替料关联及用量匹配",
+    "BOM明细291: 替料关联及用量匹配",
+    "B-V4: BOM只汇总领用物料",
+    "BOM明细292: 替料关联及用量匹配",
+    "BOM明细294: 替料关联及用量匹配",
+    "BOM明细295: 替料关联及用量匹配",
+    "C-V1: BOM只汇总领用物料",
+    "BOM明细296: 替料关联及用量匹配",
+    "BOM明细298: 替料关联及用量匹配",
+    "C-V2: BOM只汇总领用物料",
+    "BOM明细299: 替料关联及用量匹配",
+    "BOM明细301: 替料关联及用量匹配",
+    "C-V3: BOM只汇总领用物料",
+    "BOM明细302: 替料关联及用量匹配",
+    "BOM明细304: 替料关联及用量匹配",
+    "D-V1: BOM只汇总领用物料",
+    "BOM明细305: 替料关联及用量匹配",
+    "BOM明细307: 替料关联及用量匹配",
+    "D-V2: BOM只汇总领用物料",
+    "BOM明细308: 替料关联及用量匹配",
+    "BOM明细310: 替料关联及用量匹配",
+    "D-V3: BOM只汇总领用物料",
+    "BOM明细311: 替料关联及用量匹配",
+    "BOM明细313: 替料关联及用量匹配",
+    "D-V4: BOM只汇总领用物料",
+    "BOM明细314: 替料关联及用量匹配",
+    "BOM明细316: 替料关联及用量匹配",
+    "E-V1: BOM只汇总领用物料",
+    "BOM明细317: 替料关联及用量匹配",
+    "BOM明细319: 替料关联及用量匹配",
+    "F-V1: BOM只汇总领用物料",
+    "BOM明细320: 替料关联及用量匹配",
+    "BOM明细322: 替料关联及用量匹配",
+    "F-V2: BOM只汇总领用物料",
+    "BOM明细323: 替料关联及用量匹配",
+    "BOM明细325: 替料关联及用量匹配",
+    "F-V3: BOM只汇总领用物料",
+    "BOM明细326: 替料关联及用量匹配",
+    "BOM明细328: 替料关联及用量匹配"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "counts": {
+    "SaleOrder": 72,
+    "SaleOrderDetail": 72,
+    "DeliveryOrder": 72,
+    "DeliveryOrderDetail": 72
+  },
+  "current_period_orders": {
+    "orders": 185,
+    "amount": "5250119.2190"
+  },
+  "current_period_deliveries": {
+    "details": 1116,
+    "amount": "3419120.6926"
+  },
+  "new_weekly_deliveries": [
+    {
+      "date": "2026-03-26 09:00:00",
+      "count": 8,
+      "amount": "89737.9968"
+    },
+    {
+      "date": "2026-03-28 09:00:00",
+      "count": 8,
+      "amount": "109913.2430"
+    },
+    {
+      "date": "2026-04-04 09:00:00",
+      "count": 8,
+      "amount": "131769.2018"
+    },
+    {
+      "date": "2026-04-11 09:00:00",
+      "count": 8,
+      "amount": "121319.9936"
+    },
+    {
+      "date": "2026-04-18 09:00:00",
+      "count": 8,
+      "amount": "144913.1860"
+    },
+    {
+      "date": "2026-04-25 09:00:00",
+      "count": 8,
+      "amount": "130641.0714"
+    }
+  ]
+}

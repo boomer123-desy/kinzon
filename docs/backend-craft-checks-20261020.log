@@ -1,0 +1,14 @@
+Isolated test directory: C:\Users\Public\Documents\Wondershare\CreatorTemp\craft-mbom-checks-8uooqn1i
+PASS complete controller C# syntax
+PASS aggregation, units, substitutes, excluded output/deleted nodes, stable IDs
+PASS version isolation, main-version differences and lifecycle
+PASS BOM linkage and all staged writes roll back on invalid material
+PASS specification type, final rounding and invalid conversion
+PASS product/specification BOM headers and output-unit basis
+PASS invalid output conversion never persists duplicate zero IDs or assumed one-to-one rates
+PASS unit-list ratios and distinct packaging are preserved without using legacy output conversions
+PASS missing defaults, main-unit relations and malformed unit lists reject before persistence
+PASS nullable one-to-one association is enforced
+PASS referenced BOM versions, substitute references, aggregation and stable IDs
+PASS missing or archived referenced BOM rejects and rolls back
+PASS 98 relational and response assertions

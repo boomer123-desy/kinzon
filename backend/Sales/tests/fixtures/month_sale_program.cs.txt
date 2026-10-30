@@ -1,0 +1,409 @@
+using Kingzon.OLCM.Common.Services;
+using KingZon.OLCM.Base.Shared.DataBase.Entities;
+using KingZon.OLCM.Common.DataBase.Entities;
+using KingZon.OLCM.Common.DataBase.Enum;
+using KingZon.OLCM.Sales.WebApi.Controllers;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using Aspose.Cells;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
+
+static void Equal<T>(T actual, T expected, string label)
+{
+    if (!EqualityComparer<T>.Default.Equals(actual, expected)) throw new Exception($"{label}: expected {expected}, got {actual}");
+}
+
+using var connection = new SqliteConnection("Data Source=:memory:");
+connection.Open();
+var counter = new QueryCounter();
+using var db = new ReportDb(new DbContextOptionsBuilder<ReportDb>().UseSqlite(connection).AddInterceptors(counter).Options);
+db.Database.EnsureCreated();
+SaleDataStatController CreateController(int financeDate = 26)
+{
+    var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+    { ["ExcelTmp:MonthSaleDataStatTemplate"] = "ExcelTmp/MonthSaleDataStat.xlsx" }).Build();
+    return new SaleDataStatController(new CommonService<SaleOrder>(db), new CommonService<SaleOrderDetail>(db),
+        new CommonService<HistoryProduct>(db), new CommonService<DeliveryOrder>(db), new CommonService<DeliveryOrderDetail>(db),
+        new CommonService<SaleReturnOrder>(db), new CommonService<Base_Category>(db), new SystemParaService { FinanceDate = financeDate }, configuration)
+    { ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() } };
+}
+var controller = CreateController();
+async Task<MonthSaleDataStatDto> Get(int year, int month, string? keyword = null)
+{
+    counter.Count = 0;
+    var result = (OkObjectResult)await controller.GetMonthDataStat(new DateTime(year, month, 1), keyword);
+    Equal(counter.Count, 2, "query batches independent of customer/week count");
+    return (MonthSaleDataStatDto)result.Value!;
+}
+
+var empty = await Get(2026, 9);
+Equal(empty.Categories.Count, 0, "empty customer table");
+Equal(empty.OrderAmount, 0m, "empty total");
+Equal(empty.YearOnYearRate, null, "empty comparison");
+Equal(empty.DeliveryShareRate, null, "zero delivery total has no share");
+Equal(empty.Weeks.Count, 5, "empty report retains headers");
+
+var hasSixWeeks = false;
+for (var year = 2024; year <= 2028; year++)
+for (var month = 1; month <= 12; month++)
+{
+    var weeks = SaleDataStatController.GetFinanceWeeks(year, month, 26);
+    var start = new DateTime(year, month, 26).AddMonths(-1);
+    var end = start.AddMonths(1).AddDays(-1);
+    Equal(weeks.First().StartDate, start, "first financial date");
+    Equal(weeks.Last().EndDate, end, "last financial date");
+    Equal(weeks.Sum(x => x.Days), (end - start).Days + 1, "whole period exactly once");
+    for (var i = 1; i < weeks.Count; i++) Equal(weeks[i].StartDate, weeks[i - 1].EndDate.AddDays(1), "continuous weeks");
+    if (weeks.Count == 6) hasSixWeeks = true;
+}
+Equal(hasSixWeeks, true, "six-week month exists");
+
+db.AddRange(new Base_Category { Id = 1, Name = "汽车" }, new Base_Category { Id = 2, Name = "其他" });
+db.AddRange(new Base_Partner { Id = 1, CustomerName = "甲", CategoryId = 1 },
+    new Base_Partner { Id = 2, CustomerName = "乙", CategoryId = 1 },
+    new Base_Partner { Id = 3, CustomerName = "丙", CategoryId = 2 },
+    new Base_Partner { Id = 4, CustomerName = "丁" });
+var startDate = new DateTime(2026, 8, 26);
+db.AddRange(new SaleOrder { Id = 1, CustomerId = 1, CreateTime = startDate.AddHours(8), OrderTotalPrice = 100.01m, Status = SaleOrderStatus.进行中 },
+    new SaleOrder { Id = 2, CustomerId = 1, CreateTime = startDate, OrderTotalPrice = 9999, Status = SaleOrderStatus.待下单 },
+    new SaleOrder { Id = 3, CustomerId = 1, CreateTime = startDate.AddMonths(1), OrderTotalPrice = 9999, Status = SaleOrderStatus.进行中 },
+    new SaleOrder { Id = 4, CustomerId = 1, CreateTime = startDate, OrderTotalPrice = 9999, Status = SaleOrderStatus.进行中, IsDeleted = true },
+    new SaleOrder { Id = 5, CustomerId = 1, CreateTime = startDate.AddYears(-1), OrderTotalPrice = 100, Status = SaleOrderStatus.进行中 },
+    new SaleOrder { Id = 6, CustomerId = 2, CreateTime = startDate.AddYears(-1), OrderTotalPrice = 25, Status = SaleOrderStatus.进行中 },
+    new SaleOrder { Id = 7, CustomerId = 3, CreateTime = startDate.AddYears(-1), OrderTotalPrice = 80, Status = SaleOrderStatus.进行中 },
+    new SaleOrder { Id = 8, CustomerId = 4, CreateTime = startDate, OrderTotalPrice = 50, Status = SaleOrderStatus.进行中 },
+    new SaleOrder { Id = 9, CustomerId = 1, CreateTime = startDate.AddYears(-1), OrderTotalPrice = 9999, Status = SaleOrderStatus.待下单 },
+    new SaleOrder { Id = 10, CustomerId = 1, CreateTime = startDate.AddYears(-1).AddMonths(1), OrderTotalPrice = 9999, Status = SaleOrderStatus.进行中 });
+long nextId = 0;
+void Delivery(long customer, DateTime date, decimal amount, bool outbound = true)
+{
+    nextId++;
+    db.Add(new DeliveryOrder { Id = nextId, CustomerId = customer, DeliveryTime = date });
+    db.Add(new SaleOrderDetail { Id = 10000 + nextId, SaleOrderId = 0, Price = amount, PriceHaveTax = amount * 1.13m });
+    db.Add(new DeliveryOrderDetail { Id = nextId, DeliveryOrderId = outbound ? nextId : null, SaleOrderDetailId = 10000 + nextId, DeliveryQuantity = 1, SalePrice = amount, IsOutboundInventory = outbound, ReturnQuantity = 0 });
+}
+Delivery(1, startDate, 200);
+db.Set<DeliveryOrderDetail>().Local.Single(x => x.Id == nextId).ReturnQuantity = 1;
+Delivery(2, startDate.AddDays(15), 100);
+Delivery(1, startDate.AddYears(-1), 100);
+Delivery(2, startDate.AddYears(-1), 100);
+Delivery(3, startDate.AddYears(-1), 80);
+Delivery(1, startDate.AddMonths(-1), 150);
+Delivery(1, new DateTime(2025, 12, 26), 1000);
+Delivery(2, new DateTime(2025, 12, 26), 2000);
+Delivery(1, startDate.AddMonths(1), 9999);
+Delivery(1, startDate, 9999, false);
+db.AddRange(new SaleReturnOrder { Id = 1, CustomerId = 1, ReturnTime = startDate.AddDays(7), OrderTotalPrice = 25 },
+    new SaleReturnOrder { Id = 2, CustomerId = 1, ReturnTime = startDate.AddMonths(-1), OrderTotalPrice = 20 },
+    new SaleReturnOrder { Id = 3, CustomerId = 2, ReturnTime = new DateTime(2026, 1, 27), OrderTotalPrice = 500 },
+    new SaleReturnOrder { Id = 4, CustomerId = 2, ReturnTime = startDate.AddYears(-1), OrderTotalPrice = 75 },
+    new SaleReturnOrder { Id = 5, CustomerId = 1, ReturnTime = startDate.AddMonths(1), OrderTotalPrice = 9999 },
+    new SaleReturnOrder { Id = 6, CustomerId = 4, ReturnTime = startDate, OrderTotalPrice = 5 },
+    new SaleReturnOrder { Id = 7, CustomerId = 4, ReturnTime = startDate.AddMonths(-1), OrderTotalPrice = 10 },
+    new SaleReturnOrder { Id = 8, CustomerId = 1, ReturnTime = startDate, OrderTotalPrice = 9999, IsDeleted = true });
+db.SaveChanges();
+
+var report = await Get(2026, 9);
+var customers = report.Categories.SelectMany(x => x.Customers).ToDictionary(x => x.CustomerId);
+Equal(report.OrderAmount, 150.01m, "draft/deleted/end-boundary orders excluded");
+Equal(report.DeliveryAmount, 300m, "outbound only, end boundary excluded");
+Equal(report.ReturnAmount, 200m, "return quantity is converted to money using delivery unit price");
+Equal(report.NetDeliveryAmount, 100m, "net amount");
+Equal(report.LastYearOrderAmount, 205m, "year comparison uses sales orders instead of last-year deliveries or returns");
+Equal(report.YearOnYearRate, (decimal?)0.463415m, "total ratio recalculated from amounts");
+Equal(customers[2].Rank, 1, "January ranking differs from current month");
+Equal(customers[1].Rank, 2, "January rank");
+Equal(customers[1].NetDeliveryAmount, 0m, "return amount affects net delivery but not year comparison numerator");
+Equal(customers[1].YearOnYearRate, (decimal?)1m, "year comparison uses gross delivery amount");
+Equal(customers[2].YearOnYearRate, (decimal?)3m, "year comparison");
+Equal(customers[3].YearOnYearRate, (decimal?)(-1m), "comparison-only customer retained");
+Equal(customers[4].YearOnYearRate, null, "zero denominator");
+Equal(customers[1].DeliveryShareRate, (decimal?)0.666667m, "delivery share uses gross delivery amount before returns");
+Equal(customers[2].DeliveryShareRate, (decimal?)0.333333m, "second customer delivery share");
+Equal(customers[3].DeliveryShareRate, (decimal?)0m, "comparison-only customer delivery share is zero");
+Equal(report.Categories.Single(x => x.CategoryId == 1).DeliveryShareRate, (decimal?)1m, "category delivery share uses report total");
+Equal(report.DeliveryShareRate, (decimal?)1m, "total delivery share is 100 percent");
+Equal(report.OrderWeeks.Sum(x => x.Amount), report.OrderAmount, "weekly order amount total");
+Equal(report.DeliveryWeeks.Sum(x => x.Amount), report.DeliveryAmount, "weekly delivery amount total");
+Equal(report.OrderWeeks[0].Amount, 150.01m, "order amount independent from delivery amount");
+Equal(report.DeliveryWeeks[0].Amount, 200m, "delivery amount independent from order amount");
+Equal(report.OrderWeeks.Select(x => x.WeekNo).SequenceEqual(report.Weeks.Select(x => x.WeekNo)), true, "order weeks match headers");
+Equal(report.DeliveryWeeks.Select(x => x.WeekNo).SequenceEqual(report.Weeks.Select(x => x.WeekNo)), true, "delivery weeks match headers");
+Equal(typeof(MonthSaleWeekStatDto).GetProperties().Length, 2, "week DTO only contains week number and amount");
+foreach (var category in report.Categories)
+{
+    Equal(category.OrderWeeks.Sum(x => x.Amount), category.OrderAmount, "category weekly orders reconcile");
+    Equal(category.DeliveryWeeks.Sum(x => x.Amount), category.DeliveryAmount, "category weekly deliveries reconcile");
+    foreach (var customer in category.Customers)
+    {
+        Equal(customer.OrderWeeks.Sum(x => x.Amount), customer.OrderAmount, "customer weekly orders reconcile");
+        Equal(customer.DeliveryWeeks.Sum(x => x.Amount), customer.DeliveryAmount, "customer weekly deliveries reconcile");
+    }
+}
+Equal(report.Categories.Sum(x => x.NetDeliveryAmount), report.NetDeliveryAmount, "category subtotal total");
+Equal(report.Categories.Single(x => x.CategoryId == null).CategoryName, "未分类", "uncategorized customer");
+
+var filtered = await Get(2026, 9, " 甲 ");
+Equal(filtered.Categories.Count, 1, "filter categories");
+Equal(filtered.Categories.Single().Customers.Single().Rank, 2, "filter preserves ranking");
+Equal(filtered.NetDeliveryAmount, 0m, "filtered total");
+Equal(filtered.LastYearOrderAmount, 100m, "filtered comparison");
+Equal(filtered.Categories.Single().Customers.Single().DeliveryShareRate, (decimal?)1m, "delivery share denominator follows customer filter");
+var missing = await Get(2026, 9, "不存在");
+Equal(missing.Categories.Count, 0, "empty filter");
+Equal(missing.NetDeliveryAmount, 0m, "empty filtered total");
+Equal(missing.DeliveryShareRate, null, "empty filtered delivery share");
+
+var january = await Get(2026, 1);
+Equal(january.NetDeliveryAmount, 3000m, "January overlapping period counted once");
+Equal(january.JanuaryNetDeliveryAmount, 3000m, "January ranking amount");
+Equal(january.StartDate, new DateTime(2025, 12, 26), "January starts in prior year");
+Equal(january.EndDate, new DateTime(2026, 1, 25), "January closes in selected year");
+var configuredController = CreateController(10);
+var configured = (MonthSaleDataStatDto)((OkObjectResult)await configuredController.GetMonthDataStat(new DateTime(2026, 11, 1))).Value!;
+Equal(configured.StartDate, new DateTime(2026, 10, 10), "configured finance day preserved");
+Equal(configured.EndDate, new DateTime(2026, 11, 9), "configured finance month end preserved");
+try { await controller.GetMonthDataStat(default); throw new Exception("Expected invalid month error"); }
+catch (Exception error) when (error.Message == "请选择有效的开账月份") { }
+db.Add(new HistoryProduct { Id = 1, ProductNo = "HISTORY-1", ProductName = "历史产品", IsDeleted = true });
+db.AddRange(new SaleOrderDetail { Id = 1, SaleOrderId = 1, HistoryProductId = 1, PlaceOrderQuantity = 3, Price = 200, PriceHaveTax = 226, TotalPrice = 60, TotalPriceHaveTax = 67.8m },
+    new SaleOrderDetail { Id = 2, SaleOrderId = 1, HistoryProductId = 1, PlaceOrderQuantity = 2, Price = 20, TotalPrice = 40.01m });
+db.Set<DeliveryOrderDetail>().Single(x => x.Id == 1).SaleOrderDetailId = 1;
+db.Set<DeliveryOrderDetail>().Single(x => x.Id == 1).HistoryProductId = 1;
+db.SaveChanges();
+async Task<MonthSaleWeekDetailResultDto> SaleWeek(int week, long? customer = null, bool categoryFilter = false, long? category = null, string? name = null)
+    => (MonthSaleWeekDetailResultDto)((OkObjectResult)await controller.GetWeekSaleOrderDetails(new MonthSaleWeekDetailQueryDto
+    { Month = new DateTime(2026, 9, 1), WeekNo = week, CustomerId = customer, FilterCategory = categoryFilter, CategoryId = category, CustomerName = name })).Value!;
+async Task<MonthSaleWeekDetailResultDto> DeliveryWeek(int week, long? customer = null, bool categoryFilter = false, long? category = null)
+    => (MonthSaleWeekDetailResultDto)((OkObjectResult)await controller.GetWeekDeliveryDetails(new MonthSaleWeekDetailQueryDto
+    { Month = new DateTime(2026, 9, 1), WeekNo = week, CustomerId = customer, FilterCategory = categoryFilter, CategoryId = category })).Value!;
+var saleDetails = await SaleWeek(1);
+Equal(saleDetails.TotalAmount, report.OrderWeeks[0].Amount, "sales details reconcile to clicked week amount");
+Equal(saleDetails.OrderCount, 2, "headers are counted once with multiple or missing details");
+Equal(saleDetails.DetailCount, 2, "product detail count");
+Equal(saleDetails.Rows.Count, 3, "sales header without product details remains visible");
+Equal(saleDetails.Rows.Where(x => x.DetailId.HasValue).All(x => x.ProductNo == "HISTORY-1"), true, "historical deleted product snapshot retained");
+Equal((await SaleWeek(1, 1)).TotalAmount, 100.01m, "customer scope");
+Equal((await SaleWeek(1, categoryFilter: true, category: null)).TotalAmount, 50m, "null-category subtotal scope");
+Equal((await SaleWeek(1, name: " 甲 ")).TotalAmount, 100.01m, "report keyword scope");
+var deliveryDetails = await DeliveryWeek(1, 1);
+Equal(deliveryDetails.TotalAmount, 200m, "delivery details use stored delivery price rather than sales detail price");
+Equal(deliveryDetails.Rows.Single().Price, (decimal?)200m, "delivery price snapshot");
+Equal(deliveryDetails.Rows.Single().ReturnAmount, (decimal?)200m, "delivery return amount");
+Equal(deliveryDetails.Rows.Single().ProductNo, "HISTORY-1", "delivery historical product snapshot");
+for (var weekNo = 1; weekNo <= report.Weeks.Count; weekNo++)
+{
+    Equal((await SaleWeek(weekNo)).TotalAmount, report.OrderWeeks[weekNo - 1].Amount, "all sales week totals reconcile");
+    Equal((await DeliveryWeek(weekNo)).TotalAmount, report.DeliveryWeeks[weekNo - 1].Amount, "all delivery week totals reconcile including missing sales links");
+}
+Equal((await SaleWeek(1, 999)).Rows.Count, 0, "empty customer scope");
+try { await SaleWeek(99); throw new Exception("Expected invalid week error"); }
+catch (Exception error) when (error.Message == "请选择有效的财务周") { }
+async Task<Workbook> Export(MonthSaleDataStatDto expected, string? keyword = null)
+{
+    counter.Count = 0;
+    var file = (FileContentResult)await controller.ExportMonthDataStat(new MonthSaleExportQueryDto
+    { Month = new DateTime(expected.Year, expected.Month, 1), CustomerName = keyword, IncludeTax = expected.IncludeTax });
+    Equal(counter.Count, 2, "Excel shares report queries without extra queries per row");
+    Equal(file.ContentType, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx content type");
+    Equal(file.FileDownloadName, $"{expected.Year}年{expected.Month}月订单及销售发货月报表.xlsx", "download filename");
+    var workbook = new Workbook(new MemoryStream(file.FileContents));
+    var sheet = workbook.Worksheets["订单及销售发货月报"];
+    var cells = sheet.Cells;
+    var count = expected.Weeks.Count;
+    var orderTotal = 2 + count;
+    var deliveryStart = orderTotal + 1;
+    var returns = deliveryStart + count;
+    var deliveryTotal = returns + 1;
+    var lastYear = returns + 2;
+    var rate = returns + 3;
+    var share = returns + 4;
+    Equal(cells[0, 0].StringValue, $"{expected.Year}年{expected.Month}月订单及销售发货月报表（{(expected.IncludeTax ? "含税" : "不含税")}）", "scalar title marker");
+    Equal(cells[1, 0].StringValue.Contains($"{expected.StartDate:yyyy-MM-dd} 至 {expected.EndDate:yyyy-MM-dd}"), true, "scalar report period marker");
+    Equal(cells.MaxDataColumn, share, "unused week columns are removed from the template");
+    foreach (Cell cell in cells)
+    {
+        Equal(cell.StringValue.StartsWith("&="), false, "no unprocessed smart marker remains");
+        Equal(cell.StringValue.Contains("样式（导出时删除）"), false, "style prototype rows are removed");
+        if (cell.Type == CellValueType.IsError) throw new Exception($"Excel formula error at {cell.Name}: {cell.StringValue}");
+    }
+    void Amount(int row, int column, decimal amount, string label)
+    {
+        if (Math.Abs(cells[row, column].DoubleValue - (double)amount) > 0.0000001)
+            throw new Exception($"Excel {label}: expected {amount}, got {cells[row, column].Value}");
+    }
+    void Ratios(int row, MonthSaleStatBaseDto data)
+    {
+        Equal(cells[row, rate].Formula.StartsWith("=IF("), true, "growth is a formula");
+        Equal(cells[row, share].Formula.StartsWith("=IF("), true, "share is a formula");
+        if (data.YearOnYearRate.HasValue) Amount(row, rate, data.YearOnYearRate.Value, "year ratio");
+        else Equal(cells[row, rate].StringValue, "—", "zero last-year denominator");
+        if (data.DeliveryShareRate.HasValue) Amount(row, share, data.DeliveryShareRate.Value, "delivery share");
+        else Equal(cells[row, share].StringValue, "—", "zero report delivery denominator");
+    }
+    void CheckRow(int row, MonthSaleStatBaseDto data)
+    {
+        Amount(row, orderTotal, data.OrderAmount, "order total");
+        Amount(row, deliveryTotal, data.DeliveryAmount, "delivery total");
+        Amount(row, returns, data.ReturnAmount, "returns");
+        Amount(row, lastYear, data.LastYearOrderAmount, "last-year sales");
+        for (var i = 0; i < count; i++)
+        {
+            Amount(row, 2 + i, data.OrderWeeks.Single(x => x.WeekNo == expected.Weeks[i].WeekNo).Amount, "order week");
+            Amount(row, deliveryStart + i, data.DeliveryWeeks.Single(x => x.WeekNo == expected.Weeks[i].WeekNo).Amount, "delivery week");
+        }
+        Ratios(row, data);
+        Equal(cells[row, returns].GetStyle().Font.Color.ToArgb(), System.Drawing.Color.Red.ToArgb(), "return color");
+    }
+    Equal(cells[2, 2].StringValue, "第一周订单", "order header precedes delivery");
+    Equal(cells[2, deliveryStart].StringValue, "第一周发货", "delivery header matches its amounts");
+    Equal(cells[2, lastYear].StringValue, $"{expected.Year - 1}年{expected.Month}月销售额", "last-year sales header");
+    Equal(cells[2, orderTotal].GetStyle().HorizontalAlignment, TextAlignmentType.Center, "header centered");
+    var row = 4;
+    foreach (var category in expected.Categories)
+    {
+        foreach (var customer in category.Customers)
+        {
+            Equal(cells[row, 1].StringValue, customer.CustomerName, "customer order/rank unchanged");
+            Equal(cells[row, orderTotal].Formula.StartsWith("=SUM("), true, "customer order total formula");
+            Equal(cells[row, deliveryTotal].Formula.StartsWith("=SUM("), true, "customer delivery total formula");
+            Equal(cells[row, 2].IsFormula, false, "smart marker preserves editable numeric week inputs");
+            CheckRow(row++, customer);
+        }
+        CheckRow(row, category);
+        for (var column = 2; column <= lastYear; column++)
+            Equal(cells[row, column].Formula.StartsWith("=SUBTOTAL(9,"), true, "subtotal is formula");
+        Equal(cells[row, 1].GetStyle().Font.IsBold, true, "subtotal bold");
+        Equal(cells[row, 1].GetStyle().Font.IsItalic, true, "subtotal italic");
+        row++;
+    }
+    Equal(cells[row, 1].StringValue, "总计", "weekly grand total row");
+    CheckRow(row, expected);
+    if (expected.Categories.Count > 0 && keyword == null)
+        File.WriteAllBytes(Path.Combine(AppContext.BaseDirectory, $"MonthSaleDataStat.{count}-week.preview.xlsx"), file.FileContents);
+    Equal(workbook.Settings.FormulaSettings.CalculationMode, CalcModeType.Automatic, "Excel automatically recalculates edits");
+    if (expected.Categories.Count > 0)
+    {
+        cells[4, 2].PutValue(cells[4, 2].DoubleValue + 7.5);
+        cells[4, deliveryStart].PutValue(cells[4, deliveryStart].DoubleValue + 12.5);
+        workbook.CalculateFormula();
+        Amount(row, orderTotal, expected.OrderAmount + 7.5m, "edited order rolls up once");
+        Amount(row, deliveryTotal, expected.DeliveryAmount + 12.5m, "edited delivery rolls up once");
+        Amount(row, 2, expected.OrderWeeks[0].Amount + 7.5m, "edited order week total");
+        Amount(row, deliveryStart, expected.DeliveryWeeks[0].Amount + 12.5m, "edited delivery week total");
+        Amount(row, share, 1m, "total share remains 100 percent");
+        cells[4, lastYear].PutValue(-100);
+        workbook.CalculateFormula();
+        Amount(4, rate, (decimal)Math.Round((cells[4, deliveryTotal].DoubleValue + 100) / 100, 6, MidpointRounding.AwayFromZero), "negative last-year uses absolute denominator");
+        using var saved = new MemoryStream();
+        workbook.Save(saved, SaveFormat.Xlsx);
+        saved.Position = 0;
+        using var reopened = new Workbook(saved);
+        Equal(reopened.Worksheets[sheet.Name].Cells[row, deliveryTotal].Formula, cells[row, deliveryTotal].Formula, "formulas survive XLSX save/reopen");
+    }
+    return workbook;
+}
+using (await Export(report)) { }
+using (await Export(filtered, "甲")) { }
+using (await Export(missing, "不存在")) { }
+var sixWeekReport = await Get(2026, 4);
+Equal(sixWeekReport.Weeks.Count, 6, "six-week Excel fixture");
+using (await Export(sixWeekReport)) { }
+var fourWeekReport = await Get(2022, 3); // 2月26日为周六
+Equal(fourWeekReport.Weeks.Count, 4, "four-week Excel fixture");
+using (await Export(fourWeekReport)) { }
+Console.WriteLine("Aspose XLSX checks passed: 4/5/6-week headers, all cell amounts/ratios, formulas, filtered/empty exports, styles, edits and save/reopen.");
+Console.WriteLine("Month report/detail checks passed: weekly reconciliation, customer/category filters, missing detail links, historical snapshots, year comparison and fiscal boundaries.");
+
+// Regression: the selected month names the closing month, including every instant on the 25th.
+var marchStart = new DateTime(2026, 2, 26);
+var marchEnd = new DateTime(2026, 3, 26);
+var boundaryRows = new[] { (marchStart.AddTicks(-1), 999m), (marchStart, 10m),
+    (new DateTime(2026, 3, 1), 20m), (marchEnd.AddTicks(-1), 30m), (marchEnd, 999m),
+    (marchStart.AddYears(-1), 5m), (marchEnd.AddYears(-1).AddTicks(-1), 7m), (marchEnd.AddYears(-1), 999m) };
+for (var index = 0; index < boundaryRows.Length; index++)
+{
+    var (date, amount) = boundaryRows[index];
+    db.Add(new SaleOrder { Id = 100 + index, CustomerId = 1, CreateTime = date, OrderTotalPrice = amount, Status = SaleOrderStatus.进行中 });
+    Delivery(1, date, amount * 2);
+}
+db.SaveChanges();
+var march = await Get(2026, 3);
+Equal(march.Year, 2026, "selected year retained"); Equal(march.Month, 3, "selected month retained");
+Equal(march.StartDate, marchStart, "March starts on February 26");
+Equal(march.EndDate, marchEnd.AddDays(-1), "March ends on March 25");
+Equal(march.OrderAmount, 60m, "March order boundaries include last tick of 25th");
+Equal(march.DeliveryAmount, 120m, "March delivery boundaries match orders");
+Equal(march.LastYearOrderAmount, 12m, "last-year sales use prior-year February 26 to March 25");
+foreach (var monthly in new[] { march, january })
+{
+    foreach (var week in monthly.Weeks)
+    {
+        var query = new MonthSaleWeekDetailQueryDto { Month = new DateTime(monthly.Year, monthly.Month, 1), WeekNo = week.WeekNo };
+        var sales = (MonthSaleWeekDetailResultDto)((OkObjectResult)await controller.GetWeekSaleOrderDetails(query)).Value!;
+        var delivered = (MonthSaleWeekDetailResultDto)((OkObjectResult)await controller.GetWeekDeliveryDetails(query)).Value!;
+        Equal(sales.TotalAmount, monthly.OrderWeeks.Single(x => x.WeekNo == week.WeekNo).Amount, "March/January sale drilldown reconciles");
+        Equal(delivered.TotalAmount, monthly.DeliveryWeeks.Single(x => x.WeekNo == week.WeekNo).Amount, "March/January delivery drilldown reconciles");
+    }
+}
+using (await Export(march)) { }
+for (var year = 2023; year <= 2024; year++)
+for (var day = 29; day <= 31; day++)
+{
+    var february = SaleDataStatController.GetFinanceWeeks(year, 2, day);
+    var next = SaleDataStatController.GetFinanceWeeks(year, 3, day);
+    Equal(february.Last().EndDate.AddDays(1), next.First().StartDate, "short-month periods have no gaps or overlaps");
+    Equal(next.First().StartDate, new DateTime(year, 2, Math.Min(day, DateTime.DaysInMonth(year, 2))), "February cutoff clamped independently");
+    Equal(next.Last().EndDate, new DateTime(year, 3, day).AddDays(-1), "March cutoff not shifted by February clamping");
+}
+foreach (var day in new[] { 0, 32 })
+{
+    try { await CreateController(day).GetMonthDataStat(new DateTime(2026, 3, 1)); throw new Exception("invalid cutoff accepted"); }
+    catch (Exception error) when (error.Message == "财务结算日期配置无效") { }
+}
+Console.WriteLine("Closing-month checks passed: March boundaries, January drilldowns, prior-year sales, leap/short months and Excel export.");
+
+// Tax and price source regression: delivery snapshot price intentionally disagrees with sales detail price.
+db.AddRange(
+    new SaleOrder { Id=9000, CustomerId=1, CreateTime=new DateTime(2027,4,27), OrderTotalPrice=200, OrderTotalPriceHaveTax=226, Status=SaleOrderStatus.进行中 },
+    new SaleOrder { Id=9001, CustomerId=1, CreateTime=new DateTime(2026,4,27), OrderTotalPrice=100, OrderTotalPriceHaveTax=113, Status=SaleOrderStatus.进行中 },
+    new SaleOrderDetail { Id=9000, SaleOrderId=9000, HistoryProductId=1, Price=10, PriceHaveTax=11.3m, TotalPrice=120, TotalPriceHaveTax=135.6m, PlaceOrderQuantity=12 },
+    new SaleOrderDetail { Id=9001, SaleOrderId=9000, HistoryProductId=1, Price=20, PriceHaveTax=22.6m, TotalPrice=80, TotalPriceHaveTax=90.4m, PlaceOrderQuantity=4 },
+    new DeliveryOrder { Id=9000, CustomerId=1, DeliveryTime=new DateTime(2027,4,27) },
+    new DeliveryOrderDetail { Id=9000, DeliveryOrderId=9000, SaleOrderDetailId=9000, HistoryProductId=1, SalePrice=999, DeliveryQuantity=3, ReturnQuantity=1, IsOutboundInventory=false },
+    new DeliveryOrderDetail { Id=9001, DeliveryOrderId=9000, SaleOrderDetailId=9001, HistoryProductId=1, SalePrice=999, DeliveryQuantity=2, IsOutboundInventory=true },
+    new DeliveryOrderDetail { Id=9002, DeliveryOrderId=9000, SaleOrderDetailId=999999, HistoryProductId=1, SalePrice=999, DeliveryQuantity=2, ReturnQuantity=1 });
+db.SaveChanges();
+foreach(var tax in new[]{false,true})
+{
+    var current = (MonthSaleDataStatDto)((OkObjectResult)await controller.GetMonthDataStat(new DateTime(2027,5,1), includeTax:tax)).Value!;
+    Equal(current.IncludeTax,tax,"report tax mode");
+    Equal(current.OrderAmount,tax?226m:200m,"tax selects sales header total");
+    Equal(current.DeliveryAmount,tax?79.1m:70m,"delivery uses sales detail price; both outbound flag paths counted");
+    Equal(current.ReturnAmount,tax?11.3m:10m,"returns use the same sales detail price");
+    Equal(current.LastYearOrderAmount,tax?113m:100m,"year comparison has matching tax basis");
+    var week = current.Weeks.Single(x=>x.StartDate<=new DateTime(2027,4,27)&&x.EndDate>=new DateTime(2027,4,27));
+    var query = new MonthSaleWeekDetailQueryDto { Month=new DateTime(2027,5,1),WeekNo=week.WeekNo,IncludeTax=tax };
+    var sales = (MonthSaleWeekDetailResultDto)((OkObjectResult)await controller.GetWeekSaleOrderDetails(query)).Value!;
+    Equal(sales.Rows.Count,2,"multiple sales details");
+    Equal(sales.TotalAmount,current.OrderAmount,"sales detail head totals not doubled");
+    Equal(sales.Rows.Sum(x=>tax?x.TotalPriceHaveTax??0:x.TotalPrice??0),current.OrderAmount,"sales detail prices follow tax mode");
+    var delivery = (MonthSaleWeekDetailResultDto)((OkObjectResult)await controller.GetWeekDeliveryDetails(query)).Value!;
+    Equal(delivery.TotalAmount,current.DeliveryAmount,"delivery details reconcile");
+    Equal(delivery.Rows.Single(x=>x.DetailId==9002).Price,null,"missing sales link never uses obsolete delivery price");
+    Equal(delivery.Rows.Single(x=>x.DetailId==9000).Price,10m,"detail price matches sales source");
+    Equal(delivery.Rows.Single(x=>x.DetailId==9000).PriceHaveTax,11.3m,"tax price shown simultaneously");
+    Equal(delivery.Rows.Single(x=>x.DetailId==9000).TotalPrice,30m,"untaxed delivery amount shown simultaneously");
+    Equal(delivery.Rows.Single(x=>x.DetailId==9000).TotalPriceHaveTax,33.9m,"taxed delivery amount shown simultaneously");
+    query.OnlyReturns=true;query.WeekNo=0;
+    var returns = (MonthSaleWeekDetailResultDto)((OkObjectResult)await controller.GetWeekDeliveryDetails(query)).Value!;
+    Equal(returns.Rows.All(x=>x.ReturnQuantity>0),true,"return list excludes non-returned delivery details");
+    Equal(returns.Rows.Count,2,"return list includes returned rows with unknown sales price");
+    Equal(returns.TotalAmount,current.ReturnAmount,"monthly returns reconcile");
+    query.FilterCategory=true;query.CategoryId=null;
+    Equal(((MonthSaleWeekDetailResultDto)((OkObjectResult)await controller.GetWeekDeliveryDetails(query)).Value!).Rows.Count,0,"return scope retains category filtering");
+    using(await Export(current)) { }
+}
+Console.WriteLine("Tax/detail checks passed: sales source prices, both tax modes, returns only, missing links and matching Excel formulas.");

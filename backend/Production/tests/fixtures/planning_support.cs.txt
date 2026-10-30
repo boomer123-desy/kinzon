@@ -1,0 +1,51 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using KingZon.OLCM.Production.Shared.DataBase.Entities;
+
+// Only missing host types are doubles. Planning entities and mappings are real source.
+namespace KingZon.Core.DataBase
+{
+    public class BaseEntity { public long Id { get; set; } }
+    public interface ISoftDeletedEntity { bool IsDeleted { get; set; } }
+    public abstract class KingZonEntityTypeConfiguration<T> : IEntityTypeConfiguration<T> where T : class
+    {
+        public abstract void Configure(EntityTypeBuilder<T> builder);
+    }
+}
+namespace KingZon.OLCM.Base.Shared.DataBase.Entities
+{
+    public class Base_Product { public long Id { get; set; } }
+    public class Base_ProductSpecification { public long Id { get; set; } }
+    public class Base_Unit { public long Id { get; set; } }
+    public class Base_UnitConversion { public long Id { get; set; } }
+    public class Base_Department { public int Id { get; set; } }
+    public class Base_Partner { public long Id { get; set; } }
+    public class Base_Craft { public long Id { get; set; } }
+    public class Base_Machine { public long Id { get; set; } }
+    public class Base_User { public int Id { get; set; } }
+}
+namespace KingZon.OLCM.Base.Shared.DataBase.Enum
+{
+    public enum InventoryDataType { Product=1, Specification=2 }
+    public enum InventoryDataStatus { None=0 }
+}
+namespace KingZon.OLCM.Base.DataBase.Enum { public enum OperateType { 接单=1, 出单=2 } }
+namespace KingZon.OLCM.Production.Shared.DataBase.Enum
+{
+    // Host NodeType/NodeState numeric definitions are intentionally not introduced into production source.
+    public enum NodeType { 测试=1 }
+    public enum NodeState { 测试=1 }
+    public enum MaterialDemandType { 领料需求=1, 补料需求=2 }
+}
+namespace KingZon.OLCM.Production.Shared.DataBase.Entities
+{
+    public class Production_Dispatch_Order { public long Id { get; set; } }
+}
+public class PlanningDb(DbContextOptions<PlanningDb> options) : DbContext(options)
+{
+    protected override void OnModelCreating(ModelBuilder model)
+    {
+        model.ApplyConfigurationsFromAssembly(typeof(Production_Plan).Assembly);
+        model.Entity<Production_Dispatch_Order>().HasKey(x=>x.Id);
+    }
+}

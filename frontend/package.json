@@ -1,0 +1,22 @@
+{
+  "name": "production-schedule-manage",
+  "private": true,
+  "scripts": {
+    "test": "node --test src/views/production/dispatch_order_manage/__tests__/material-demand-by-bom.test.cjs src/views/production/dispatch_order_manage/__tests__/material-demand-detail.test.cjs src/views/technology/craft_manage/component/__tests__/craft-lint.test.cjs src/views/technology/craft_manage/component/__tests__/craft-manage.test.cjs src/views/technology/craft_manage/component/__tests__/craft-tree.test.cjs src/views/technology/production_schedule_manage/__tests__/production-schedule-checks.test.cjs src/views/technology/production_schedule_manage/__tests__/production-schedule.test.cjs tests/sales/month-sale-stat.test.cjs"
+  },
+  "dependencies": {
+    "@svar-ui/vue-gantt": "2.7.4"
+  },
+  "peerDependencies": {
+    "vue": "^3.3.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "@vue/compiler-sfc": "^3.5.0",
+    "eslint": "^8.57.1",
+    "eslint-plugin-vue": "^9.33.0",
+    "typescript": "^5.9.0",
+    "vue": "^3.5.0"
+  }
+}

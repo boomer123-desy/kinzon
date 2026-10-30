@@ -1,0 +1,76 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
+using Microsoft.AspNetCore.Mvc;
+using KingZon.OLCM.Base.Shared.DataBase.Entities;
+using KingZon.OLCM.Technical.Shared.DataBase.Entities;
+using KingZon.OLCM.Technical.Shared.DataBase.Enum;
+using KingZon.OLCM.Technical.WebApi.Controllers;
+using KingZon.OLCM.Base.Shared.DataBase.Enum;
+using KingZon.OLCM.Production.WebApi.Dto;
+using System.Text.Json;
+using var connection = new SqliteConnection("Data Source=:memory:");
+await connection.OpenAsync();
+using var db = new QueryDb(new DbContextOptionsBuilder<QueryDb>().UseSqlite(connection).Options);
+await db.Database.EnsureCreatedAsync();
+db.AddRange(new Base_Unit{Id=1,Name="KG"},new Base_Unit{Id=2,Name="箱"},new Base_Product{Id=1,BaseUnitId=1,ProductNo="P1",ProductName="产品"},
+ new Base_Product{Id=2,BaseUnitId=1,ProductNo="P2",ProductName="钢板"},new Base_Department{Id=1},new Base_Craft{Id=1},new Base_User{Id=1},
+ new KingZon.Mes.Workflow.Entity.WF_WorkflowTemplate{Id=1},new KingZon.Mes.Workflow.Entity.WF_NodeTemplate{Id=1},
+ new Technical_CraftOrder{Id=1,ProductId=1,Code="CO1",Name="工艺"},
+ new Technical_CraftOrderVersion{Id=1,CraftOrderId=1,WorkflowTemplateId=1,Status=CraftOrderVersionStatus.已发布,Version="V1"},
+ new Technical_NodeSettingTemplate{Id=1,CraftOrderVersionId=1,CraftId=1,NodeTemplateId=1,Sequence=10,Code="010",Name="切割",IsInbound=true,IsReportWork=true},
+ new Technical_NodeSettingTemplate{Id=2,CraftOrderVersionId=1,CraftId=1,NodeTemplateId=1,Sequence=20,Code="020",Name="外协",IsOutsource=true},
+ new Technical_NodeSettingTemplate{Id=3,CraftOrderVersionId=1,CraftId=1,NodeTemplateId=1,Sequence=30,Code="030",Name="内部加工"},
+ new Technical_NodeSettingTemplate{Id=4,CraftOrderVersionId=1,CraftId=1,NodeTemplateId=1,Sequence=40,Code="040",Name="外协入库",IsOutsource=true,IsInbound=true},
+ new Base_Machine{Id=8,CraftRLs=new(){new(){CraftId=1}},UserRLs=new(){new(){UserId=1}}},
+ new Base_Craft{Id=2},new Base_Machine{Id=9,CraftRLs=new(){new(){CraftId=2}}},
+ new Base_Machine{Id=10,IsStop=true,CraftRLs=new(){new(){CraftId=1}}},
+ new Technical_NodeSettingTemplate_Machine_RL{Id=1,NodeSettingTemplateId=1,MachineId=8},
+ new Technical_NodeSettingTemplate_Machine_RL{Id=2,NodeSettingTemplateId=1,MachineId=9},
+ new Technical_NodeSettingTemplate_Machine_RL{Id=3,NodeSettingTemplateId=1,MachineId=10},
+ new Technical_NodeSettingTemplate_Machine_RL{Id=4,NodeSettingTemplateId=2,MachineId=8},
+ new Technical_NodeSettingTemplate_Material_RL{Id=1,NodeSettingTemplateId=1,DataType=InventoryDataType.Product,DataId=2,UnitId=1,Quantity=2,UnitListInfo="[]",IOType=NodeIOType.输入},
+ new Technical_NodeSettingTemplate_Material_RL{Id=2,NodeSettingTemplateId=1,DataType=InventoryDataType.Product,DataId=1,UnitId=1,Quantity=1,UnitListInfo="[]",IOType=NodeIOType.输出},
+ new Technical_NodeSettingTemplate_Material_RL{Id=3,NodeSettingTemplateId=1,DataType=InventoryDataType.Product,DataId=2,UnitId=1,Quantity=2,UnitListInfo="[]",IOType=NodeIOType.输入,InsteadSourceId=1},
+ new Technical_NodeSettingTemplate_Material_RL{Id=4,NodeSettingTemplateId=2,DataType=InventoryDataType.Product,DataId=2,UnitId=2,UnitConversionId=7,Quantity=2.5m,UnitListInfo="[{\"id\":7,\"unitId\":2,\"unitName\":\"箱\",\"ratio\":5}]",IOType=NodeIOType.输入});
+await db.SaveChangesAsync();
+var controller = new ProductionScheduleManageController(new(db),new(db),new(db),new(db),new(db),new(db),new(db),new(db),new(db),new(db),new(db),new(db));
+var response=(OkObjectResult)await controller.GetScheduleTemplate(1);
+var root=JsonSerializer.SerializeToElement(response.Value, KingZon.Core.JsonHelper.DefaultJsonSerializerOptions);
+int count=0;void Check(bool value,string label){if(!value)throw new Exception(label);count++;}
+Check(root.GetProperty("craftVersionId").GetInt64()==1,"version identity");
+var nodes=root.GetProperty("processs");Check(nodes.GetArrayLength()==4,"one editing process per source node for all four flag combinations");
+Check(!root.TryGetProperty("nodeTypes",out _),"execution types are not editing options");
+var flags=new[]{(Outsource:false,Inbound:true),(Outsource:true,Inbound:false),(Outsource:false,Inbound:false),(Outsource:true,Inbound:true)};
+for(var index=0;index<flags.Length;index++)
+{
+ Check(nodes[index].GetProperty("isOutsource").GetBoolean()==flags[index].Outsource
+  &&nodes[index].GetProperty("isInbound").GetBoolean()==flags[index].Inbound,$"independent flags preserved: {index}");
+ Check(nodes[index].GetProperty("nodeSettingTemplateId").GetInt64()==index+1
+  &&nodes[index].GetProperty("order").GetInt32()==(index+1)*10
+  &&!nodes[index].TryGetProperty("nodeType",out _),$"source identity and order preserved without generated nodes: {index}");
+}
+Check(nodes[0].GetProperty("isReportWork").GetBoolean(),"report work copied");
+Check(nodes[0].GetProperty("code").GetString()=="010"&&nodes[1].GetProperty("code").GetString()=="020","source process codes preserved");
+var materials=nodes[0].GetProperty("materials");Check(materials.GetArrayLength()==1,"output and substitutes excluded from demand");
+Check(materials[0].GetProperty("quantityPerUnit").GetDecimal()==2,"recipe coefficient preserved");
+Check(materials[0].GetProperty("unitOptions")[0].GetProperty("ratio").GetDecimal()==1,"main unit snapshot supplied");
+var outsourceMaterial=nodes[1].GetProperty("materials");
+Check(outsourceMaterial.GetArrayLength()==1&&outsourceMaterial[0].GetProperty("quantityPerUnit").GetDecimal()==2.5m,"outsource input remains attached to source process");
+Check(outsourceMaterial[0].GetProperty("unitId").GetInt64()==2
+ &&outsourceMaterial[0].GetProperty("unitConversionId").GetInt64()==7
+ &&outsourceMaterial[0].GetProperty("unitOptions")[0].GetProperty("ratio").GetDecimal()==5,"selected unit conversion snapshot preserved");
+Check(nodes[2].GetProperty("materials").GetArrayLength()==0&&nodes[3].GetProperty("materials").GetArrayLength()==0,"inputs are not copied between process groups");
+Check(root.GetProperty("machines")[0].GetProperty("users")[0].GetProperty("id").GetInt64()==1,"equipment/person nesting");
+Check(nodes[0].GetProperty("machines").GetArrayLength()==1&&nodes[0].GetProperty("machines")[0].GetProperty("machineId").GetInt64()==8,"default machine matches craft and excludes stopped machines");
+Check(nodes[1].GetProperty("machines").GetArrayLength()==1&&nodes[2].GetProperty("machines").GetArrayLength()==0,"equipment remains attached to source process");
+Check(db.Set<Technical_NodeSettingTemplate>().Count()==4&&db.Set<Technical_NodeSettingTemplate_Material_RL>().Count()==4,"read-only initialization");
+foreach(var flag in flags)
+{
+ var dto=new CreateProductionScheduleDto{Processs=new(){new(){IsOutsource=flag.Outsource,IsInbound=flag.Inbound}}};
+ var json=JsonSerializer.Serialize(dto,KingZon.Core.JsonHelper.DefaultJsonSerializerOptions);
+ var submitted=JsonSerializer.Deserialize<CreateProductionScheduleDto>(json,KingZon.Core.JsonHelper.DefaultJsonSerializerOptions)!;
+ Check(submitted.Processs[0].IsOutsource==flag.Outsource&&submitted.Processs[0].IsInbound==flag.Inbound,"submission DTO retains independent flags");
+}
+var version=await db.Set<Technical_CraftOrderVersion>().SingleAsync();version.Status=CraftOrderVersionStatus.已废弃;await db.SaveChangesAsync();
+try{await controller.GetScheduleTemplate(1);throw new Exception("expected rejection");}catch(Exception ex)when(ex.Message.Contains("已发布")){count++;}
+Console.WriteLine($"Schedule template: {count} isolated checks passed.");

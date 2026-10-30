@@ -1,0 +1,769 @@
+
+> test
+> node --test src/views/production/dispatch_order_manage/__tests__/material-demand-by-bom.test.cjs src/views/production/dispatch_order_manage/__tests__/material-demand-detail.test.cjs src/views/technology/craft_manage/component/__tests__/craft-lint.test.cjs src/views/technology/craft_manage/component/__tests__/craft-manage.test.cjs src/views/technology/craft_manage/component/__tests__/craft-tree.test.cjs src/views/technology/production_schedule_manage/__tests__/production-schedule-checks.test.cjs src/views/technology/production_schedule_manage/__tests__/production-schedule.test.cjs tests/sales/month-sale-stat.test.cjs
+
+TAP version 13
+# Subtest: actual BOM page, submit methods and full production DTO pass strict type checks with host doubles
+ok 1 - actual BOM page, submit methods and full production DTO pass strict type checks with host doubles
+  ---
+  duration_ms: 3326.6379
+  ...
+# Subtest: main BOM loads with converted output quantity, physical units and stable distinct tree IDs
+ok 2 - main BOM loads with converted output quantity, physical units and stable distinct tree IDs
+  ---
+  duration_ms: 7.3393
+  ...
+# Subtest: unit changes preserve physical demand, manual quantities update outbound snapshots
+ok 3 - unit changes preserve physical demand, manual quantities update outbound snapshots
+  ---
+  duration_ms: 1.7117
+  ...
+# Subtest: alternatives are exclusive, unselected materials excluded, corrupted multiple selection rejected
+ok 4 - alternatives are exclusive, unselected materials excluded, corrupted multiple selection rejected
+  ---
+  duration_ms: 3.7309
+  ...
+# Subtest: other materials retain edits, restore picker state, delete and survive BOM clearing
+ok 5 - other materials retain edits, restore picker state, delete and survive BOM clearing
+  ---
+  duration_ms: 3.5418
+  ...
+# Subtest: saved drafts are isolated from parent, tree parent cycles are removed from submit payload
+ok 6 - saved drafts are isolated from parent, tree parent cycles are removed from submit payload
+  ---
+  duration_ms: 5.1043
+  ...
+# Subtest: empty BOM list supports manual materials; missing/invalid unit ratios block false success
+ok 7 - empty BOM list supports manual materials; missing/invalid unit ratios block false success
+  ---
+  duration_ms: 2.4373
+  ...
+# Subtest: query failure keeps visible draft and blocks submitting it as a newly selected BOM
+ok 8 - query failure keeps visible draft and blocks submitting it as a newly selected BOM
+  ---
+  duration_ms: 2.4086
+  ...
+# Subtest: child BOM references are resolved to physical material IDs instead of submitted as version IDs
+ok 9 - child BOM references are resolved to physical material IDs instead of submitted as version IDs
+  ---
+  duration_ms: 2.7361
+  ...
+# Subtest: invalid BOM totals block queries, empty manual drafts never create NaN outbound quantities
+ok 10 - invalid BOM totals block queries, empty manual drafts never create NaN outbound quantities
+  ---
+  duration_ms: 0.7781
+  ...
+# Subtest: a late previous-product response cannot overwrite a new current row
+ok 11 - a late previous-product response cannot overwrite a new current row
+  ---
+  duration_ms: 0.6074
+  ...
+# Subtest: BOM submission uses the material branch and fills basis identity without formula unit fields
+ok 12 - BOM submission uses the material branch and fills basis identity without formula unit fields
+  ---
+  duration_ms: 182.3431
+  ...
+# Subtest: initialization restores income pricing for a preselected department and production unit
+not ok 13 - initialization restores income pricing for a preselected department and production unit
+  ---
+  duration_ms: 118.8618
+  location: 'D:\\File\\项目文件\\实习\\returnOrder\\frontend\\src\\views\\production\\dispatch_order_manage\\__tests__\\material-demand-by-bom.test.cjs:827:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    undefined !== 88
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 88
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (D:\File\项目文件\实习\returnOrder\frontend\src\views\production\dispatch_order_manage\__tests__\material-demand-by-bom.test.cjs:859:10)
+    async Test.run (node:internal/test_runner/test:632:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:374:7)
+  ...
+# Subtest: income validation distinguishes missing pricing unit from invalid converted quantity
+not ok 14 - income validation distinguishes missing pricing unit from invalid converted quantity
+  ---
+  duration_ms: 84.2547
+  location: 'D:\\File\\项目文件\\实习\\returnOrder\\frontend\\src\\views\\production\\dispatch_order_manage\\__tests__\\material-demand-by-bom.test.cjs:873:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /收入计价数量无效/. Input:
+    
+    '请在【加工单价管理】功能输入第1条记录的收入计价单位'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: '请在【加工单价管理】功能输入第1条记录的收入计价单位'
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (D:\File\项目文件\实习\returnOrder\frontend\src\views\production\dispatch_order_manage\__tests__\material-demand-by-bom.test.cjs:893:12)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:631:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:374:18)
+    Test.postRun (node:internal/test_runner/test:715:19)
+    Test.run (node:internal/test_runner/test:673:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:374:7)
+  ...
+# Subtest: formula submission keeps its original unit fields and fills formula basis identity
+ok 15 - formula submission keeps its original unit fields and fills formula basis identity
+  ---
+  duration_ms: 263.5253
+  ...
+# Subtest: manual materials from BOM editor submit without a BOM version or formula fields
+ok 16 - manual materials from BOM editor submit without a BOM version or formula fields
+  ---
+  duration_ms: 86.9033
+  ...
+# Subtest: version conversion wins and zero/stale parent mainQuantity is ignored
+ok 17 - version conversion wins and zero/stale parent mainQuantity is ignored
+  ---
+  duration_ms: 86.9515
+  ...
+# Subtest: missing version relationship falls back to a fresh product/specification unit pair without mixing ratios
+ok 18 - missing version relationship falls back to a fresh product/specification unit pair without mixing ratios
+  ---
+  duration_ms: 85.4828
+  ...
+# Subtest: latest units support an empty version unit snapshot and use the matching package conversion ID
+ok 19 - latest units support an empty version unit snapshot and use the matching package conversion ID
+  ---
+  duration_ms: 0.9757
+  ...
+# Subtest: legacy duplicate zero IDs preserve the specification output and convert boxes using latest units
+ok 20 - legacy duplicate zero IDs preserve the specification output and convert boxes using latest units
+  ---
+  duration_ms: 1.9985
+  ...
+# Subtest: legacy main unit ID zero resolves to latest main unit and uses both latest ratios
+ok 21 - legacy main unit ID zero resolves to latest main unit and uses both latest ratios
+  ---
+  duration_ms: 1.2624
+  ...
+# Subtest: specification snapshot and latest list can use a conversion ID for opposite units
+ok 22 - specification snapshot and latest list can use a conversion ID for opposite units
+  ---
+  duration_ms: 0.6238
+  ...
+# Subtest: missing box conversion cannot fall back to another package with the same unit ID
+ok 23 - missing box conversion cannot fall back to another package with the same unit ID
+  ---
+  duration_ms: 0.6375
+  ...
+# Subtest: invalid quantities or unavailable conversions never submit a false zero or infinity
+ok 24 - invalid quantities or unavailable conversions never submit a false zero or infinity
+  ---
+  duration_ms: 4.9866
+  ...
+# Subtest: failed latest-unit request prevents querying and submitting BOM details
+ok 25 - failed latest-unit request prevents querying and submitting BOM details
+  ---
+  duration_ms: 0.7429
+  ...
+# Subtest: reopening a draft refreshes changed latest conversion before accepting old material quantities
+ok 26 - reopening a draft refreshes changed latest conversion before accepting old material quantities
+  ---
+  duration_ms: 2.6646
+  ...
+# Subtest: query and submit use the same rounding and current dispatch inputs
+ok 27 - query and submit use the same rounding and current dispatch inputs
+  ---
+  duration_ms: 94.4938
+  ...
+# Subtest: missing selected unit or quantity blocks posting instead of filling required values with zero
+ok 28 - missing selected unit or quantity blocks posting instead of filling required values with zero
+  ---
+  duration_ms: 81.757
+  ...
+# Subtest: dispatch quantity scales BOM tree, selected materials and unit snapshots before reopening
+ok 29 - dispatch quantity scales BOM tree, selected materials and unit snapshots before reopening
+  ---
+  duration_ms: 81.8563
+  ...
+# Subtest: quantity scaling preserves substitute choice, other materials and independent drafts per dispatch row
+ok 30 - quantity scaling preserves substitute choice, other materials and independent drafts per dispatch row
+  ---
+  duration_ms: 72.9971
+  ...
+# Subtest: supplement numbering tolerates missing values and numeric strings without modifying the source
+ok 31 - supplement numbering tolerates missing values and numeric strings without modifying the source
+  ---
+  duration_ms: 4.2719
+  ...
+# Subtest: cancel retains saved ordering and batch selection receives consecutive numeric orders
+ok 32 - cancel retains saved ordering and batch selection receives consecutive numeric orders
+  ---
+  duration_ms: 0.8309
+  ...
+# Subtest: craft components and shared types pass Vue prop ownership and TypeScript lint rules
+ok 33 - craft components and shared types pass Vue prop ownership and TypeScript lint rules
+  ---
+  duration_ms: 7731.9359
+  ...
+# Subtest: create validates product/name, prevents duplicate submits, then opens the saved order
+ok 34 - create validates product/name, prevents duplicate submits, then opens the saved order
+  ---
+  duration_ms: 763.7367
+  ...
+# Subtest: a failed initial version still opens the already-created order
+ok 35 - a failed initial version still opens the already-created order
+  ---
+  duration_ms: 4.9908
+  ...
+# Subtest: rename uses a separate draft, preserves product info, and sends only id/name
+ok 36 - rename uses a separate draft, preserves product info, and sends only id/name
+  ---
+  duration_ms: 262.7192
+  ...
+# Subtest: input/output buttons target separate areas; only inbound permits output
+ok 37 - input/output buttons target separate areas; only inbound permits output
+  ---
+  duration_ms: 635.8836
+  ...
+# Subtest: empty tables accept additions; selected main controls insertion order and batches deduplicate
+ok 38 - empty tables accept additions; selected main controls insertion order and batches deduplicate
+  ---
+  duration_ms: 4.9752
+  ...
+# Subtest: substitutes attach to the selected main, even when a substitute is selected
+ok 39 - substitutes attach to the selected main, even when a substitute is selected
+  ---
+  duration_ms: 5.2379
+  ...
+# Subtest: current product is allowed for inbound but blocked for consumption
+ok 40 - current product is allowed for inbound but blocked for consumption
+  ---
+  duration_ms: 2.758
+  ...
+# Subtest: readonly versions and stale selections cannot mutate materials
+ok 41 - readonly versions and stale selections cannot mutate materials
+  ---
+  duration_ms: 5.8142
+  ...
+# Subtest: save-version payload retains the single-level nested substitute model
+ok 42 - save-version payload retains the single-level nested substitute model
+  ---
+  duration_ms: 5.7473
+  ...
+# Subtest: a slow previous version cannot replace the currently loaded routes
+ok 43 - a slow previous version cannot replace the currently loaded routes
+  ---
+  duration_ms: 9.1411
+  ...
+# Subtest: drag placement inserts batches before/after rows and appends independently of selection
+ok 44 - drag placement inserts batches before/after rows and appends independently of selection
+  ---
+  duration_ms: 4.9724
+  ...
+# Subtest: drop onto a main attaches substitutes without selecting it, and child placement stays one level
+ok 45 - drop onto a main attaches substitutes without selecting it, and child placement stays one level
+  ---
+  duration_ms: 3.2825
+  ...
+# Subtest: grid row feedback matches before, substitute and after drop targets; unrelated/nested drags ignored
+ok 46 - grid row feedback matches before, substitute and after drop targets; unrelated/nested drags ignored
+  ---
+  duration_ms: 1.661
+  ...
+# Subtest: child drop positions preserve parent; valid payload emits once and invalid payloads do not emit
+ok 47 - child drop positions preserve parent; valid payload emits once and invalid payloads do not emit
+  ---
+  duration_ms: 1.1673
+  ...
+# Subtest: resource drag serializes multiple selected rows and readonly/loading prevents drag
+ok 48 - resource drag serializes multiple selected rows and readonly/loading prevents drag
+  ---
+  duration_ms: 3.815
+  ...
+# Subtest: machine library ignores stale craft requests and exposes only the current craft machines
+ok 49 - machine library ignores stale craft requests and exposes only the current craft machines
+  ---
+  duration_ms: 4.2666
+  ...
+# Subtest: machines validate craft membership, deduplicate, preserve invalid existing IDs and support removal
+ok 50 - machines validate craft membership, deduplicate, preserve invalid existing IDs and support removal
+  ---
+  duration_ms: 1.355
+  ...
+# Subtest: machine library drag payload is separate from materials and machine drops preserve IDs
+ok 51 - machine library drag payload is separate from materials and machine drops preserve IDs
+  ---
+  duration_ms: 3.1114
+  ...
+# Subtest: save payload includes machine selection with the current craft
+ok 52 - save payload includes machine selection with the current craft
+  ---
+  duration_ms: 5.4439
+  ...
+# Subtest: library row selection clears on filtering/tab switches and unselected row actions use only that row
+ok 53 - library row selection clears on filtering/tab switches and unselected row actions use only that row
+  ---
+  duration_ms: 2.5473
+  ...
+# Subtest: material navigation selects the exact input/output main and rejects children or stale rows
+ok 54 - material navigation selects the exact input/output main and rejects children or stale rows
+  ---
+  duration_ms: 3.0432
+  ...
+# Subtest: KingZonDataGrid adapter expands and focuses through its internal grid and scrolls the actual row
+ok 55 - KingZonDataGrid adapter expands and focuses through its internal grid and scrolls the actual row
+  ---
+  duration_ms: 1.4416
+  ...
+# Subtest: tree navigation waits for the correct process editor and rejects a stale version navigation
+ok 56 - tree navigation waits for the correct process editor and rejects a stale version navigation
+  ---
+  duration_ms: 7.4005
+  ...
+# Subtest: outsourcing enforces inbound on the immediate predecessor, reordering and deletion recompute the requirement
+ok 57 - outsourcing enforces inbound on the immediate predecessor, reordering and deletion recompute the requirement
+  ---
+  duration_ms: 4.3803
+  ...
+# Subtest: first/consecutive external processes and read-only histories obey the boundary rules
+ok 58 - first/consecutive external processes and read-only histories obey the boundary rules
+  ---
+  duration_ms: 2.7386
+  ...
+# Subtest: save normalizes inbound and sequence even if an immediate save precedes the UI watcher
+ok 59 - save normalizes inbound and sequence even if an immediate save precedes the UI watcher
+  ---
+  duration_ms: 2.696
+  ...
+# Subtest: version operations send object request bodies accepted by the typed http client
+ok 60 - version operations send object request bodies accepted by the typed http client
+  ---
+  duration_ms: 2.9898
+  ...
+# Subtest: editing a code keeps the selected process identity even while empty or duplicated
+ok 61 - editing a code keeps the selected process identity even while empty or duplicated
+  ---
+  duration_ms: 1.9922
+  ...
+# Subtest: process and material group navigation select their own tabs on the same process
+ok 62 - process and material group navigation select their own tabs on the same process
+  ---
+  duration_ms: 1.5667
+  ...
+# Subtest: unchecking inbound removes output mains and nested/legacy substitutes; required inbound preserves them
+ok 63 - unchecking inbound removes output mains and nested/legacy substitutes; required inbound preserves them
+  ---
+  duration_ms: 2.8525
+  ...
+# Subtest: library selections clear only after accepted additions, including successful drops
+ok 64 - library selections clear only after accepted additions, including successful drops
+  ---
+  duration_ms: 4.0942
+  ...
+# Subtest: machine hours follow machine identity and readonly/removal retain valid configuration
+ok 65 - machine hours follow machine identity and readonly/removal retain valid configuration
+  ---
+  duration_ms: 1.24
+  ...
+# Subtest: save carries process hours, reporting and machine hours; invalid codes/hours block submission
+ok 66 - save carries process hours, reporting and machine hours; invalid codes/hours block submission
+  ---
+  duration_ms: 3.8547
+  ...
+# Subtest: library loading belongs to the newest request and ends on success or failure
+ok 67 - library loading belongs to the newest request and ends on success or failure
+  ---
+  duration_ms: 3.0295
+  ...
+# Subtest: craft order list loading belongs to the newest request and deletion waits for refresh
+ok 68 - craft order list loading belongs to the newest request and deletion waits for refresh
+  ---
+  duration_ms: 50.7182
+  ...
+# Subtest: library detail tooltip and advanced filters expose specification, grade and version
+ok 69 - library detail tooltip and advanced filters expose specification, grade and version
+  ---
+  duration_ms: 1.8707
+  ...
+# Subtest: material editor emits patches without mutating frozen process, mains or substitutes
+ok 70 - material editor emits patches without mutating frozen process, mains or substitutes
+  ---
+  duration_ms: 1.6119
+  ...
+# Subtest: machine editor emits replacement lists and never mutates frozen machine settings
+ok 71 - machine editor emits replacement lists and never mutates frozen machine settings
+  ---
+  duration_ms: 0.6803
+  ...
+# Subtest: process form emits fields, protects required inbound and honors readonly props
+ok 72 - process form emits fields, protects required inbound and honors readonly props
+  ---
+  duration_ms: 1.664
+  ...
+# Subtest: material table cell changes emit updates for known rows only
+ok 73 - material table cell changes emit updates for known rows only
+  ---
+  duration_ms: 0.323
+  ...
+# Subtest: process files upload against the saved process and refresh the file list
+ok 74 - process files upload against the saved process and refresh the file list
+  ---
+  duration_ms: 1.5622
+  ...
+# Subtest: workspace applies changes without replacing process or selected material identities
+ok 75 - workspace applies changes without replacing process or selected material identities
+  ---
+  duration_ms: 2.377
+  ...
+# Subtest: route reorder and save do not mutate frozen route props
+ok 76 - route reorder and save do not mutate frozen route props
+  ---
+  duration_ms: 2.4198
+  ...
+# Subtest: resource library loads after its conditional grid mounts on first tab activation
+ok 77 - resource library loads after its conditional grid mounts on first tab activation
+  ---
+  duration_ms: 8.7443
+  ...
+# Subtest: resource tab changes cancel pending loads and coalesce selections before the render completes
+ok 78 - resource tab changes cancel pending loads and coalesce selections before the render completes
+  ---
+  duration_ms: 5.8302
+  ...
+# Subtest: loading updates only the expanded node and coalesces repeat clicks
+ok 79 - loading updates only the expanded node and coalesces repeat clicks
+  ---
+  duration_ms: 35.7441
+  ...
+# Subtest: empty, null and direct responses finish loading and remain cached
+ok 80 - empty, null and direct responses finish loading and remain cached
+  ---
+  duration_ms: 19.1182
+  ...
+# Subtest: nested materials load recursively; empty groups are leaves
+ok 81 - nested materials load recursively; empty groups are leaves
+  ---
+  duration_ms: 7.5403
+  ...
+# Subtest: collapse during a request stays collapsed after completion
+ok 82 - collapse during a request stays collapsed after completion
+  ---
+  duration_ms: 3.6165
+  ...
+# Subtest: failures and malformed responses leave a retryable message
+ok 83 - failures and malformed responses leave a retryable message
+  ---
+  duration_ms: 12.1785
+  ...
+# Subtest: route edits preserve node identity, collapse state, substitutes and in-flight requests
+ok 84 - route edits preserve node identity, collapse state, substitutes and in-flight requests
+  ---
+  duration_ms: 5.8142
+  ...
+# Subtest: unsaved rows and repeated referenced processes have unique IDs and independent states
+ok 85 - unsaved rows and repeated referenced processes have unique IDs and independent states
+  ---
+  duration_ms: 6.33
+  ...
+# Subtest: version/order changes and product replacement discard stale responses
+ok 86 - version/order changes and product replacement discard stale responses
+  ---
+  duration_ms: 12.2364
+  ...
+# Subtest: invalid material IDs cannot enter perpetual loading
+ok 87 - invalid material IDs cannot enter perpetual loading
+  ---
+  duration_ms: 2.7681
+  ...
+# Subtest: late failures after a version switch or unmount do not show stale errors
+ok 88 - late failures after a version switch or unmount do not show stale errors
+  ---
+  duration_ms: 21.0689
+  ...
+# Subtest: legacy display fields and typeText-only nested materials remain supported
+ok 89 - legacy display fields and typeText-only nested materials remain supported
+  ---
+  duration_ms: 3.4972
+  ...
+# Subtest: name column grows with expanded lazy levels and ignores collapsed descendants
+ok 90 - name column grows with expanded lazy levels and ignores collapsed descendants
+  ---
+  duration_ms: 9.5015
+  ...
+# Subtest: tree material navigation carries the exact top-level row and ignores substitutes and lazy descendants
+ok 91 - tree material navigation carries the exact top-level row and ignores substitutes and lazy descendants
+  ---
+  duration_ms: 5.3332
+  ...
+# Subtest: only inbound processes show output groups and node editing preserves selection targets
+ok 92 - only inbound processes show output groups and node editing preserves selection targets
+  ---
+  duration_ms: 8.4188
+  ...
+# Subtest: all schedule Vue SFC scripts and templates compile
+ok 93 - all schedule Vue SFC scripts and templates compile
+  ---
+  duration_ms: 516.8577
+  ...
+# Subtest: schedule model and component scripts pass strict TypeScript checking
+ok 94 - schedule model and component scripts pass strict TypeScript checking
+  ---
+  duration_ms: 4468.7786
+  ...
+# Subtest: schedule code passes Vue ownership and TypeScript lint checks
+ok 95 - schedule code passes Vue ownership and TypeScript lint checks
+  ---
+  duration_ms: 5082.0275
+  ...
+# Subtest: page starts empty and uses actual query quantities, units and source IDs without mock recomputation
+ok 96 - page starts empty and uses actual query quantities, units and source IDs without mock recomputation
+  ---
+  duration_ms: 860.8673
+  ...
+# Subtest: refresh and recalculate request current quantity; changed input increments applied revision only after success
+ok 97 - refresh and recalculate request current quantity; changed input increments applied revision only after success
+  ---
+  duration_ms: 6.2453
+  ...
+# Subtest: version changes and concurrent refreshes ignore older responses and keep current loading state
+ok 98 - version changes and concurrent refreshes ignore older responses and keep current loading state
+  ---
+  duration_ms: 18.1675
+  ...
+# Subtest: query errors and invalid payload do not fall back to example data
+ok 99 - query errors and invalid payload do not fall back to example data
+  ---
+  duration_ms: 3.5859
+  ...
+# Subtest: craft picker uses paged host query and selected order versions, prioritizing main version
+ok 100 - craft picker uses paged host query and selected order versions, prioritizing main version
+  ---
+  duration_ms: 6.7082
+  ...
+# Subtest: parent can supply and change craft version prop for automatic loading
+ok 101 - parent can supply and change craft version prop for automatic loading
+  ---
+  duration_ms: 8.5156
+  ...
+# Subtest: route query loads specified version and clears the old tree when entry is removed
+ok 102 - route query loads specified version and clears the old tree when entry is removed
+  ---
+  duration_ms: 7.0959
+  ...
+# Subtest: failed refresh retains last successful quantities and selected version rather than changing applied inputs
+ok 103 - failed refresh retains last successful quantities and selected version rather than changing applied inputs
+  ---
+  duration_ms: 6.7867
+  ...
+# Subtest: MRP propagates parent production, not finished goods gross demand; follows source and dates
+ok 104 - MRP propagates parent production, not finished goods gross demand; follows source and dates
+  ---
+  duration_ms: 7.9832
+  ...
+# Subtest: safe stock, date cutoff, cancellation and zero demand are handled without negative net
+ok 105 - safe stock, date cutoff, cancellation and zero demand are handled without negative net
+  ---
+  duration_ms: 0.9938
+  ...
+# Subtest: same goods inventory and receipts are allocated only once across separate requirement instances
+ok 106 - same goods inventory and receipts are allocated only once across separate requirement instances
+  ---
+  duration_ms: 1.0187
+  ...
+# Subtest: material readiness consumes earlier commitments and waits for known receipt date
+ok 107 - material readiness consumes earlier commitments and waits for known receipt date
+  ---
+  duration_ms: 4.3646
+  ...
+# Subtest: validation rejects overplan, broken dependencies, undersized capacity and missing outsource / warehouse fields
+ok 108 - validation rejects overplan, broken dependencies, undersized capacity and missing outsource / warehouse fields
+  ---
+  duration_ms: 1.7544
+  ...
+# Subtest: resource overlaps reject both equipment and staff, but adjacent bookings are allowed
+ok 109 - resource overlaps reject both equipment and staff, but adjacent bookings are allowed
+  ---
+  duration_ms: 1.8671
+  ...
+# Subtest: immediate execution requires physical stock and a current execution window; late commitments cannot duplicate
+ok 110 - immediate execution requires physical stock and a current execution window; late commitments cannot duplicate
+  ---
+  duration_ms: 1.5588
+  ...
+# Subtest: owner saves detached operation/material snapshots, reserves once, rejects double save and releases cancellation
+ok 111 - owner saves detached operation/material snapshots, reserves once, rejects double save and releases cancellation
+  ---
+  duration_ms: 99.2494
+  ...
+# Subtest: tree filtering preserves ancestors and seven quantity columns remain in the agreed order
+ok 112 - tree filtering preserves ancestors and seven quantity columns remain in the agreed order
+  ---
+  duration_ms: 17.3623
+  ...
+# Subtest: purchase suggestions update forecast without changing physical inventory and prevent duplicate / late supply
+ok 113 - purchase suggestions update forecast without changing physical inventory and prevent duplicate / late supply
+  ---
+  duration_ms: 38.8945
+  ...
+# Subtest: drawer quantity changes keep single dispatch quantities aligned and saves every operation
+ok 114 - drawer quantity changes keep single dispatch quantities aligned and saves every operation
+  ---
+  duration_ms: 6.433
+  ...
+# Subtest: gantt renders operation-level dependencies, live material risk, stale revisions and cancelled orders
+ok 115 - gantt renders operation-level dependencies, live material risk, stale revisions and cancelled orders
+  ---
+  duration_ms: 2.6682
+  ...
+# Subtest: gantt uses calendar month bounds and keeps exact local hours for long ranges
+ok 116 - gantt uses calendar month bounds and keeps exact local hours for long ranges
+  ---
+  duration_ms: 4.3619
+  ...
+# Subtest: seven quantity totals separate transit, running, planned and cancelled supplies while keeping deadline net
+ok 117 - seven quantity totals separate transit, running, planned and cancelled supplies while keeping deadline net
+  ---
+  duration_ms: 1.193
+  ...
+# Subtest: inline draft rows preserve selection across semi-finished goods and do not reserve until saved
+ok 118 - inline draft rows preserve selection across semi-finished goods and do not reserve until saved
+  ---
+  duration_ms: 22.1109
+  ...
+# Subtest: new inline form starts with blank quantity and dates
+ok 119 - new inline form starts with blank quantity and dates
+  ---
+  duration_ms: 1.507
+  ...
+# Subtest: gantt preserves five levels, focused ancestor paths, dependencies and two full months
+ok 120 - gantt preserves five levels, focused ancestor paths, dependencies and two full months
+  ---
+  duration_ms: 2.5791
+  ...
+# Subtest: dragging order shifts all processes and rejects overlap, short capacity, deadline and running orders without mutation
+ok 121 - dragging order shifts all processes and rejects overlap, short capacity, deadline and running orders without mutation
+  ---
+  duration_ms: 2.5098
+  ...
+# Subtest: process editor emits detached changes and retains the original selection controls without mutating parent data
+ok 122 - process editor emits detached changes and retains the original selection controls without mutating parent data
+  ---
+  duration_ms: 3.3075
+  ...
+# Subtest: status enums retain query values and cancellation semantics, while Gantt uses actual product information
+ok 123 - status enums retain query values and cancellation semantics, while Gantt uses actual product information
+  ---
+  duration_ms: 1.8109
+  ...
+# [Vue warn]: Failed to resolve component: RadioButton
+# If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+#   at <SaleDataStat>
+# [Vue warn]: Failed to resolve component: Label
+# If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+#   at <SaleDataStat>
+# [Vue warn]: Failed to resolve component: RadioButton
+# If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+#   at <SaleDataStat>
+# [Vue warn]: Failed to resolve component: Label
+# If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+#   at <SaleDataStat>
+# [Vue warn]: Failed to resolve component: RadioButton
+# If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+#   at <SaleDataStat>
+# [Vue warn]: Failed to resolve component: Label
+# If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+#   at <SaleDataStat>
+# [Vue warn]: Failed to resolve component: RadioButton
+# If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+#   at <SaleDataStat>
+# [Vue warn]: Failed to resolve component: Label
+# If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement. 
+#   at <SaleDataStat>
+# Subtest: shared grid can move total into delivery headers when restoring a different week count
+ok 124 - shared grid can move total into delivery headers when restoring a different week count
+  ---
+  duration_ms: 7.9533
+  ...
+# Subtest: rendered financial headers provide default slots and valid column spans for 4, 5 and 6 weeks
+ok 125 - rendered financial headers provide default slots and valid column spans for 4, 5 and 6 weeks
+  ---
+  duration_ms: 419.5417
+  ...
+# Subtest: supplied March response renders order amounts in order columns, and zero in delivery columns
+ok 126 - supplied March response renders order amounts in order columns, and zero in delivery columns
+  ---
+  duration_ms: 143.8386
+  ...
+# Subtest: report page template/script compile and actual DTO/page pass strict TypeScript checks
+ok 127 - report page template/script compile and actual DTO/page pass strict TypeScript checks
+  ---
+  duration_ms: 2573.7856
+  ...
+# Subtest: formula export uses the loaded report filters, download wrapper and duplicate/loading guards
+ok 128 - formula export uses the loaded report filters, download wrapper and duplicate/loading guards
+  ---
+  duration_ms: 2.6001
+  ...
+# Subtest: week clicks open the dialog with customer/category/total scopes and loaded report dates
+not ok 129 - week clicks open the dialog with customer/category/total scopes and loaded report dates
+  ---
+  duration_ms: 4.3341
+  location: 'D:\\File\\项目文件\\实习\\returnOrder\\frontend\\tests\\sales\\month-sale-stat.test.cjs:541:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + undefined
+    - false
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (D:\File\项目文件\实习\returnOrder\frontend\tests\sales\month-sale-stat.test.cjs:601:10)
+    async Test.run (node:internal/test_runner/test:632:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:374:7)
+  ...
+# Subtest: detail component selects the correct API, keeps nullable category scope, and clears loading on failure
+ok 130 - detail component selects the correct API, keeps nullable category scope, and clears loading on failure
+  ---
+  duration_ms: 2.9663
+  ...
+# Subtest: SearchPanel filters map to month/customer query and reset restores current month
+ok 131 - SearchPanel filters map to month/customer query and reset restores current month
+  ---
+  duration_ms: 6.679
+  ...
+# Subtest: real response produces ranked customer rows, category subtotals and one total without recomputing ratios
+ok 132 - real response produces ranked customer rows, category subtotals and one total without recomputing ratios
+  ---
+  duration_ms: 1.2704
+  ...
+# Subtest: zero comparison is displayed safely, six weeks and cross-year comparison titles work
+ok 133 - zero comparison is displayed safely, six weeks and cross-year comparison titles work
+  ---
+  duration_ms: 0.6723
+  ...
+# Subtest: failed refresh retains the loaded report and clears loading, empty response clears old rows
+ok 134 - failed refresh retains the loaded report and clears loading, empty response clears old rows
+  ---
+  duration_ms: 0.7768
+  ...
+# Subtest: tax toggle reloads report and preserves loaded tax scope for week/return details
+ok 135 - tax toggle reloads report and preserves loaded tax scope for week/return details
+  ---
+  duration_ms: 1.3002
+  ...
+# Subtest: return detail requests only returned deliveries and shows both tax bases with unique head footer totals
+ok 136 - return detail requests only returned deliveries and shows both tax bases with unique head footer totals
+  ---
+  duration_ms: 1.7898
+  ...
+1..136
+# tests 136
+# suites 0
+# pass 133
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 13026.6638

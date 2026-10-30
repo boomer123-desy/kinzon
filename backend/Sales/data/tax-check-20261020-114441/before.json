@@ -1,0 +1,220 @@
+{
+  "database": "test_qibiao",
+  "customerId": 873,
+  "SaleOrder": [
+    {
+      "Id": 2690,
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-SO-001",
+      "CustomerId": 873,
+      "CreateTime": "2026-03-26 09:00:00",
+      "OrderTotalPrice": "60000.0000",
+      "OrderTotalPriceHaveTax": "0.0000",
+      "UpdateTime": "2026-03-26 09:00:00"
+    },
+    {
+      "Id": 2691,
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-SO-002",
+      "CustomerId": 873,
+      "CreateTime": "2026-03-28 09:00:00",
+      "OrderTotalPrice": "68500.0000",
+      "OrderTotalPriceHaveTax": "0.0000",
+      "UpdateTime": "2026-03-28 09:00:00"
+    },
+    {
+      "Id": 2692,
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-SO-003",
+      "CustomerId": 873,
+      "CreateTime": "2026-04-04 09:00:00",
+      "OrderTotalPrice": "77000.0000",
+      "OrderTotalPriceHaveTax": "0.0000",
+      "UpdateTime": "2026-04-04 09:00:00"
+    },
+    {
+      "Id": 2693,
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-SO-004",
+      "CustomerId": 873,
+      "CreateTime": "2026-04-11 09:00:00",
+      "OrderTotalPrice": "85500.0000",
+      "OrderTotalPriceHaveTax": "0.0000",
+      "UpdateTime": "2026-04-11 09:00:00"
+    },
+    {
+      "Id": 2694,
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-SO-005",
+      "CustomerId": 873,
+      "CreateTime": "2026-04-18 09:00:00",
+      "OrderTotalPrice": "94000.0000",
+      "OrderTotalPriceHaveTax": "0.0000",
+      "UpdateTime": "2026-04-18 09:00:00"
+    },
+    {
+      "Id": 2695,
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-SO-006",
+      "CustomerId": 873,
+      "CreateTime": "2026-04-25 09:00:00",
+      "OrderTotalPrice": "102500.0000",
+      "OrderTotalPriceHaveTax": "0.0000",
+      "UpdateTime": "2026-04-25 09:00:00"
+    },
+    {
+      "Id": 2746,
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-SO-057",
+      "CustomerId": 873,
+      "CreateTime": "2025-03-26 09:00:00",
+      "OrderTotalPrice": "316870.0000",
+      "OrderTotalPriceHaveTax": "0.0000",
+      "UpdateTime": "2025-03-26 09:00:00"
+    }
+  ],
+  "SaleOrderDetail": [
+    {
+      "Id": 18053,
+      "SaleOrderId": 2690,
+      "Price": "10.0000",
+      "PriceHaveTax": "0.0000",
+      "TaxRate": "0E-30",
+      "TotalPrice": "60000.000000000000000000000000000000",
+      "TotalPriceHaveTax": "0E-30",
+      "PlaceOrderQuantity": 6000,
+      "MoldCost": "0.0000",
+      "UpdateTime": "2026-03-26 09:00:00"
+    },
+    {
+      "Id": 18054,
+      "SaleOrderId": 2691,
+      "Price": "10.0000",
+      "PriceHaveTax": "0.0000",
+      "TaxRate": "0E-30",
+      "TotalPrice": "68500.000000000000000000000000000000",
+      "TotalPriceHaveTax": "0E-30",
+      "PlaceOrderQuantity": 6850,
+      "MoldCost": "0.0000",
+      "UpdateTime": "2026-03-28 09:00:00"
+    },
+    {
+      "Id": 18055,
+      "SaleOrderId": 2692,
+      "Price": "10.0000",
+      "PriceHaveTax": "0.0000",
+      "TaxRate": "0E-30",
+      "TotalPrice": "77000.000000000000000000000000000000",
+      "TotalPriceHaveTax": "0E-30",
+      "PlaceOrderQuantity": 7700,
+      "MoldCost": "0.0000",
+      "UpdateTime": "2026-04-04 09:00:00"
+    },
+    {
+      "Id": 18056,
+      "SaleOrderId": 2693,
+      "Price": "10.0000",
+      "PriceHaveTax": "0.0000",
+      "TaxRate": "0E-30",
+      "TotalPrice": "85500.000000000000000000000000000000",
+      "TotalPriceHaveTax": "0E-30",
+      "PlaceOrderQuantity": 8550,
+      "MoldCost": "0.0000",
+      "UpdateTime": "2026-04-11 09:00:00"
+    },
+    {
+      "Id": 18057,
+      "SaleOrderId": 2694,
+      "Price": "10.0000",
+      "PriceHaveTax": "0.0000",
+      "TaxRate": "0E-30",
+      "TotalPrice": "94000.000000000000000000000000000000",
+      "TotalPriceHaveTax": "0E-30",
+      "PlaceOrderQuantity": 9400,
+      "MoldCost": "0.0000",
+      "UpdateTime": "2026-04-18 09:00:00"
+    },
+    {
+      "Id": 18058,
+      "SaleOrderId": 2695,
+      "Price": "10.0000",
+      "PriceHaveTax": "0.0000",
+      "TaxRate": "0E-30",
+      "TotalPrice": "102500.000000000000000000000000000000",
+      "TotalPriceHaveTax": "0E-30",
+      "PlaceOrderQuantity": 10250,
+      "MoldCost": "0.0000",
+      "UpdateTime": "2026-04-25 09:00:00"
+    },
+    {
+      "Id": 18109,
+      "SaleOrderId": 2746,
+      "Price": "10.0000",
+      "PriceHaveTax": "0.0000",
+      "TaxRate": "0E-30",
+      "TotalPrice": "316870.000000000000000000000000000000",
+      "TotalPriceHaveTax": "0E-30",
+      "PlaceOrderQuantity": 31687,
+      "MoldCost": "0.0000",
+      "UpdateTime": "2025-03-26 09:00:00"
+    }
+  ],
+  "DeliveryOrderDetail": [
+    {
+      "Id": 18590,
+      "SaleOrderDetailId": 18053,
+      "SalePrice": "10.0000",
+      "DeliveryQuantity": 3300,
+      "ReturnQuantity": 0,
+      "UpdateTime": "2026-03-26 09:00:00",
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-DO-001"
+    },
+    {
+      "Id": 18591,
+      "SaleOrderDetailId": 18054,
+      "SalePrice": "10.0000",
+      "DeliveryQuantity": 4315,
+      "ReturnQuantity": 0,
+      "UpdateTime": "2026-03-28 09:00:00",
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-DO-002"
+    },
+    {
+      "Id": 18592,
+      "SaleOrderDetailId": 18055,
+      "SalePrice": "10.0000",
+      "DeliveryQuantity": 5467,
+      "ReturnQuantity": 0,
+      "UpdateTime": "2026-04-04 09:00:00",
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-DO-003"
+    },
+    {
+      "Id": 18593,
+      "SaleOrderDetailId": 18056,
+      "SalePrice": "10.0000",
+      "DeliveryQuantity": 6754,
+      "ReturnQuantity": 0,
+      "UpdateTime": "2026-04-11 09:00:00",
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-DO-004"
+    },
+    {
+      "Id": 18594,
+      "SaleOrderDetailId": 18057,
+      "SalePrice": "10.0000",
+      "DeliveryQuantity": 8178,
+      "ReturnQuantity": 0,
+      "UpdateTime": "2026-04-18 09:00:00",
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-DO-005"
+    },
+    {
+      "Id": 18595,
+      "SaleOrderDetailId": 18058,
+      "SalePrice": "10.0000",
+      "DeliveryQuantity": 5637,
+      "ReturnQuantity": 0,
+      "UpdateTime": "2026-04-25 09:00:00",
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-DO-006"
+    },
+    {
+      "Id": 18646,
+      "SaleOrderDetailId": 18109,
+      "SalePrice": "10.0000",
+      "DeliveryQuantity": 17427,
+      "ReturnQuantity": 0,
+      "UpdateTime": "2025-03-26 09:00:00",
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-DO-057"
+    }
+  ]
+}

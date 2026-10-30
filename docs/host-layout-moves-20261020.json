@@ -1,0 +1,1412 @@
+{
+  "root": "D:\\File\\项目文件\\实习\\returnOrder",
+  "moves": [
+    {
+      "from": "backend/sale_return_order/ExcelTemplates/MonthSaleDataStat.xlsx",
+      "to": "backend/Sales/KingZon.OLCM.Sales.WebApi/ExcelTmp/MonthSaleDataStat.xlsx",
+      "sha256": "57743cb32a5f495e91e4845f51cac7e2d95f05f19c39b5bc78babe7944a7c6a9",
+      "finalSha256": "57743cb32a5f495e91e4845f51cac7e2d95f05f19c39b5bc78babe7944a7c6a9"
+    },
+    {
+      "from": "backend/sale_return_order/controller/DeliverOrderManageController.cs",
+      "to": "backend/Inventory/KingZon.OLCM.Inventory.WebApi/Controllers/DeliverOrderManageController.cs",
+      "sha256": "5ec55c58d3e3644ee3e69d96172aa34798c96243d153cbbd0f745036b21a309f",
+      "finalSha256": "5ec55c58d3e3644ee3e69d96172aa34798c96243d153cbbd0f745036b21a309f"
+    },
+    {
+      "from": "backend/sale_return_order/controller/ProductController.cs",
+      "to": "backend/Base/KingZon.OLCM.Base.WebApi/Controllers/ProductController.cs",
+      "sha256": "99e31472e0512588d49da1124af332b257ee31b95c45af338a58613f0cf7f9e6",
+      "finalSha256": "99e31472e0512588d49da1124af332b257ee31b95c45af338a58613f0cf7f9e6"
+    },
+    {
+      "from": "backend/sale_return_order/controller/ReturnArrivalController.cs",
+      "to": "backend/Inventory/KingZon.OLCM.Inventory.WebApi/Controllers/ReturnArrivalController.cs",
+      "sha256": "9ef6edb8135688363d122d3e3b0a449640b6608677e554e26b694b241f50d459",
+      "finalSha256": "9ef6edb8135688363d122d3e3b0a449640b6608677e554e26b694b241f50d459"
+    },
+    {
+      "from": "backend/sale_return_order/controller/SaleDataStatController.cs",
+      "to": "backend/Sales/KingZon.OLCM.Sales.WebApi/Controllers/SaleDataStatController.cs",
+      "sha256": "64801c530c8b01ae23e993d9cdaa2beb1b1138218d7d130bf0b63a1260b4a9fb",
+      "finalSha256": "64801c530c8b01ae23e993d9cdaa2beb1b1138218d7d130bf0b63a1260b4a9fb"
+    },
+    {
+      "from": "backend/sale_return_order/controller/SaleOrderController.cs",
+      "to": "backend/Common/KingZon.OLCM.Common.WebApi/Controllers/SaleOrderController.cs",
+      "sha256": "69c136e5c1850f3e723c12a140bdd1085fce52c22f1136e22c1ec40b8733f5fc",
+      "finalSha256": "69c136e5c1850f3e723c12a140bdd1085fce52c22f1136e22c1ec40b8733f5fc"
+    },
+    {
+      "from": "backend/sale_return_order/controller/SaleReturnOrderManageController.cs",
+      "to": "backend/Sale/KingZon.OLCM.Sale.WebApi/Controllers/SaleReturnOrderManageController.cs",
+      "sha256": "856cf6b79e53578a191900bd78029163539f923bb2b47a38d119726f7c4368fc",
+      "finalSha256": "856cf6b79e53578a191900bd78029163539f923bb2b47a38d119726f7c4368fc"
+    },
+    {
+      "from": "backend/sale_return_order/controller/dto/ReturnArrivalDto.cs",
+      "to": "backend/Inventory/KingZon.OLCM.Inventory.WebApi/Dto/ReturnArrivalDto.cs",
+      "sha256": "e1d6a51c1b19986a48d93ffe5141e8a685c29e202851ec7a1a3e8da30015753e",
+      "finalSha256": "e1d6a51c1b19986a48d93ffe5141e8a685c29e202851ec7a1a3e8da30015753e"
+    },
+    {
+      "from": "backend/sale_return_order/controller/dto/SaleDataStatDTO.cs",
+      "to": "backend/Sales/KingZon.OLCM.Sales.WebApi/Dto/SaleDataStatDTO.cs",
+      "sha256": "4f26a81c7b3ee0958bdf57c223f31220c3397334364ed7707fbc409ed3b9004f",
+      "finalSha256": "4f26a81c7b3ee0958bdf57c223f31220c3397334364ed7707fbc409ed3b9004f"
+    },
+    {
+      "from": "backend/sale_return_order/controller/dto/SaleReturnOrderDto.cs",
+      "to": "backend/Sale/KingZon.OLCM.Sale.WebApi/Dto/SaleReturnOrderDto.cs",
+      "sha256": "78a3bc1641da96a7bc7d3f6edda75be59e66ba04950ac020dac37636f8b02dbe",
+      "finalSha256": "78a3bc1641da96a7bc7d3f6edda75be59e66ba04950ac020dac37636f8b02dbe"
+    },
+    {
+      "from": "backend/sale_return_order/data/KZ-DEMO-20261013174718-D4726B/cleanup.sql",
+      "to": "backend/Sales/data/KZ-DEMO-20261013174718-D4726B/cleanup.sql",
+      "sha256": "d003fed9d4291592ad4d15d529c31c342edabd2149e44b18fed78c025a119c43",
+      "finalSha256": "d003fed9d4291592ad4d15d529c31c342edabd2149e44b18fed78c025a119c43"
+    },
+    {
+      "from": "backend/sale_return_order/data/KZ-DEMO-20261013174718-D4726B/manifest.json",
+      "to": "backend/Sales/data/KZ-DEMO-20261013174718-D4726B/manifest.json",
+      "sha256": "5f01b7ad4c13c68d29a2faddb7ce3d1df03945782789bee2520cdefa4fb7d1f4",
+      "finalSha256": "5f01b7ad4c13c68d29a2faddb7ce3d1df03945782789bee2520cdefa4fb7d1f4"
+    },
+    {
+      "from": "backend/sale_return_order/data/KZ-DEMO-20261013174833-B11AF1/cleanup.sql",
+      "to": "backend/Sales/data/KZ-DEMO-20261013174833-B11AF1/cleanup.sql",
+      "sha256": "f542febe64d7ca22d1eb531121e0311e118f8a57fecc540d2de015ca58b30548",
+      "finalSha256": "f542febe64d7ca22d1eb531121e0311e118f8a57fecc540d2de015ca58b30548"
+    },
+    {
+      "from": "backend/sale_return_order/data/KZ-DEMO-20261013174833-B11AF1/manifest.json",
+      "to": "backend/Sales/data/KZ-DEMO-20261013174833-B11AF1/manifest.json",
+      "sha256": "b5feae539471306b6801d32f5a1f269e3b1468b7e2f5604af226d919de3a42d7",
+      "finalSha256": "b5feae539471306b6801d32f5a1f269e3b1468b7e2f5604af226d919de3a42d7"
+    },
+    {
+      "from": "backend/sale_return_order/data/KZ-DEMO-20261013174833-B11AF1/verification.json",
+      "to": "backend/Sales/data/KZ-DEMO-20261013174833-B11AF1/verification.json",
+      "sha256": "c104109bb2594e9510f10df1d551ea1b945f154ba3e7f2d5db7fd2bd84c00dad",
+      "finalSha256": "c104109bb2594e9510f10df1d551ea1b945f154ba3e7f2d5db7fd2bd84c00dad"
+    },
+    {
+      "from": "backend/sale_return_order/data/audit-20261014-104414/audit.json",
+      "to": "backend/Sales/data/audit-20261014-104414/audit.json",
+      "sha256": "2016e89b5e3f9ec5a5833723f648191b352652dfc403b302e638f2d62c49bb42",
+      "finalSha256": "2016e89b5e3f9ec5a5833723f648191b352652dfc403b302e638f2d62c49bb42"
+    },
+    {
+      "from": "backend/sale_return_order/data/audit-20261014-104414/核对结果.md",
+      "to": "backend/Sales/data/audit-20261014-104414/核对结果.md",
+      "sha256": "8aeaa4d8e55e434cb78c08b1d22669b1fad1e8039aa9d087b3e8871b315f8c4d",
+      "finalSha256": "8aeaa4d8e55e434cb78c08b1d22669b1fad1e8039aa9d087b3e8871b315f8c4d"
+    },
+    {
+      "from": "backend/sale_return_order/data/tax-check-20261020-114441/README.md",
+      "to": "backend/Sales/data/tax-check-20261020-114441/README.md",
+      "sha256": "1c66847eac732585c47cba512dbaea3288b45ecdee19328bde0720fc1628416c",
+      "finalSha256": "1c66847eac732585c47cba512dbaea3288b45ecdee19328bde0720fc1628416c"
+    },
+    {
+      "from": "backend/sale_return_order/data/tax-check-20261020-114441/before.json",
+      "to": "backend/Sales/data/tax-check-20261020-114441/before.json",
+      "sha256": "1aa8cdc62c65f91ce2db00cde979bb80868ee807fdf4090d0bbdacbe51ce0213",
+      "finalSha256": "1aa8cdc62c65f91ce2db00cde979bb80868ee807fdf4090d0bbdacbe51ce0213"
+    },
+    {
+      "from": "backend/sale_return_order/data/tax-check-20261020-114441/expected.json",
+      "to": "backend/Sales/data/tax-check-20261020-114441/expected.json",
+      "sha256": "aa2bdec95f06bf793b65ffb73bf5b0c78cbde77d4bd6765c8b063f7b35776380",
+      "finalSha256": "aa2bdec95f06bf793b65ffb73bf5b0c78cbde77d4bd6765c8b063f7b35776380"
+    },
+    {
+      "from": "backend/sale_return_order/data/tax-check-20261020-114441/restore.sql",
+      "to": "backend/Sales/data/tax-check-20261020-114441/restore.sql",
+      "sha256": "51d35e934442c8648ac7dde48ee2172e4a62ac56b5ac0d8e45048b0e5139ec5a",
+      "finalSha256": "51d35e934442c8648ac7dde48ee2172e4a62ac56b5ac0d8e45048b0e5139ec5a"
+    },
+    {
+      "from": "backend/sale_return_order/data/校验销售月报.sql",
+      "to": "backend/Sales/data/校验销售月报.sql",
+      "sha256": "9dece2cbb13177f54011a66816205736a5c697ea636d13e0e57c61845345fc52",
+      "finalSha256": "9dece2cbb13177f54011a66816205736a5c697ea636d13e0e57c61845345fc52"
+    },
+    {
+      "from": "backend/sale_return_order/entity/SaleOrder.cs",
+      "to": "backend/Common/KingZon.OLCM.Common.DataBase/Entities/SaleOrder.cs",
+      "sha256": "9999ee8a6fa5af4f61bd760f4e6505acbce962e889b17a81bc12ddd3cf21cd7d",
+      "finalSha256": "9999ee8a6fa5af4f61bd760f4e6505acbce962e889b17a81bc12ddd3cf21cd7d"
+    },
+    {
+      "from": "backend/sale_return_order/entity/SaleOrderDetail.cs",
+      "to": "backend/Common/KingZon.OLCM.Common.DataBase/Entities/SaleOrderDetail.cs",
+      "sha256": "a89e9b8d4f2710649fd3adc231cbd773a2724aa7d9339f4f7a2132507101a420",
+      "finalSha256": "a89e9b8d4f2710649fd3adc231cbd773a2724aa7d9339f4f7a2132507101a420"
+    },
+    {
+      "from": "backend/sale_return_order/tests/fixtures/month_sale_program.cs.txt",
+      "to": "backend/Sales/tests/fixtures/month_sale_program.cs.txt",
+      "sha256": "29c0da49731281b27902d90376f967f3b688612e7dc6b31367805afc3f6b0b2b",
+      "finalSha256": "9f44b35734f7e3fc1fc962030401af290a3577076bd48e688c82c1b69e0da3aa"
+    },
+    {
+      "from": "backend/sale_return_order/tests/fixtures/month_sale_response.json",
+      "to": "backend/Sales/tests/fixtures/month_sale_response.json",
+      "sha256": "a2f4a40503be2591b13d1bb516bc6a7d93cb3f81c5e40c212aced3fcc8fc97a0",
+      "finalSha256": "a2f4a40503be2591b13d1bb516bc6a7d93cb3f81c5e40c212aced3fcc8fc97a0"
+    },
+    {
+      "from": "backend/sale_return_order/tests/fixtures/month_sale_support.cs.txt",
+      "to": "backend/Sales/tests/fixtures/month_sale_support.cs.txt",
+      "sha256": "19a8e060bbcdc0f62899fb96e163587847660af8756d0da11530fb2603988b0e",
+      "finalSha256": "19a8e060bbcdc0f62899fb96e163587847660af8756d0da11530fb2603988b0e"
+    },
+    {
+      "from": "backend/sale_return_order/tests/verify_month_sale_stat.py",
+      "to": "backend/Sales/tests/verify_month_sale_stat.py",
+      "sha256": "79f873cd3a41d9d79c96fa6a8eb3fa33f40605542fd1f4d967bc4f599282f005",
+      "finalSha256": "396e3e3a754db59b707634dd69b4229b3dcdc75f682d1138947604ed54639362"
+    },
+    {
+      "from": "backend/sale_return_order/tools/__pycache__/generate_month_sale_demo.cpython-312.pyc",
+      "to": "backend/Sales/tools/__pycache__/generate_month_sale_demo.cpython-312.pyc",
+      "sha256": "f98534bbef4b303d43f7b54634591bd5e466d3b2b81953c6ebc80d1151e83a73",
+      "finalSha256": "f98534bbef4b303d43f7b54634591bd5e466d3b2b81953c6ebc80d1151e83a73"
+    },
+    {
+      "from": "backend/sale_return_order/tools/audit_month_sale_response.py",
+      "to": "backend/Sales/tools/audit_month_sale_response.py",
+      "sha256": "c34e799b47511e46e0e47bc0677f6d524df462a53634933b655287074c4f7eb6",
+      "finalSha256": "c34e799b47511e46e0e47bc0677f6d524df462a53634933b655287074c4f7eb6"
+    },
+    {
+      "from": "backend/sale_return_order/tools/generate_month_sale_demo.py",
+      "to": "backend/Sales/tools/generate_month_sale_demo.py",
+      "sha256": "00f1c6b176e0d4ace685bb13dd719795c79a2488726a8bdb131a7da726aab205",
+      "finalSha256": "00f1c6b176e0d4ace685bb13dd719795c79a2488726a8bdb131a7da726aab205"
+    },
+    {
+      "from": "backend/new-sale_return_order/controller/ArrivalRecordController.cs",
+      "to": "backend/Inventory/KingZon.OLCM.Inventory.WebApi/Controllers/ArrivalRecordController.cs",
+      "sha256": "d1e1c30a202714828f1ec9070ce6eaa207ad1063ea74d91b522eef13fa8ac985",
+      "finalSha256": "d1e1c30a202714828f1ec9070ce6eaa207ad1063ea74d91b522eef13fa8ac985"
+    },
+    {
+      "from": "backend/new-sale_return_order/controller/Base_Goods.cs",
+      "to": "backend/Base/KingZon.OLCM.Base.DataBase/Entities/Base_Goods.cs",
+      "sha256": "dec2d18d638886eb7af2aa1d264f66bc8d9bbab46537b838274d964d3583462a",
+      "finalSha256": "dec2d18d638886eb7af2aa1d264f66bc8d9bbab46537b838274d964d3583462a"
+    },
+    {
+      "from": "backend/new-sale_return_order/controller/Base_Product.cs",
+      "to": "backend/Base/KingZon.OLCM.Base.DataBase/Entities/Base_Product.cs",
+      "sha256": "42280afcaca3b9775d6b15730c476c08f0acb2b08a24e88f897ee0270d2a81ae",
+      "finalSha256": "42280afcaca3b9775d6b15730c476c08f0acb2b08a24e88f897ee0270d2a81ae"
+    },
+    {
+      "from": "backend/new-sale_return_order/controller/Base_ProductSpecification.cs",
+      "to": "backend/Base/KingZon.OLCM.Base.DataBase/Entities/Base_ProductSpecification.cs",
+      "sha256": "130f8a25eda844b72c9b3779966ba29e66d85bda18d314777a0bc9cc34f7f238",
+      "finalSha256": "130f8a25eda844b72c9b3779966ba29e66d85bda18d314777a0bc9cc34f7f238"
+    },
+    {
+      "from": "backend/new-sale_return_order/controller/Inbound",
+      "to": "backend/references/new-sale_return_order/controller/Inbound",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "finalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "from": "backend/new-sale_return_order/controller/Inventory_ArrivalRecord.cs",
+      "to": "backend/Inventory/KingZon.OLCM.Inventory.DataBase/Entities/Inventory_ArrivalRecord.cs",
+      "sha256": "8ad737e6c1ce19b6f135770cfc3d77c526cf8c97d0c6b7029917cf2e5380e7d1",
+      "finalSha256": "8ad737e6c1ce19b6f135770cfc3d77c526cf8c97d0c6b7029917cf2e5380e7d1"
+    },
+    {
+      "from": "backend/new-sale_return_order/controller/PurchasingWarehousingController.cs",
+      "to": "backend/Inventory/KingZon.OLCM.Inventory.WebApi/Controllers/PurchasingWarehousingController.cs",
+      "sha256": "c3147a013de521cbc3359777558dca40c63b50343641be8b9e2eb48f8feff711",
+      "finalSha256": "c3147a013de521cbc3359777558dca40c63b50343641be8b9e2eb48f8feff711"
+    },
+    {
+      "from": "backend/new-sale_return_order/controller/ReturnArrivalController.cs",
+      "to": "backend/references/new-sale_return_order/controller/ReturnArrivalController.cs",
+      "sha256": "e1617e5b4db5c10f26e7895e25fd98788b011db7b8332caacc34e11b785dbdc5",
+      "finalSha256": "e1617e5b4db5c10f26e7895e25fd98788b011db7b8332caacc34e11b785dbdc5"
+    },
+    {
+      "from": "backend/new-sale_return_order/controller/SaleReturnOrderDto.cs",
+      "to": "backend/references/new-sale_return_order/controller/SaleReturnOrderDto.cs",
+      "sha256": "2642eeff936a9e834d4bbb16e07ba4978230374067317a61be649d6e3ef03e5a",
+      "finalSha256": "2642eeff936a9e834d4bbb16e07ba4978230374067317a61be649d6e3ef03e5a"
+    },
+    {
+      "from": "backend/new-sale_return_order/controller/SaleReturnOrderManageController.cs",
+      "to": "backend/references/new-sale_return_order/controller/SaleReturnOrderManageController.cs",
+      "sha256": "7c5d6dedcc775640ba4b51d4fc31b1fa80484a48f9d4fb06cde2a9dadab16b94",
+      "finalSha256": "7c5d6dedcc775640ba4b51d4fc31b1fa80484a48f9d4fb06cde2a9dadab16b94"
+    },
+    {
+      "from": "backend/new-sale_return_order/controller/Sale_ReturnOrder.cs",
+      "to": "backend/Sale/KingZon.OLCM.Sale.DataBase/Entities/Sale_ReturnOrder.cs",
+      "sha256": "7465748e40b061a5b3b58beb9e36c108c441b2e6f02edde38fb9a5360a799b4c",
+      "finalSha256": "7465748e40b061a5b3b58beb9e36c108c441b2e6f02edde38fb9a5360a799b4c"
+    },
+    {
+      "from": "backend/new-sale_return_order/controller/Sale_ReturnOrderDetail.cs",
+      "to": "backend/Sale/KingZon.OLCM.Sale.DataBase/Entities/Sale_ReturnOrderDetail.cs",
+      "sha256": "9b9d86f696c6ce026289a070f2e4deaee5301564c82454741e81585f60c3c8f9",
+      "finalSha256": "9b9d86f696c6ce026289a070f2e4deaee5301564c82454741e81585f60c3c8f9"
+    },
+    {
+      "from": "backend/old-sale_return_order/controller/SaleReturnOrder.cs",
+      "to": "backend/Common/KingZon.OLCM.Common.DataBase/Entities/SaleReturnOrder.cs",
+      "sha256": "9177d934a2b5b75773f899747e884a6497c571c4fefb6dfe7c454be8d0ca7544",
+      "finalSha256": "9177d934a2b5b75773f899747e884a6497c571c4fefb6dfe7c454be8d0ca7544"
+    },
+    {
+      "from": "backend/old-sale_return_order/controller/SaleReturnOrderController.cs",
+      "to": "backend/Common/KingZon.OLCM.Common.WebApi/Controllers/SaleReturnOrderController.cs",
+      "sha256": "c149fea9bc77eedc23a988fefaeabdd7d5e0e4fb682f3339f4a032c84d495fa7",
+      "finalSha256": "c149fea9bc77eedc23a988fefaeabdd7d5e0e4fb682f3339f4a032c84d495fa7"
+    },
+    {
+      "from": "backend/old-sale_return_order/controller/SaleReturnOrderDetail.cs",
+      "to": "backend/Common/KingZon.OLCM.Common.DataBase/Entities/SaleReturnOrderDetail.cs",
+      "sha256": "e6cda7983fd5997f76846b0f90d7be8d91e74ad73e2548fb9f817faf20b72aa3",
+      "finalSha256": "e6cda7983fd5997f76846b0f90d7be8d91e74ad73e2548fb9f817faf20b72aa3"
+    },
+    {
+      "from": "backend/old-sale_return_order/controller/SaleReturnOrderDto.cs",
+      "to": "backend/Sales/KingZon.OLCM.Sales.WebApi/Dto/SaleReturnOrderDto.cs",
+      "sha256": "647bc0becf2471602337c9d6a384bb61f5d87759f09da57ea54c9805b717aa4c",
+      "finalSha256": "647bc0becf2471602337c9d6a384bb61f5d87759f09da57ea54c9805b717aa4c"
+    },
+    {
+      "from": "backend/production/controller/BomManageController.cs",
+      "to": "backend/Production/KingZon.OLCM.Production.WebApi/Controllers/BomManageController.cs",
+      "sha256": "8ae6a365daf05491867ca90433c9c7b1da38a80afb45e7e119faf660a89b3b52",
+      "finalSha256": "8ae6a365daf05491867ca90433c9c7b1da38a80afb45e7e119faf660a89b3b52"
+    },
+    {
+      "from": "backend/production/controller/DispatchOrderManageController.cs",
+      "to": "backend/Production/KingZon.OLCM.Production.WebApi/Controllers/DispatchOrderManageController.cs",
+      "sha256": "d24b8fb09b69e1c3bccf0fbce33b9bb51fe893c3f997ffe6a030e728ca4b48b6",
+      "finalSha256": "d24b8fb09b69e1c3bccf0fbce33b9bb51fe893c3f997ffe6a030e728ca4b48b6"
+    },
+    {
+      "from": "backend/production/dto/BomDto.cs",
+      "to": "backend/Production/KingZon.OLCM.Production.WebApi/Dto/BomDto.cs",
+      "sha256": "79ad74970bee433319e19e79effda15d9e22c793ae1ea277cc07d1652c5647fb",
+      "finalSha256": "79ad74970bee433319e19e79effda15d9e22c793ae1ea277cc07d1652c5647fb"
+    },
+    {
+      "from": "backend/production/entity/Production_Dispatch_OperationRecord.cs",
+      "to": "backend/Production/KingZon.OLCM.Production.DataBase/Entities/Production_Dispatch_OperationRecord.cs",
+      "sha256": "8768975f7127e2a40b2976644a3f1ac903712ba31d2921a138d40f9170bf78d5",
+      "finalSha256": "8768975f7127e2a40b2976644a3f1ac903712ba31d2921a138d40f9170bf78d5"
+    },
+    {
+      "from": "backend/production/entity/Production_Dispatch_OperationRecordRL.cs",
+      "to": "backend/Production/KingZon.OLCM.Production.DataBase/Entities/Production_Dispatch_OperationRecordRL.cs",
+      "sha256": "4c2fd37c752e532c091b53ebbb43e7bda9086b1642183214efd4b4216ecad0b9",
+      "finalSha256": "4c2fd37c752e532c091b53ebbb43e7bda9086b1642183214efd4b4216ecad0b9"
+    },
+    {
+      "from": "backend/production/entity/Production_Dispatch_Order.cs",
+      "to": "backend/Production/KingZon.OLCM.Production.DataBase/Entities/Production_Dispatch_Order.cs",
+      "sha256": "878d5b13d5da8363f77399f4aaea94df3fd680924cbbfe0db8fdffd63b4fa98e",
+      "finalSha256": "878d5b13d5da8363f77399f4aaea94df3fd680924cbbfe0db8fdffd63b4fa98e"
+    },
+    {
+      "from": "backend/production/entity/Production_Dispatch_SaleRL.cs",
+      "to": "backend/Production/KingZon.OLCM.Production.DataBase/Entities/Production_Dispatch_SaleRL.cs",
+      "sha256": "f7880ef7cf5910eac662b3cf0e173ac3bf6a7b8bc3ea5cf11b516ce1deb02dc0",
+      "finalSha256": "f7880ef7cf5910eac662b3cf0e173ac3bf6a7b8bc3ea5cf11b516ce1deb02dc0"
+    },
+    {
+      "from": "backend/production/entity/Production_Machine_Material_Receive_Demand.cs",
+      "to": "backend/Production/KingZon.OLCM.Production.DataBase/Entities/Production_Machine_Material_Receive_Demand.cs",
+      "sha256": "60dee1afcee031346570cb097e70e0fbcde653fa2020e91eae4f356dc38851cd",
+      "finalSha256": "60dee1afcee031346570cb097e70e0fbcde653fa2020e91eae4f356dc38851cd"
+    },
+    {
+      "from": "backend/production/entity/Production_Material_Receive_Demand.cs",
+      "to": "backend/Production/KingZon.OLCM.Production.DataBase/Entities/Production_Material_Receive_Demand.cs",
+      "sha256": "5126f44f3006245ec7dfbcd358fd4b823b19501c997a9ff921fbb65817e94b8a",
+      "finalSha256": "5126f44f3006245ec7dfbcd358fd4b823b19501c997a9ff921fbb65817e94b8a"
+    },
+    {
+      "from": "backend/production/enum/DispatchBasisType.cs",
+      "to": "backend/Production/KingZon.OLCM.Production.DataBase/Enum/DispatchBasisType.cs",
+      "sha256": "518b70228560e6be26f2302b4641a8b98a61b9bea08f489f9d5362a5887b8a2a",
+      "finalSha256": "518b70228560e6be26f2302b4641a8b98a61b9bea08f489f9d5362a5887b8a2a"
+    },
+    {
+      "from": "backend/production/tests/fixtures/bom_demand_program.cs.txt",
+      "to": "backend/Production/tests/fixtures/bom_demand_program.cs.txt",
+      "sha256": "95215dad7120beba3dff5bac7a51626650a9895f40fa4d0b79c1f31ebacd217b",
+      "finalSha256": "95215dad7120beba3dff5bac7a51626650a9895f40fa4d0b79c1f31ebacd217b"
+    },
+    {
+      "from": "backend/production/tests/fixtures/bom_demand_support.cs.txt",
+      "to": "backend/Production/tests/fixtures/bom_demand_support.cs.txt",
+      "sha256": "74190a9c5bc342e064a44001919d65a735cb421a37dddf5099bd1572762817a8",
+      "finalSha256": "74190a9c5bc342e064a44001919d65a735cb421a37dddf5099bd1572762817a8"
+    },
+    {
+      "from": "backend/production/tests/verify_bom_demand.py",
+      "to": "backend/Production/tests/verify_bom_demand.py",
+      "sha256": "c289dcbc9e56d0fab98db5457cbcc3cc62c5ece1db30d7d100c516e9f88215fc",
+      "finalSha256": "0dd4669007116b7b47b608ffdf5f4d94b2bcf100afe714b9a6d4d2b8fbbc4469"
+    },
+    {
+      "from": "backend/production/tests/verify_dispatch_bom.py",
+      "to": "backend/Production/tests/verify_dispatch_bom.py",
+      "sha256": "924a34d2f4acc688bab5f3a5a21c8b7f3393148f4374e90cb06cc440c244f807",
+      "finalSha256": "e7b832d39c2c54d6602f5095e58f68186b9edf38273195e1635e0182e1cfeaac"
+    },
+    {
+      "from": "backend/sale_order_manage/DeliveryOrderController.cs",
+      "to": "backend/Inventory/KingZon.OLCM.Inventory.WebApi/Controllers/DeliveryOrderController.cs",
+      "sha256": "be6e692fc5d9ed0b2a79ea3c5a14ef551679a2726446130dd176b322a6d445a2",
+      "finalSha256": "be6e692fc5d9ed0b2a79ea3c5a14ef551679a2726446130dd176b322a6d445a2"
+    },
+    {
+      "from": "backend/sale_order_manage/InventoryService.cs",
+      "to": "backend/Inventory/KingZon.OLCM.Inventory.Services/InventoryService.cs",
+      "sha256": "20182b3b58e5788aafa0a3f876cfa9083c4bcb71127cffb4f2342c8327531370",
+      "finalSha256": "20182b3b58e5788aafa0a3f876cfa9083c4bcb71127cffb4f2342c8327531370"
+    },
+    {
+      "from": "backend/sale_order_manage/Inventory_DeliveryOrderDetail.cs",
+      "to": "backend/Inventory/KingZon.OLCM.Inventory.DataBase/Entities/Inventory_DeliveryOrderDetail.cs",
+      "sha256": "550cea0f7ccf9b3536035a3c533bfdfd98c9efbc009932f02049abfe96736c69",
+      "finalSha256": "550cea0f7ccf9b3536035a3c533bfdfd98c9efbc009932f02049abfe96736c69"
+    },
+    {
+      "from": "backend/sale_order_manage/SaleOrderManageController.cs",
+      "to": "backend/Sale/KingZon.OLCM.Sale.WebApi/Controllers/SaleOrderManageController.cs",
+      "sha256": "935edd0bc52a99f20d45cbb7a7da8e393bb9f73679a9cb1eec64ab9fd5111497",
+      "finalSha256": "935edd0bc52a99f20d45cbb7a7da8e393bb9f73679a9cb1eec64ab9fd5111497"
+    },
+    {
+      "from": "backend/technical/craft/CRAFT_CHANGELOG.md",
+      "to": "docs/technical/CRAFT_CHANGELOG.md",
+      "sha256": "1f583e06563fbabb234ae494a0ed72e5eaa50b9a3f7072e79562ae238050ae2c",
+      "finalSha256": "9256a28b944e4a166cf6c4345e96415d04c017641d8dec21a5b1809ce4c4ad73"
+    },
+    {
+      "from": "backend/technical/craft/controller/CraftController.cs",
+      "to": "backend/Base/KingZon.OLCM.Base.WebApi/Controllers/CraftController.cs",
+      "sha256": "8e2d04f1aaf8a0278363eb9145649e3c1a2401d4206ba4ff2656af9cc1c1c74a",
+      "finalSha256": "8e2d04f1aaf8a0278363eb9145649e3c1a2401d4206ba4ff2656af9cc1c1c74a"
+    },
+    {
+      "from": "backend/technical/craft/controller/CraftOrderManageController.cs",
+      "to": "backend/Technical/KingZon.OLCM.Technical.WebApi/Controllers/CraftOrderManageController.cs",
+      "sha256": "476ca0f4e0251b059f00bd02986269f6f88f16e72bdfab75f58a9ef33846b1a8",
+      "finalSha256": "476ca0f4e0251b059f00bd02986269f6f88f16e72bdfab75f58a9ef33846b1a8"
+    },
+    {
+      "from": "backend/technical/craft/controller/FormulaManageController.cs",
+      "to": "backend/Technical/KingZon.OLCM.Technical.WebApi/Controllers/FormulaManageController.cs",
+      "sha256": "3ad4cfa689a949eac2da9c4e732b673991fd9ede5a1208590d78f4a76bf2ccd4",
+      "finalSha256": "3ad4cfa689a949eac2da9c4e732b673991fd9ede5a1208590d78f4a76bf2ccd4"
+    },
+    {
+      "from": "backend/technical/craft/controller/ProcessOrderController.cs",
+      "to": "backend/Technology/KingZon.OLCM.Technology.WebApi/Controllers/ProcessOrderController.cs",
+      "sha256": "31be4b24d31649c9e3c391e1acc543d0e3d5391eafbfb6ed0e91cca420592ab6",
+      "finalSha256": "31be4b24d31649c9e3c391e1acc543d0e3d5391eafbfb6ed0e91cca420592ab6"
+    },
+    {
+      "from": "backend/technical/craft/dto/CraftDto.cs",
+      "to": "backend/Technical/KingZon.OLCM.Technical.WebApi/Dto/CraftDto.cs",
+      "sha256": "795675fc216016b7785aeb53f25547b245915ff8ea4126a04c44faed424a16d6",
+      "finalSha256": "795675fc216016b7785aeb53f25547b245915ff8ea4126a04c44faed424a16d6"
+    },
+    {
+      "from": "backend/technical/craft/dto/DataInfo.cs",
+      "to": "backend/Base/KingZon.OLCM.Base.Services/Dto/DataInfo.cs",
+      "sha256": "63b6770d4a806af864801b99064b18c7f4df08dd6d229825e85c6e056bc5529b",
+      "finalSha256": "63b6770d4a806af864801b99064b18c7f4df08dd6d229825e85c6e056bc5529b"
+    },
+    {
+      "from": "backend/technical/craft/dto/ProductIdFieldDto.cs",
+      "to": "backend/Base/KingZon.OLCM.Base.Services/Dto/ProductIdFieldDto.cs",
+      "sha256": "47057b7ee6ef6a146b81d9bbabce31898d3c216d11da8325c72b1fcbfe32229a",
+      "finalSha256": "47057b7ee6ef6a146b81d9bbabce31898d3c216d11da8325c72b1fcbfe32229a"
+    },
+    {
+      "from": "backend/technical/craft/entities/Base_Craft.cs",
+      "to": "backend/Base/KingZon.OLCM.Base.DataBase/Entities/Base_Craft.cs",
+      "sha256": "57f43713865faf61f96c9e65521458ba34761bc9a2bf7ee01c5186d54a0942a1",
+      "finalSha256": "57f43713865faf61f96c9e65521458ba34761bc9a2bf7ee01c5186d54a0942a1"
+    },
+    {
+      "from": "backend/technical/craft/entities/Base_Machine.cs",
+      "to": "backend/Base/KingZon.OLCM.Base.DataBase/Entities/Base_Machine.cs",
+      "sha256": "a359a2cfb6afd497577809e6b604cfde2f47292e7f797a998ab42f7c82d6ff37",
+      "finalSha256": "a359a2cfb6afd497577809e6b604cfde2f47292e7f797a998ab42f7c82d6ff37"
+    },
+    {
+      "from": "backend/technical/craft/entities/Base_Machine_Craft_RL.cs",
+      "to": "backend/Base/KingZon.OLCM.Base.DataBase/Entities/Base_Machine_Craft_RL.cs",
+      "sha256": "2884c4e5b9327ee64b4b546bf59b3ef4c7ba40db2d41abcb239d965e9aad3a22",
+      "finalSha256": "2884c4e5b9327ee64b4b546bf59b3ef4c7ba40db2d41abcb239d965e9aad3a22"
+    },
+    {
+      "from": "backend/technical/craft/entities/Base_Machine_User_RL.cs",
+      "to": "backend/Base/KingZon.OLCM.Base.DataBase/Entities/Base_Machine_User_RL.cs",
+      "sha256": "398dd3653ae09163a1bbd540e3c46113e7f7bcb2b539fca1eee971640b5ddb10",
+      "finalSha256": "398dd3653ae09163a1bbd540e3c46113e7f7bcb2b539fca1eee971640b5ddb10"
+    },
+    {
+      "from": "backend/technical/craft/entities/CraftOrderWorkflowEnums.cs",
+      "to": "backend/Technical/KingZon.OLCM.Technical.DataBase/Enum/CraftOrderWorkflowEnums.cs",
+      "sha256": "b131ae3ea62e7a6a50c0fac7ee82114e214adb9aca6656e0e4fd29a213c53295",
+      "finalSha256": "b131ae3ea62e7a6a50c0fac7ee82114e214adb9aca6656e0e4fd29a213c53295"
+    },
+    {
+      "from": "backend/technical/craft/entities/Production_MBom.cs",
+      "to": "backend/Production/KingZon.OLCM.Production.DataBase/Entities/Production_MBom.cs",
+      "sha256": "87f66f7d99a2d248fb1a4d23bad1db055ef869a416e1342415e9d90a95b48d8a",
+      "finalSha256": "87f66f7d99a2d248fb1a4d23bad1db055ef869a416e1342415e9d90a95b48d8a"
+    },
+    {
+      "from": "backend/technical/craft/entities/Production_MBom_Detail.cs",
+      "to": "backend/Production/KingZon.OLCM.Production.DataBase/Entities/Production_MBom_Detail.cs",
+      "sha256": "c18519809282573fdc850c7edeae5d6f4489e013936985f5494353beab14335a",
+      "finalSha256": "c18519809282573fdc850c7edeae5d6f4489e013936985f5494353beab14335a"
+    },
+    {
+      "from": "backend/technical/craft/entities/Production_MBom_Version.cs",
+      "to": "backend/Production/KingZon.OLCM.Production.DataBase/Entities/Production_MBom_Version.cs",
+      "sha256": "db771f77019c1d3199be34638e2a183069901b0de3666b0ee03d3e220bef0ea7",
+      "finalSha256": "db771f77019c1d3199be34638e2a183069901b0de3666b0ee03d3e220bef0ea7"
+    },
+    {
+      "from": "backend/technical/craft/entities/Technical_CraftOrder.cs",
+      "to": "backend/Technical/KingZon.OLCM.Technical.DataBase/Entities/Technical_CraftOrder.cs",
+      "sha256": "134ac108781b701271228bdbf99e25d7d7da444483ce22fc81fa6ff1904ac19b",
+      "finalSha256": "134ac108781b701271228bdbf99e25d7d7da444483ce22fc81fa6ff1904ac19b"
+    },
+    {
+      "from": "backend/technical/craft/entities/Technical_CraftOrderVersion.cs",
+      "to": "backend/Technical/KingZon.OLCM.Technical.DataBase/Entities/Technical_CraftOrderVersion.cs",
+      "sha256": "5e29ba445cb83f4702944411af99cb8fdb3e1d4ff10b9f58f0a70311cd181367",
+      "finalSha256": "5e29ba445cb83f4702944411af99cb8fdb3e1d4ff10b9f58f0a70311cd181367"
+    },
+    {
+      "from": "backend/technical/craft/entities/Technical_NodeSettingTemplate.cs",
+      "to": "backend/Technical/KingZon.OLCM.Technical.DataBase/Entities/Technical_NodeSettingTemplate.cs",
+      "sha256": "770e1dac7a2968664e489bda9f43ec3cc27bd9776d34268ad4e8f241712269dd",
+      "finalSha256": "770e1dac7a2968664e489bda9f43ec3cc27bd9776d34268ad4e8f241712269dd"
+    },
+    {
+      "from": "backend/technical/craft/entities/Technical_NodeSettingTemplate_Machine_RL.cs",
+      "to": "backend/Technical/KingZon.OLCM.Technical.DataBase/Entities/Technical_NodeSettingTemplate_Machine_RL.cs",
+      "sha256": "b078699628d169e5eee8b9b6c016d53cb00a85ea1b56901406f1e9bc493a69ec",
+      "finalSha256": "b078699628d169e5eee8b9b6c016d53cb00a85ea1b56901406f1e9bc493a69ec"
+    },
+    {
+      "from": "backend/technical/craft/entities/Technical_NodeSettingTemplate_Material_RL.cs",
+      "to": "backend/Technical/KingZon.OLCM.Technical.DataBase/Entities/Technical_NodeSettingTemplate_Material_RL.cs",
+      "sha256": "6983cb934ed2541282ff11c6437b612111ef778bf784d279c6b0bc007e041733",
+      "finalSha256": "6983cb934ed2541282ff11c6437b612111ef778bf784d279c6b0bc007e041733"
+    },
+    {
+      "from": "backend/technical/craft/seed/seed_technical_craft.sql",
+      "to": "backend/Technical/sql/seed_technical_craft.sql",
+      "sha256": "57170042bb587608f8db5e09164cdeef452bbfc9ed226f04b2bdb007d7205c14",
+      "finalSha256": "57170042bb587608f8db5e09164cdeef452bbfc9ed226f04b2bdb007d7205c14"
+    },
+    {
+      "from": "backend/technical/craft/seed/upgrade_craft_bom_version.sql",
+      "to": "backend/Technical/sql/upgrade_craft_bom_version.sql",
+      "sha256": "0abf5d6522339eeae207bd0a7d653d4d44c541546d65602984f1728fd193984e",
+      "finalSha256": "0abf5d6522339eeae207bd0a7d653d4d44c541546d65602984f1728fd193984e"
+    },
+    {
+      "from": "backend/technical/craft/seed/upgrade_craft_work_hours.sql",
+      "to": "backend/Technical/sql/upgrade_craft_work_hours.sql",
+      "sha256": "a4f5fde761ec0dd31e0e1d95d4e7285df9d70bd3ca6e2df8fb312fa1fe7d3f57",
+      "finalSha256": "a4f5fde761ec0dd31e0e1d95d4e7285df9d70bd3ca6e2df8fb312fa1fe7d3f57"
+    },
+    {
+      "from": "backend/technical/craft/service/Utils.cs",
+      "to": "backend/Base/KingZon.OLCM.Base.Services/Utils.cs",
+      "sha256": "4f9470ecabc9ca3582ce5d2d7654c80db8bf2e68f7a74dc3b51b22a86868fc58",
+      "finalSha256": "4f9470ecabc9ca3582ce5d2d7654c80db8bf2e68f7a74dc3b51b22a86868fc58"
+    },
+    {
+      "from": "backend/technical/craft/tests/fixtures/mbom_cases.cs.txt",
+      "to": "backend/Technical/tests/craft/fixtures/mbom_cases.cs.txt",
+      "sha256": "802cecd1134c389276f54e6bc308e33e5c1e74515c9a027299aeb92d9a9bb9ea",
+      "finalSha256": "802cecd1134c389276f54e6bc308e33e5c1e74515c9a027299aeb92d9a9bb9ea"
+    },
+    {
+      "from": "backend/technical/craft/tests/fixtures/mbom_support.cs.txt",
+      "to": "backend/Technical/tests/craft/fixtures/mbom_support.cs.txt",
+      "sha256": "a8009adc509a8b88be58bc2a1bbf21006cbf7dd6444142a2d2e008a0905bfab9",
+      "finalSha256": "a8009adc509a8b88be58bc2a1bbf21006cbf7dd6444142a2d2e008a0905bfab9"
+    },
+    {
+      "from": "backend/technical/craft/tests/verify_mbom_sync.py",
+      "to": "backend/Technical/tests/craft/verify_mbom_sync.py",
+      "sha256": "b57ef9ef362ee0188985af36aacd6695190dd2c2c1fc746f3e960f9d334414d9",
+      "finalSha256": "3a9a3666070092614a8b5c82e4eb7853d18b20a8bac622f95d509dd935f59764"
+    },
+    {
+      "from": "backend/technical/production_schedule/README.md",
+      "to": "docs/technical/production_schedule.md",
+      "sha256": "e6b85cd60491084725fe6b68b600af09a890a18a9279d0a1f22bee8c4705a093",
+      "finalSha256": "1f4a3df8b52e2940a2b59c6d21942c0c7e66869574a9bd6330cc8258c3cffe5a"
+    },
+    {
+      "from": "backend/technical/production_schedule/controller/ProductionScheduleManageController.cs",
+      "to": "backend/Technical/KingZon.OLCM.Technical.WebApi/Controllers/ProductionScheduleManageController.cs",
+      "sha256": "ea29a87de5fd0d88ca0b27472ffdf90708cf2b564619a97153e7e5688ef05aae",
+      "finalSha256": "ea29a87de5fd0d88ca0b27472ffdf90708cf2b564619a97153e7e5688ef05aae"
+    },
+    {
+      "from": "backend/technical/production_schedule/dto/ProductionScheduleQuantityDto.cs",
+      "to": "backend/Technical/KingZon.OLCM.Technical.WebApi/Dto/ProductionScheduleQuantityDto.cs",
+      "sha256": "a3bfef7ccf7a722cd4d506d9c5c045c7c09f97c7474f35a902edd18171eb64c3",
+      "finalSha256": "a3bfef7ccf7a722cd4d506d9c5c045c7c09f97c7474f35a902edd18171eb64c3"
+    },
+    {
+      "from": "backend/technical/production_schedule/tests/fixtures/quantity_cases.cs.txt",
+      "to": "backend/Technical/tests/production_schedule/fixtures/quantity_cases.cs.txt",
+      "sha256": "08f305663343b0ad0f66880f4045b7309ab1472d15b5ebc82dd824f862606a90",
+      "finalSha256": "08f305663343b0ad0f66880f4045b7309ab1472d15b5ebc82dd824f862606a90"
+    },
+    {
+      "from": "backend/technical/production_schedule/tests/fixtures/quantity_support.cs.txt",
+      "to": "backend/Technical/tests/production_schedule/fixtures/quantity_support.cs.txt",
+      "sha256": "379b700cd2662e87b7952286002db1a8bccd5b0bad4502c7024618e94acab9ae",
+      "finalSha256": "379b700cd2662e87b7952286002db1a8bccd5b0bad4502c7024618e94acab9ae"
+    },
+    {
+      "from": "backend/technical/production_schedule/tests/verify_quantity_query.py",
+      "to": "backend/Technical/tests/production_schedule/verify_quantity_query.py",
+      "sha256": "2cbbbe00f798fab2c48709af00289c46444d4fdf455605546545579b638b7cc2",
+      "finalSha256": "0335a2c99fe4205f3a83c53072faa6371cb9c36ac323609492d9f496c1688b6e"
+    },
+    {
+      "from": "frontend/base-pc/components/search_panel/search-panel.ts",
+      "to": "frontend/src/components/search_panel/search-panel.ts",
+      "sha256": "d5f29ac1701ef4c4dad8e90294f968db2fa4c35a4a8a0e7be582830b8b3d098d",
+      "finalSha256": "d5f29ac1701ef4c4dad8e90294f968db2fa4c35a4a8a0e7be582830b8b3d098d"
+    },
+    {
+      "from": "frontend/base-pc/components/search_panel/search-panel.vue",
+      "to": "frontend/src/components/search_panel/search-panel.vue",
+      "sha256": "1a9c13906ef1c2459e673e256387f9585b6cff7d131c3272484979dffd582107",
+      "finalSha256": "1a9c13906ef1c2459e673e256387f9585b6cff7d131c3272484979dffd582107"
+    },
+    {
+      "from": "frontend/inventory/customer_Inventory_Manage/index.vue",
+      "to": "frontend/src/views/inventory/customer_Inventory_Manage/index.vue",
+      "sha256": "b141e3c558cd1889b83aef9b7c81a0ab3bbf7bca3b69bf117173fafa6f238381",
+      "finalSha256": "b141e3c558cd1889b83aef9b7c81a0ab3bbf7bca3b69bf117173fafa6f238381"
+    },
+    {
+      "from": "frontend/inventory/inventory_management/dataGrid.vue",
+      "to": "frontend/src/views/inventory/inventory_management/dataGrid.vue",
+      "sha256": "d4c1430f8f7ef4fb0706daaaaaa4fe2f080f3f574402215e73c30621079f4564",
+      "finalSha256": "d4c1430f8f7ef4fb0706daaaaaa4fe2f080f3f574402215e73c30621079f4564"
+    },
+    {
+      "from": "frontend/inventory/inventory_management/index.vue",
+      "to": "frontend/src/views/inventory/inventory_management/index.vue",
+      "sha256": "2291284e184534b4937e026cd71fa328686d9c96ac33ac68c9dc2d5b86520546",
+      "finalSha256": "2291284e184534b4937e026cd71fa328686d9c96ac33ac68c9dc2d5b86520546"
+    },
+    {
+      "from": "frontend/inventory/inventory_management/material-inventory-datagrid.vue",
+      "to": "frontend/src/views/inventory/inventory_management/material-inventory-datagrid.vue",
+      "sha256": "28ef08ae8f57c69dfc2283340393b3e037918fe7d7373ed987bfb3cbc8d09862",
+      "finalSha256": "28ef08ae8f57c69dfc2283340393b3e037918fe7d7373ed987bfb3cbc8d09862"
+    },
+    {
+      "from": "frontend/new-sale_return_order/SaleOrder_manage.vue",
+      "to": "frontend/src/views/sales/sale_return_order_new/SaleOrder_manage.vue",
+      "sha256": "ad7397b105a78a9f9de00ed730976b46ce9564143c0de2f65b5f78706a5248b6",
+      "finalSha256": "ad7397b105a78a9f9de00ed730976b46ce9564143c0de2f65b5f78706a5248b6"
+    },
+    {
+      "from": "frontend/new-sale_return_order/add-sale-return-order.vue",
+      "to": "frontend/src/views/sales/sale_return_order_new/add-sale-return-order.vue",
+      "sha256": "93681140da857e567a4410c1d8129d27d2e6b66f0743f286dcb91ec334adba34",
+      "finalSha256": "93681140da857e567a4410c1d8129d27d2e6b66f0743f286dcb91ec334adba34"
+    },
+    {
+      "from": "frontend/new-sale_return_order/add-sale-return-product.vue",
+      "to": "frontend/src/views/sales/sale_return_order_new/add-sale-return-product.vue",
+      "sha256": "84e267bf5b6ba5052d46eff00d060380a533f56b628404cf3d21a0ea4108d2c4",
+      "finalSha256": "84e267bf5b6ba5052d46eff00d060380a533f56b628404cf3d21a0ea4108d2c4"
+    },
+    {
+      "from": "frontend/new-sale_return_order/choice-customer-product.vue",
+      "to": "frontend/src/views/sales/sale_return_order_new/choice-customer-product.vue",
+      "sha256": "09b2419509919d445f856adecbd37fe8e9c201597a55a6b15ffdda90116896de",
+      "finalSha256": "09b2419509919d445f856adecbd37fe8e9c201597a55a6b15ffdda90116896de"
+    },
+    {
+      "from": "frontend/new-sale_return_order/deliver-order-detail.vue",
+      "to": "frontend/src/views/sales/sale_return_order_new/deliver-order-detail.vue",
+      "sha256": "d1828646a967c89cacf1e5abfbbca8dd88b7df8dfbf8e5c828a85a4ef3fe05ce",
+      "finalSha256": "d1828646a967c89cacf1e5abfbbca8dd88b7df8dfbf8e5c828a85a4ef3fe05ce"
+    },
+    {
+      "from": "frontend/new-sale_return_order/edit-sale-return-order-header.vue",
+      "to": "frontend/src/views/sales/sale_return_order_new/edit-sale-return-order-header.vue",
+      "sha256": "aff488ae4718600223b6cfd86e1502c28ff465bcf38882ba1e2ac3426550837d",
+      "finalSha256": "aff488ae4718600223b6cfd86e1502c28ff465bcf38882ba1e2ac3426550837d"
+    },
+    {
+      "from": "frontend/new-sale_return_order/edit-sale-return-order.vue",
+      "to": "frontend/src/views/sales/sale_return_order_new/edit-sale-return-order.vue",
+      "sha256": "75b842c5e98b71a56e1b26c9f250a1da6765c4a5ff00388232f6445165e081b2",
+      "finalSha256": "75b842c5e98b71a56e1b26c9f250a1da6765c4a5ff00388232f6445165e081b2"
+    },
+    {
+      "from": "frontend/new-sale_return_order/index.vue",
+      "to": "frontend/src/views/sales/sale_return_order_new/index.vue",
+      "sha256": "76d777e1d9aa668f989a84299f48f9692cb219e9383058639708ae94dcf704bf",
+      "finalSha256": "76d777e1d9aa668f989a84299f48f9692cb219e9383058639708ae94dcf704bf"
+    },
+    {
+      "from": "frontend/new-sale_return_order/inventory.ts",
+      "to": "frontend/src/types/fragments/inventory.ts",
+      "sha256": "82d2369e3b79c7bb75fa598867a1374cec591874114509d3a3225821562b5ed1",
+      "finalSha256": "82d2369e3b79c7bb75fa598867a1374cec591874114509d3a3225821562b5ed1"
+    },
+    {
+      "from": "frontend/new-sale_return_order/purchase_warehousing.vue",
+      "to": "frontend/src/views/purchase/purchase_warehousing.vue",
+      "sha256": "f4751bf168478e91787793685cff479d04eed4a8194e64389d18e301f4985a4c",
+      "finalSha256": "f4751bf168478e91787793685cff479d04eed4a8194e64389d18e301f4985a4c"
+    },
+    {
+      "from": "frontend/new-sale_return_order/purchase_warehousing/batch-inbound.vue",
+      "to": "frontend/src/views/purchase/purchase_warehousing/batch-inbound.vue",
+      "sha256": "88613f1362a237a09935aa423ddce5609be32c46e4a4569a785938ce392f5717",
+      "finalSha256": "88613f1362a237a09935aa423ddce5609be32c46e4a4569a785938ce392f5717"
+    },
+    {
+      "from": "frontend/new-sale_return_order/purchase_warehousing/index.vue",
+      "to": "frontend/src/views/purchase/purchase_warehousing/index.vue",
+      "sha256": "cee06b55780f8d32a55ae5fefa16b5c7f7a4e41c8bcc02f086d4ef4f315cf2c0",
+      "finalSha256": "cee06b55780f8d32a55ae5fefa16b5c7f7a4e41c8bcc02f086d4ef4f315cf2c0"
+    },
+    {
+      "from": "frontend/new-sale_return_order/return_arrival_management/add-return-arrival-detail.vue",
+      "to": "frontend/src/views/inventory/return_arrival_management_new/add-return-arrival-detail.vue",
+      "sha256": "7ac89d0901d1d65a820a4292c6a287f40f32753f6531f641750e5958c1aab339",
+      "finalSha256": "f0d9825cd8c1a1d49a6ee58222d47f268c9651facc0016d04bf2ad80f5e02681"
+    },
+    {
+      "from": "frontend/new-sale_return_order/return_arrival_management/add-return-arrival-order.vue",
+      "to": "frontend/src/views/inventory/return_arrival_management_new/add-return-arrival-order.vue",
+      "sha256": "e6a0781501a9bd261698ffe830d523a3dce74ae77b0629dfa3d82cde26b33b41",
+      "finalSha256": "da576b8726119c313bc3795e7a1fd537afe150c786439eb85964cfc4df21f979"
+    },
+    {
+      "from": "frontend/new-sale_return_order/return_arrival_management/arrival-detail.vue",
+      "to": "frontend/src/views/inventory/return_arrival_management_new/arrival-detail.vue",
+      "sha256": "70d1e6dc03c55fdeb00cb2539ebc200efab9470dd57157f1f7d56a4f4574d38c",
+      "finalSha256": "70d1e6dc03c55fdeb00cb2539ebc200efab9470dd57157f1f7d56a4f4574d38c"
+    },
+    {
+      "from": "frontend/new-sale_return_order/return_arrival_management/batch-inbound.vue",
+      "to": "frontend/src/views/inventory/return_arrival_management_new/batch-inbound.vue",
+      "sha256": "b71a1ae81378e4d36c5af41bad607d320442926e0ca6324d65a85fb73c4a5769",
+      "finalSha256": "c0d8a03c94db68bca4d95997c4cd305c67fcee27383f1cd22463dc8623f2a7a9"
+    },
+    {
+      "from": "frontend/new-sale_return_order/return_arrival_management/inbound.vue",
+      "to": "frontend/src/views/inventory/return_arrival_management_new/inbound.vue",
+      "sha256": "38d048ced00c2b16dbdef0b121ee09d36d8e161f9aa5963226c3b000cd8a9c18",
+      "finalSha256": "38d048ced00c2b16dbdef0b121ee09d36d8e161f9aa5963226c3b000cd8a9c18"
+    },
+    {
+      "from": "frontend/new-sale_return_order/return_arrival_management/index.vue",
+      "to": "frontend/src/views/inventory/return_arrival_management_new/index.vue",
+      "sha256": "ad0473a96818ede0e4b8c8f4ffa3c55eb6aedf699af4cba49ff3dd419c0c84db",
+      "finalSha256": "ad0473a96818ede0e4b8c8f4ffa3c55eb6aedf699af4cba49ff3dd419c0c84db"
+    },
+    {
+      "from": "frontend/new-sale_return_order/return_arrival_management/return-detail.vue",
+      "to": "frontend/src/views/inventory/return_arrival_management_new/return-detail.vue",
+      "sha256": "6d0c7a91693537f6c5e5b9a9451af5af92c9593cd0e0ed5dece66764b19aeeff",
+      "finalSha256": "6d0c7a91693537f6c5e5b9a9451af5af92c9593cd0e0ed5dece66764b19aeeff"
+    },
+    {
+      "from": "frontend/new-sale_return_order/sale.ts",
+      "to": "frontend/src/types/fragments/new-sale-return.ts",
+      "sha256": "5b8a30d45e424ec2cb5560f5bc9ad30458f5b5e3eae226bd777c1b6e2d9a08a8",
+      "finalSha256": "5b8a30d45e424ec2cb5560f5bc9ad30458f5b5e3eae226bd777c1b6e2d9a08a8"
+    },
+    {
+      "from": "frontend/new-sale_return_order/unit_quantity_show.vue",
+      "to": "frontend/src/views/sales/sale_return_order_new/unit_quantity_show.vue",
+      "sha256": "3c39571254771e2c3f60f986e63911ba36203369c3efbc6077d4f70daecb8c68",
+      "finalSha256": "3c39571254771e2c3f60f986e63911ba36203369c3efbc6077d4f70daecb8c68"
+    },
+    {
+      "from": "frontend/old-sale_return_order/add-sale-return-hisproduct.vue",
+      "to": "frontend/src/views/sales/sale_return_order_legacy/add-sale-return-hisproduct.vue",
+      "sha256": "6efad38d8151f60e128d160c334f0236aea080036162d72d1b05947861093fb6",
+      "finalSha256": "6efad38d8151f60e128d160c334f0236aea080036162d72d1b05947861093fb6"
+    },
+    {
+      "from": "frontend/old-sale_return_order/add-sale-return-order.vue",
+      "to": "frontend/src/views/sales/sale_return_order_legacy/add-sale-return-order.vue",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "finalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "from": "frontend/old-sale_return_order/choice-product.vue",
+      "to": "frontend/src/views/sales/sale_return_order_legacy/choice-product.vue",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "finalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "from": "frontend/old-sale_return_order/deliver-order-detail.vue",
+      "to": "frontend/src/views/sales/sale_return_order_legacy/deliver-order-detail.vue",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "finalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "from": "frontend/old-sale_return_order/index.vue",
+      "to": "frontend/src/views/sales/sale_return_order_legacy/index.vue",
+      "sha256": "20b17a457f57156a7b40245277359651895f476d80dd134da45644d0c8d3c6a1",
+      "finalSha256": "20b17a457f57156a7b40245277359651895f476d80dd134da45644d0c8d3c6a1"
+    },
+    {
+      "from": "frontend/package/MutiDisplayTypeInput.vue",
+      "to": "frontend/src/components/package/MutiDisplayTypeInput.vue",
+      "sha256": "1d7db83e9c0590443fcfbb5a928f74fddbcbbcae2c24876b7d41f0aeb6e97a03",
+      "finalSha256": "1d7db83e9c0590443fcfbb5a928f74fddbcbbcae2c24876b7d41f0aeb6e97a03"
+    },
+    {
+      "from": "frontend/package/common.ts",
+      "to": "frontend/src/types/package.ts",
+      "sha256": "8934efad1d5dcbb3d8a71843bb1f49e6b380c9b1255d4055b442dee51d35ba50",
+      "finalSha256": "8934efad1d5dcbb3d8a71843bb1f49e6b380c9b1255d4055b442dee51d35ba50"
+    },
+    {
+      "from": "frontend/package/package.vue",
+      "to": "frontend/src/components/package/package.vue",
+      "sha256": "48ed3e4ca5951869e4cc41839b845e07d7bb16a57a6a3cec4a446775a8a09ab6",
+      "finalSha256": "48ed3e4ca5951869e4cc41839b845e07d7bb16a57a6a3cec4a446775a8a09ab6"
+    },
+    {
+      "from": "frontend/production/types/enums.ts",
+      "to": "frontend/src/types/fragments/dispatch-enums.ts",
+      "sha256": "a9e736731e1025891de6dea32496753aeb7ca96a2caa0614bd38311411d2f74e",
+      "finalSha256": "a9e736731e1025891de6dea32496753aeb7ca96a2caa0614bd38311411d2f74e"
+    },
+    {
+      "from": "frontend/production/types/production.ts",
+      "to": "frontend/src/types/production.ts",
+      "sha256": "f2ce4a5bb6849731f4e05aa8202a6c45fc0461e38014446a55ff0e78a7e8e493",
+      "finalSha256": "19aa48864ff4a36722e5ac6fbcd471a809f733b61f77d540f6b56930260230d8"
+    },
+    {
+      "from": "frontend/production/views/dispatch_order_manage/__tests__/material-demand-by-bom.test.cjs",
+      "to": "frontend/src/views/production/dispatch_order_manage/__tests__/material-demand-by-bom.test.cjs",
+      "sha256": "465320264ed83161c903ac91d726022389cdd7a45cb5fe049882bf3855f4d424",
+      "finalSha256": "89bcb826debf294896b6af1e83250a9a92a50cfd29759f9bbf946465c3dd3aae"
+    },
+    {
+      "from": "frontend/production/views/dispatch_order_manage/__tests__/material-demand-detail.test.cjs",
+      "to": "frontend/src/views/production/dispatch_order_manage/__tests__/material-demand-detail.test.cjs",
+      "sha256": "a8dcdf309506e8a5760fca7b12ecd3b5320a64a66fdab8f78adafe2e3b0adeb7",
+      "finalSha256": "e7583e74ceba03bc2b1d116c2739698b882f827d294158928380a057f5c38755"
+    },
+    {
+      "from": "frontend/production/views/dispatch_order_manage/add-dispatch.vue",
+      "to": "frontend/src/views/production/dispatch_order_manage/add-dispatch.vue",
+      "sha256": "9a7bb7422c143122c6014786896e0c948237f09d3d454493ce43fb314da77907",
+      "finalSha256": "9a7bb7422c143122c6014786896e0c948237f09d3d454493ce43fb314da77907"
+    },
+    {
+      "from": "frontend/production/views/dispatch_order_manage/index.vue",
+      "to": "frontend/src/views/production/dispatch_order_manage/index.vue",
+      "sha256": "5a6b9fa21607ac1b4089ad9ae783c7c8dc6f597fed182d5c84b478c9d101c0be",
+      "finalSha256": "5a6b9fa21607ac1b4089ad9ae783c7c8dc6f597fed182d5c84b478c9d101c0be"
+    },
+    {
+      "from": "frontend/production/views/dispatch_order_manage/material-demand-by-bom.md",
+      "to": "frontend/src/views/production/dispatch_order_manage/material-demand-by-bom.md",
+      "sha256": "142ea216827b592fa15b855305d152da2f6e90d300a90912d4071b9cea2f21b2",
+      "finalSha256": "4661ea8a29a806bc5b98b7b1040f26abde6f59a6222783da847648ee7445e7b8"
+    },
+    {
+      "from": "frontend/production/views/dispatch_order_manage/material-demand-by-bom.vue",
+      "to": "frontend/src/views/production/dispatch_order_manage/material-demand-by-bom.vue",
+      "sha256": "5361eabab7af0be66ac66722a14bd668e0b2fff3cfecd35c67643ed5a4579c6c",
+      "finalSha256": "5361eabab7af0be66ac66722a14bd668e0b2fff3cfecd35c67643ed5a4579c6c"
+    },
+    {
+      "from": "frontend/production/views/dispatch_order_manage/material-demand-detail.vue",
+      "to": "frontend/src/views/production/dispatch_order_manage/material-demand-detail.vue",
+      "sha256": "3272a7622f5b877b6b9a562d7ed002cef56cca07ffdc4c1d15e69957cef36100",
+      "finalSha256": "3272a7622f5b877b6b9a562d7ed002cef56cca07ffdc4c1d15e69957cef36100"
+    },
+    {
+      "from": "frontend/production/views/dispatch_order_manage/material-demand.vue",
+      "to": "frontend/src/views/production/dispatch_order_manage/material-demand.vue",
+      "sha256": "3108b4511151a82fd8340def4612fe3e98ba6ea8401f43c8521aff24dbb97f2c",
+      "finalSha256": "3108b4511151a82fd8340def4612fe3e98ba6ea8401f43c8521aff24dbb97f2c"
+    },
+    {
+      "from": "frontend/production/views/dispatch_order_manage/modify-price.vue",
+      "to": "frontend/src/views/production/dispatch_order_manage/modify-price.vue",
+      "sha256": "af7cad170bdb9eb7de8cb18c8ab04d17ec5dbb07ad3b307c815907e2b7ae3948",
+      "finalSha256": "af7cad170bdb9eb7de8cb18c8ab04d17ec5dbb07ad3b307c815907e2b7ae3948"
+    },
+    {
+      "from": "frontend/production/views/dispatch_order_manage/operation-detail.vue",
+      "to": "frontend/src/views/production/dispatch_order_manage/operation-detail.vue",
+      "sha256": "38d16632ec705396f5f9a91054c0378af0ddca5b1b66fb0168f1e0b8db59e6e9",
+      "finalSha256": "38d16632ec705396f5f9a91054c0378af0ddca5b1b66fb0168f1e0b8db59e6e9"
+    },
+    {
+      "from": "frontend/production/views/dispatch_order_manage/select-material.vue",
+      "to": "frontend/src/views/production/dispatch_order_manage/select-material.vue",
+      "sha256": "1a4a1ecc2020f5810451b86c0e53bfa348d2ae60677c9b0513e3d62ea0887432",
+      "finalSha256": "1a4a1ecc2020f5810451b86c0e53bfa348d2ae60677c9b0513e3d62ea0887432"
+    },
+    {
+      "from": "frontend/production/views/dispatch_order_manage/select-saleOrder.vue",
+      "to": "frontend/src/views/production/dispatch_order_manage/select-saleOrder.vue",
+      "sha256": "4bd4399868aeddee94d327cdc28929f749823afdc0920de0a7a86c391cb4dee8",
+      "finalSha256": "4bd4399868aeddee94d327cdc28929f749823afdc0920de0a7a86c391cb4dee8"
+    },
+    {
+      "from": "frontend/production/views/dispatch_order_manage/selete-product.vue",
+      "to": "frontend/src/views/production/dispatch_order_manage/selete-product.vue",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "finalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "from": "frontend/sale_order_manage/KingZonDataGrid.vue",
+      "to": "frontend/src/components/reference/KingZonDataGrid.vue",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "finalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "from": "frontend/sale_order_manage/add-sale-order-delivery.vue",
+      "to": "frontend/src/views/sales/sale_order_manage/add-sale-order-delivery.vue",
+      "sha256": "283540755cbc6ac121219e16eee5fa5cd3fa76aa19caa7aecd03253f9b3826a9",
+      "finalSha256": "283540755cbc6ac121219e16eee5fa5cd3fa76aa19caa7aecd03253f9b3826a9"
+    },
+    {
+      "from": "frontend/sale_order_manage/add-sale-order.vue",
+      "to": "frontend/src/views/sales/sale_order_manage/add-sale-order.vue",
+      "sha256": "36e8c2bb4ac67ab2ad41d84a4d1e17513088afdc862fabd415d3d003732dab4f",
+      "finalSha256": "36e8c2bb4ac67ab2ad41d84a4d1e17513088afdc862fabd415d3d003732dab4f"
+    },
+    {
+      "from": "frontend/sale_order_manage/body-add-edit.vue",
+      "to": "frontend/src/views/sales/sale_order_manage/body-add-edit.vue",
+      "sha256": "c915f915a376ec0e96fc797c84984431d0efc09e29a337071a30fa28eee39c7e",
+      "finalSha256": "c915f915a376ec0e96fc797c84984431d0efc09e29a337071a30fa28eee39c7e"
+    },
+    {
+      "from": "frontend/sale_order_manage/inventory-allocation.vue",
+      "to": "frontend/src/views/sales/sale_order_manage/inventory-allocation.vue",
+      "sha256": "739084f7692c3d87a4219b6e1756c9afe041ca3a21f4fbfd820789145684a3d2",
+      "finalSha256": "739084f7692c3d87a4219b6e1756c9afe041ca3a21f4fbfd820789145684a3d2"
+    },
+    {
+      "from": "frontend/sale_order_manage/launch_delivery_order.vue",
+      "to": "frontend/src/views/sales/sale_order_manage/launch_delivery_order.vue",
+      "sha256": "c786789aa596b391f858f39d445792f47029e3d9c169006da73987a50c403e07",
+      "finalSha256": "c786789aa596b391f858f39d445792f47029e3d9c169006da73987a50c403e07"
+    },
+    {
+      "from": "frontend/sale_order_manage/sale.ts",
+      "to": "frontend/src/types/sale.ts",
+      "sha256": "19c3900fa9a8e4b6fcd1a428a8bde505b49d673d53ecb2817a2c7a53887597c3",
+      "finalSha256": "19c3900fa9a8e4b6fcd1a428a8bde505b49d673d53ecb2817a2c7a53887597c3"
+    },
+    {
+      "from": "frontend/sale_order_manage/unit-conversion.vue",
+      "to": "frontend/src/views/sales/sale_order_manage/unit-conversion.vue",
+      "sha256": "304deec63561661db77cef682dd397801a71658cbf76836a0c3dc70757b4d701",
+      "finalSha256": "304deec63561661db77cef682dd397801a71658cbf76836a0c3dc70757b4d701"
+    },
+    {
+      "from": "frontend/sale_return_order/components/kingzon-datagrid.vue",
+      "to": "frontend/src/components/kingzon-datagrid.vue",
+      "sha256": "811140a53592871021ee241195764ab8a9e05fe37b697eff77f1dfd17ce7e693",
+      "finalSha256": "811140a53592871021ee241195764ab8a9e05fe37b697eff77f1dfd17ce7e693"
+    },
+    {
+      "from": "frontend/sale_return_order/demo/add-dispatch.vue",
+      "to": "frontend/examples/sales/add-dispatch.vue",
+      "sha256": "895934b591880a8590f59a7d4296ba12a0a46ce1999373c7f9e6d4eb0bd17aa8",
+      "finalSha256": "895934b591880a8590f59a7d4296ba12a0a46ce1999373c7f9e6d4eb0bd17aa8"
+    },
+    {
+      "from": "frontend/sale_return_order/return_arrival_management/add-return-arrival-order.vue",
+      "to": "frontend/src/views/inventory/return_arrival_management/add-return-arrival-order.vue",
+      "sha256": "e22ee49a89dd9eba5bee36f61496a579540f78d395d14fb799198518e8962ebd",
+      "finalSha256": "e22ee49a89dd9eba5bee36f61496a579540f78d395d14fb799198518e8962ebd"
+    },
+    {
+      "from": "frontend/sale_return_order/return_arrival_management/arrival-detail.vue",
+      "to": "frontend/src/views/inventory/return_arrival_management/arrival-detail.vue",
+      "sha256": "6f61ae0783e0833a56368a150a6bee5259ab976f3677c4804c4272f251413b12",
+      "finalSha256": "6f61ae0783e0833a56368a150a6bee5259ab976f3677c4804c4272f251413b12"
+    },
+    {
+      "from": "frontend/sale_return_order/return_arrival_management/batch-inbound.vue",
+      "to": "frontend/src/views/inventory/return_arrival_management/batch-inbound.vue",
+      "sha256": "92e3e0b09ac95b86bf10e572f3c0375b44d9550e053265f760080554f1016395",
+      "finalSha256": "92e3e0b09ac95b86bf10e572f3c0375b44d9550e053265f760080554f1016395"
+    },
+    {
+      "from": "frontend/sale_return_order/return_arrival_management/inbound.vue",
+      "to": "frontend/src/views/inventory/return_arrival_management/inbound.vue",
+      "sha256": "c23ed0ba30b5f96e1e4f44a0ba8ebcea1727f622902eda5ed43fbda185fba8a4",
+      "finalSha256": "c23ed0ba30b5f96e1e4f44a0ba8ebcea1727f622902eda5ed43fbda185fba8a4"
+    },
+    {
+      "from": "frontend/sale_return_order/return_arrival_management/index.vue",
+      "to": "frontend/src/views/inventory/return_arrival_management/index.vue",
+      "sha256": "8b58ec04bba91be2c4f0ee3fdb2642994f13e96301b1b3fa5a7903d05dd419cc",
+      "finalSha256": "8b58ec04bba91be2c4f0ee3fdb2642994f13e96301b1b3fa5a7903d05dd419cc"
+    },
+    {
+      "from": "frontend/sale_return_order/return_arrival_management/material-inbound.vue",
+      "to": "frontend/src/views/inventory/return_arrival_management/material-inbound.vue",
+      "sha256": "d77a9ef12c962d939d87ed38210d5d58d56b19af1a2fc281a2d278905265045c",
+      "finalSha256": "d77a9ef12c962d939d87ed38210d5d58d56b19af1a2fc281a2d278905265045c"
+    },
+    {
+      "from": "frontend/sale_return_order/return_arrival_management/return-detail.vue",
+      "to": "frontend/src/views/inventory/return_arrival_management/return-detail.vue",
+      "sha256": "5e30d5c9d6b0ae6f59b2a039d81d0c2ef2f3d13867dcb97dcf5a252cf73fb466",
+      "finalSha256": "5e30d5c9d6b0ae6f59b2a039d81d0c2ef2f3d13867dcb97dcf5a252cf73fb466"
+    },
+    {
+      "from": "frontend/sale_return_order/return_arrival_management/unit-form-quantity-show.vue",
+      "to": "frontend/src/views/inventory/return_arrival_management/unit-form-quantity-show.vue",
+      "sha256": "42f8a68f43a51eebd7c93cc5f684791357f0eca8810f065f8c8489f0e8a971ae",
+      "finalSha256": "42f8a68f43a51eebd7c93cc5f684791357f0eca8810f065f8c8489f0e8a971ae"
+    },
+    {
+      "from": "frontend/sale_return_order/sale_data_stat/README.md",
+      "to": "frontend/src/views/sales/sale_data_stat/README.md",
+      "sha256": "503342d7dedc37aaae0003bc2d92d85fbf0ab2d6127ddc986114d48838410c0f",
+      "finalSha256": "d55f77ce21776d59fba6a41faab8cda22b2c10a501d74429e94af055082a7c7d"
+    },
+    {
+      "from": "frontend/sale_return_order/sale_data_stat/component/sale-stat-week-detail.vue",
+      "to": "frontend/src/views/sales/sale_data_stat/component/sale-stat-week-detail.vue",
+      "sha256": "31f7c1b97b1dbe67945157b0e9a723dff3f360978f0787a5f2cffad67ef68854",
+      "finalSha256": "31f7c1b97b1dbe67945157b0e9a723dff3f360978f0787a5f2cffad67ef68854"
+    },
+    {
+      "from": "frontend/sale_return_order/sale_data_stat/index.vue",
+      "to": "frontend/src/views/sales/sale_data_stat/index.vue",
+      "sha256": "4d8172ced3dbf9ea280d48e84d12d07a991399c749f2c85ecf116824e8dd1d7b",
+      "finalSha256": "4d8172ced3dbf9ea280d48e84d12d07a991399c749f2c85ecf116824e8dd1d7b"
+    },
+    {
+      "from": "frontend/sale_return_order/sale_order/index.vue",
+      "to": "frontend/src/views/sales/sale_order/index.vue",
+      "sha256": "c01ae1803ea82c25c92ed6cffc2a811bd7adfde8b7ff135f2943028b71a4af39",
+      "finalSha256": "c01ae1803ea82c25c92ed6cffc2a811bd7adfde8b7ff135f2943028b71a4af39"
+    },
+    {
+      "from": "frontend/sale_return_order/sale_return_order_manage/add-sale-return-order.vue",
+      "to": "frontend/src/views/sales/sale_return_order_manage/add-sale-return-order.vue",
+      "sha256": "ff9e9fb71710a0c6bfa58f5cffef0fbbf8a64da4686bb8ab45c3eec614d5ac80",
+      "finalSha256": "ff9e9fb71710a0c6bfa58f5cffef0fbbf8a64da4686bb8ab45c3eec614d5ac80"
+    },
+    {
+      "from": "frontend/sale_return_order/sale_return_order_manage/add-sale-return-product.vue",
+      "to": "frontend/src/views/sales/sale_return_order_manage/add-sale-return-product.vue",
+      "sha256": "fa6d353a8db654986c6d57d47cb3bcceecc4b61d272ac8a37106f8ba464870f6",
+      "finalSha256": "fa6d353a8db654986c6d57d47cb3bcceecc4b61d272ac8a37106f8ba464870f6"
+    },
+    {
+      "from": "frontend/sale_return_order/sale_return_order_manage/choice-customer-product.vue",
+      "to": "frontend/src/views/sales/sale_return_order_manage/choice-customer-product.vue",
+      "sha256": "846a107a273d3ccad7c297781adc89759be5dbbd9508c64539196639fc7b2b66",
+      "finalSha256": "846a107a273d3ccad7c297781adc89759be5dbbd9508c64539196639fc7b2b66"
+    },
+    {
+      "from": "frontend/sale_return_order/sale_return_order_manage/deliver-order-detail.vue",
+      "to": "frontend/src/views/sales/sale_return_order_manage/deliver-order-detail.vue",
+      "sha256": "05985126e54078f3d6b85d6ad06c8149bed1ac616137bd49dd974c4d2f7d2560",
+      "finalSha256": "05985126e54078f3d6b85d6ad06c8149bed1ac616137bd49dd974c4d2f7d2560"
+    },
+    {
+      "from": "frontend/sale_return_order/sale_return_order_manage/edit-sale-return-order.vue",
+      "to": "frontend/src/views/sales/sale_return_order_manage/edit-sale-return-order.vue",
+      "sha256": "129328349b932c87bc131d361651681a92fc3454112ed7327f3f4ceab6f9b44a",
+      "finalSha256": "129328349b932c87bc131d361651681a92fc3454112ed7327f3f4ceab6f9b44a"
+    },
+    {
+      "from": "frontend/sale_return_order/sale_return_order_manage/index.vue",
+      "to": "frontend/src/views/sales/sale_return_order_manage/index.vue",
+      "sha256": "fb0f5ad14b520397a14ec8ddf8590427051211355d5a8ff0b772378b48b31ff0",
+      "finalSha256": "fb0f5ad14b520397a14ec8ddf8590427051211355d5a8ff0b772378b48b31ff0"
+    },
+    {
+      "from": "frontend/sale_return_order/tests/month-sale-stat.test.cjs",
+      "to": "frontend/tests/sales/month-sale-stat.test.cjs",
+      "sha256": "de42fa1dd72e13570b456d30ec63181afacdd89ab45971a576f54141f873063a",
+      "finalSha256": "96ebc77e1e30fb866d31faeab5ea8c49f27f7b9e17118cf9fb5724876dd05a11"
+    },
+    {
+      "from": "frontend/sale_return_order/type/sale-data-stat.ts",
+      "to": "frontend/src/types/sales.ts",
+      "sha256": "6045ab2f0ee036799e0f6188558482ca59c200bbb2856b05ee0bc7fbe0066107",
+      "finalSha256": "6045ab2f0ee036799e0f6188558482ca59c200bbb2856b05ee0bc7fbe0066107"
+    },
+    {
+      "from": "frontend/sale_return_order/type/sale.ts",
+      "to": "frontend/src/types/fragments/sale-return.ts",
+      "sha256": "d651fd2744976ed846e80e819d483aaba3d4926fc283ebdaf70478bf7ea9aae6",
+      "finalSha256": "d651fd2744976ed846e80e819d483aaba3d4926fc283ebdaf70478bf7ea9aae6"
+    },
+    {
+      "from": "frontend/technical/craft_manage/component/__tests__/craft-lint.test.cjs",
+      "to": "frontend/src/views/technology/craft_manage/component/__tests__/craft-lint.test.cjs",
+      "sha256": "7a9bb4ea98a200c0b409c24185be3ca5f302276a4dcfa48af05235375fd1fdf8",
+      "finalSha256": "fba849a94b9ef7bb470becb569cd43e9f0a0feaca7435bd435cf595b5dd34cf4"
+    },
+    {
+      "from": "frontend/technical/craft_manage/component/__tests__/craft-manage.test.cjs",
+      "to": "frontend/src/views/technology/craft_manage/component/__tests__/craft-manage.test.cjs",
+      "sha256": "97c850e0405cf32b7b89095bf32bf9bb3fa9915bc33652b7cd95486a9beb45e7",
+      "finalSha256": "bfa5413d9d4d5f619bf319bc0a4a80642a4bc23276a79876897b44e0ca297b07"
+    },
+    {
+      "from": "frontend/technical/craft_manage/component/__tests__/craft-tree.test.cjs",
+      "to": "frontend/src/views/technology/craft_manage/component/__tests__/craft-tree.test.cjs",
+      "sha256": "26510cab9d8026b9d91535d2b2e909c970dd62dd144bb38db4a1db12972cffa5",
+      "finalSha256": "26510cab9d8026b9d91535d2b2e909c970dd62dd144bb38db4a1db12972cffa5"
+    },
+    {
+      "from": "frontend/technical/craft_manage/component/craft-create-dialog.vue",
+      "to": "frontend/src/views/technology/craft_manage/component/craft-create-dialog.vue",
+      "sha256": "ed3be259f8545e364ac78ebe01cb5c849be8652fa146f53fa349de5b46fab9a6",
+      "finalSha256": "ed3be259f8545e364ac78ebe01cb5c849be8652fa146f53fa349de5b46fab9a6"
+    },
+    {
+      "from": "frontend/technical/craft_manage/component/craft-editor.vue",
+      "to": "frontend/src/views/technology/craft_manage/component/craft-editor.vue",
+      "sha256": "5b3e2d8c1d081fda1f14090aa5831ef4411e4b8abb5aa2009a0e146012431b2a",
+      "finalSha256": "5b3e2d8c1d081fda1f14090aa5831ef4411e4b8abb5aa2009a0e146012431b2a"
+    },
+    {
+      "from": "frontend/technical/craft_manage/component/craft-file.vue",
+      "to": "frontend/src/views/technology/craft_manage/component/craft-file.vue",
+      "sha256": "ccf547010b65b7d696375121792ac9edf2ef67e58616abcff81599ced769186d",
+      "finalSha256": "ccf547010b65b7d696375121792ac9edf2ef67e58616abcff81599ced769186d"
+    },
+    {
+      "from": "frontend/technical/craft_manage/component/craft-info.vue",
+      "to": "frontend/src/views/technology/craft_manage/component/craft-info.vue",
+      "sha256": "7c2279540c0a675350d64bc2efc627505e53f649f3e0282ce0bfcb23ac415c34",
+      "finalSha256": "7c2279540c0a675350d64bc2efc627505e53f649f3e0282ce0bfcb23ac415c34"
+    },
+    {
+      "from": "frontend/technical/craft_manage/component/craft-machine.vue",
+      "to": "frontend/src/views/technology/craft_manage/component/craft-machine.vue",
+      "sha256": "1c2121783416904ec513607f10d48bb2ee199eee7a65ffb2aebdd9bb472634a4",
+      "finalSha256": "1c2121783416904ec513607f10d48bb2ee199eee7a65ffb2aebdd9bb472634a4"
+    },
+    {
+      "from": "frontend/technical/craft_manage/component/craft-material-table.vue",
+      "to": "frontend/src/views/technology/craft_manage/component/craft-material-table.vue",
+      "sha256": "49c4e96f13966310c3f247d8455fad954d5a19845ab262d37dfd2e8d01f3d323",
+      "finalSha256": "49c4e96f13966310c3f247d8455fad954d5a19845ab262d37dfd2e8d01f3d323"
+    },
+    {
+      "from": "frontend/technical/craft_manage/component/craft-order-header.vue",
+      "to": "frontend/src/views/technology/craft_manage/component/craft-order-header.vue",
+      "sha256": "61ff165601a4f99817c510defee6502085b92da9bd486974689b77e68907d097",
+      "finalSha256": "61ff165601a4f99817c510defee6502085b92da9bd486974689b77e68907d097"
+    },
+    {
+      "from": "frontend/technical/craft_manage/component/craft-process-info.vue",
+      "to": "frontend/src/views/technology/craft_manage/component/craft-process-info.vue",
+      "sha256": "bb3d1bb65ef0d5b79e8953389de8fab5ed7f295692a7de7538a146cf2040bb21",
+      "finalSha256": "bb3d1bb65ef0d5b79e8953389de8fab5ed7f295692a7de7538a146cf2040bb21"
+    },
+    {
+      "from": "frontend/technical/craft_manage/component/craft-tree.vue",
+      "to": "frontend/src/views/technology/craft_manage/component/craft-tree.vue",
+      "sha256": "c80eb00af2261fcb473b859b6c7a3258561dc5f9b806d752d5bdb2baadc86963",
+      "finalSha256": "c80eb00af2261fcb473b859b6c7a3258561dc5f9b806d752d5bdb2baadc86963"
+    },
+    {
+      "from": "frontend/technical/craft_manage/component/resource-library.vue",
+      "to": "frontend/src/views/technology/craft_manage/component/resource-library.vue",
+      "sha256": "a42e498208731ae6ada5243bc358a1a4c161699af49298fa6785d2d3fb1f62c3",
+      "finalSha256": "a42e498208731ae6ada5243bc358a1a4c161699af49298fa6785d2d3fb1f62c3"
+    },
+    {
+      "from": "frontend/technical/craft_manage/create-craft.vue",
+      "to": "frontend/src/views/technology/craft_manage/create-craft.vue",
+      "sha256": "5beb0e58ddaddc22487e5e253be3692126dbf671fc4826bbbf6c4bb5017e0d52",
+      "finalSha256": "5beb0e58ddaddc22487e5e253be3692126dbf671fc4826bbbf6c4bb5017e0d52"
+    },
+    {
+      "from": "frontend/technical/craft_manage/index.vue",
+      "to": "frontend/src/views/technology/craft_manage/index.vue",
+      "sha256": "5049735cc5afc162eeb9bbfc38ebd5674f25de77b40b16905b84b4c14ba81de2",
+      "finalSha256": "5049735cc5afc162eeb9bbfc38ebd5674f25de77b40b16905b84b4c14ba81de2"
+    },
+    {
+      "from": "frontend/technical/css/kingzon.css",
+      "to": "frontend/src/assets/css/kingzon.css",
+      "sha256": "af4e881c35e4dd963fda57f677d54d257da9e2292aa85110a36e53dd8319c32b",
+      "finalSha256": "af4e881c35e4dd963fda57f677d54d257da9e2292aa85110a36e53dd8319c32b"
+    },
+    {
+      "from": "frontend/technical/formula_manage/component/formula-search-table.vue",
+      "to": "frontend/src/views/technology/formula_manage/component/formula-search-table.vue",
+      "sha256": "4e17c018ff051f845c05935c0b4e8bf0cecd75294d93e5d8ae27ca6706425d46",
+      "finalSha256": "4e17c018ff051f845c05935c0b4e8bf0cecd75294d93e5d8ae27ca6706425d46"
+    },
+    {
+      "from": "frontend/technical/formula_manage/component/formula-search.vue",
+      "to": "frontend/src/views/technology/formula_manage/component/formula-search.vue",
+      "sha256": "dc22bcf9699d19f01403e3e3e3f713f1954533a12b51031b5117d6f149fbfb15",
+      "finalSha256": "dc22bcf9699d19f01403e3e3e3f713f1954533a12b51031b5117d6f149fbfb15"
+    },
+    {
+      "from": "frontend/technical/formula_manage/create-formula-version.vue",
+      "to": "frontend/src/views/technology/formula_manage/create-formula-version.vue",
+      "sha256": "d373c1e7ad77c82997411c90e445584fcf91ed3b8d3a0b624dfd0960ae772291",
+      "finalSha256": "d373c1e7ad77c82997411c90e445584fcf91ed3b8d3a0b624dfd0960ae772291"
+    },
+    {
+      "from": "frontend/technical/formula_manage/create-formula.vue",
+      "to": "frontend/src/views/technology/formula_manage/create-formula.vue",
+      "sha256": "e08b27267c98a1136e08c29fa408dc4154ac29263ca96faaf10cd89b703886d7",
+      "finalSha256": "e08b27267c98a1136e08c29fa408dc4154ac29263ca96faaf10cd89b703886d7"
+    },
+    {
+      "from": "frontend/technical/formula_manage/index.vue",
+      "to": "frontend/src/views/technology/formula_manage/index.vue",
+      "sha256": "c272c0fc295071970fac89883a2c02931e820fe45c0508b3e145ffb2d57fe889",
+      "finalSha256": "c272c0fc295071970fac89883a2c02931e820fe45c0508b3e145ffb2d57fe889"
+    },
+    {
+      "from": "frontend/technical/production_schedule_manage/.gitignore",
+      "to": "frontend/.gitignore",
+      "sha256": "4d56952b0fb13bf8f9b6c13a6d4c34a075bac3af447636a1df4335d7576e2f97",
+      "finalSha256": "4d56952b0fb13bf8f9b6c13a6d4c34a075bac3af447636a1df4335d7576e2f97"
+    },
+    {
+      "from": "frontend/technical/production_schedule_manage/README.md",
+      "to": "frontend/src/views/technology/production_schedule_manage/README.md",
+      "sha256": "a77661f3b891e37e7e2c8c5a27fd4e342605ce200d8138d42c61725ac3ec646e",
+      "finalSha256": "b43b05d4fa15d2d8e64442aea4236f1aa6d083c808baa270799f926fdc2b8506"
+    },
+    {
+      "from": "frontend/technical/production_schedule_manage/__tests__/fixtures.ts",
+      "to": "frontend/src/views/technology/production_schedule_manage/__tests__/fixtures.ts",
+      "sha256": "cef16a8c6492342980796201ab8bfe09f7153a5663a202a1c9fab03be815828e",
+      "finalSha256": "cef16a8c6492342980796201ab8bfe09f7153a5663a202a1c9fab03be815828e"
+    },
+    {
+      "from": "frontend/technical/production_schedule_manage/__tests__/production-schedule-checks.test.cjs",
+      "to": "frontend/src/views/technology/production_schedule_manage/__tests__/production-schedule-checks.test.cjs",
+      "sha256": "8dd77bf405a52abbff56d27c722b8770bce7e361c1664c42aeb0040e82ffa3cf",
+      "finalSha256": "f351172a5e94705924c6be4057125d922e37a97d6a7659f43cf93d1a0d49610d"
+    },
+    {
+      "from": "frontend/technical/production_schedule_manage/__tests__/production-schedule.test.cjs",
+      "to": "frontend/src/views/technology/production_schedule_manage/__tests__/production-schedule.test.cjs",
+      "sha256": "8a85e8aec9a708fda9b071d0d46c92ef3035f3ac5154a2f67c5db9b49cd4e76e",
+      "finalSha256": "20de422d7c255a67437cbdd8b78e0b4342d390fd343986bad910a4a37258c5d9"
+    },
+    {
+      "from": "frontend/technical/production_schedule_manage/component/create-schedule.vue",
+      "to": "frontend/src/views/technology/production_schedule_manage/component/create-schedule.vue",
+      "sha256": "4876e59d6facbf1445ad08d6c74f9e2dda642f5f83b348601092c7b37b75cfa3",
+      "finalSha256": "4876e59d6facbf1445ad08d6c74f9e2dda642f5f83b348601092c7b37b75cfa3"
+    },
+    {
+      "from": "frontend/technical/production_schedule_manage/component/schedule-gantt.vue",
+      "to": "frontend/src/views/technology/production_schedule_manage/component/schedule-gantt.vue",
+      "sha256": "32a3f145f4d23dbf046e76128cd8eb5c53dc18162e8251025d5eb3e3263ff046",
+      "finalSha256": "32a3f145f4d23dbf046e76128cd8eb5c53dc18162e8251025d5eb3e3263ff046"
+    },
+    {
+      "from": "frontend/technical/production_schedule_manage/component/schedule-material-tree.vue",
+      "to": "frontend/src/views/technology/production_schedule_manage/component/schedule-material-tree.vue",
+      "sha256": "fe18dec696cc089d2aa52c35b837340c33652e8df2df0c06387ec11ac0b08ece",
+      "finalSha256": "fe18dec696cc089d2aa52c35b837340c33652e8df2df0c06387ec11ac0b08ece"
+    },
+    {
+      "from": "frontend/technical/production_schedule_manage/component/schedule-order-list.vue",
+      "to": "frontend/src/views/technology/production_schedule_manage/component/schedule-order-list.vue",
+      "sha256": "e7e47cc57da8f94760013a68c66ded5e2e8db3a39bdbd373b96b042a87281dff",
+      "finalSha256": "e7e47cc57da8f94760013a68c66ded5e2e8db3a39bdbd373b96b042a87281dff"
+    },
+    {
+      "from": "frontend/technical/production_schedule_manage/component/schedule-process.vue",
+      "to": "frontend/src/views/technology/production_schedule_manage/component/schedule-process.vue",
+      "sha256": "efeb312011845b43645c2caa1a7a9f8550e37f6d86db4ca64c7c2b52732d5f5d",
+      "finalSha256": "efeb312011845b43645c2caa1a7a9f8550e37f6d86db4ca64c7c2b52732d5f5d"
+    },
+    {
+      "from": "frontend/technical/production_schedule_manage/component/svar-chart.vue",
+      "to": "frontend/src/views/technology/production_schedule_manage/component/svar-chart.vue",
+      "sha256": "b5f671d1652f04f3f1cbbeebcef72cb6b7dc6a118ca70f08bbc4df2f4262738d",
+      "finalSha256": "b5f671d1652f04f3f1cbbeebcef72cb6b7dc6a118ca70f08bbc4df2f4262738d"
+    },
+    {
+      "from": "frontend/technical/production_schedule_manage/index.vue",
+      "to": "frontend/src/views/technology/production_schedule_manage/index.vue",
+      "sha256": "c43a7c53e8e3b450fd5f26716a9e1b4e3312ba136f4e7cf06b0e2094197e3929",
+      "finalSha256": "c43a7c53e8e3b450fd5f26716a9e1b4e3312ba136f4e7cf06b0e2094197e3929"
+    },
+    {
+      "from": "frontend/technical/production_schedule_manage/package-lock.json",
+      "to": "frontend/package-lock.json",
+      "sha256": "f25214837004e54767989c8809a792ece48d9f1e1eacd9881a6bbe4f4624f95b",
+      "finalSha256": "f25214837004e54767989c8809a792ece48d9f1e1eacd9881a6bbe4f4624f95b"
+    },
+    {
+      "from": "frontend/technical/production_schedule_manage/package.json",
+      "to": "frontend/package.json",
+      "sha256": "43c7bc9409a92b52081a8bc18c8849443f9126b85f3feed735427c79b163ca26",
+      "finalSha256": "9b506b4a78f346494091bc0930cbadd6ea30d729513a652ca4fd671b8f94e9fa"
+    },
+    {
+      "from": "frontend/technical/production_schedule_manage/schedule.ts",
+      "to": "frontend/src/views/technology/production_schedule_manage/schedule.ts",
+      "sha256": "da105db53f9a6a829b256a0f4450a2e2a9c63b6f6269c112a1963338e8d4a47c",
+      "finalSha256": "da105db53f9a6a829b256a0f4450a2e2a9c63b6f6269c112a1963338e8d4a47c"
+    },
+    {
+      "from": "frontend/technical/types/craft.ts",
+      "to": "frontend/src/types/craft.ts",
+      "sha256": "b832ef02b8c24a0ff86277850a9f22da72f53a0d792ae69c2086349ed11c6ab7",
+      "finalSha256": "b832ef02b8c24a0ff86277850a9f22da72f53a0d792ae69c2086349ed11c6ab7"
+    },
+    {
+      "from": "frontend/technical/types/enums.ts",
+      "to": "frontend/src/types/enums.ts",
+      "sha256": "56d74b4b6c62156eba3a2dde1785b0541cde48e6eff527a780351c37919d2ab6",
+      "finalSha256": "4ca17c9425e76f3da26dbc744364f59165ed18911a8b119e9e24ae6fac1f449e"
+    },
+    {
+      "from": "frontend/technical/types/production-schedule.ts",
+      "to": "frontend/src/types/production-schedule.ts",
+      "sha256": "aefe969d450d47540349456fc01bdb350435848d34086c68eb9e189203838ab2",
+      "finalSha256": "aefe969d450d47540349456fc01bdb350435848d34086c68eb9e189203838ab2"
+    },
+    {
+      "from": "frontend/technical/types/technical.ts",
+      "to": "frontend/src/types/technical.ts",
+      "sha256": "6d61f19e2283cf584aa21a8a50d81c6a1025a5c60a9b1888c9ce6511f735add7",
+      "finalSha256": "6d61f19e2283cf584aa21a8a50d81c6a1025a5c60a9b1888c9ce6511f735add7"
+    }
+  ],
+  "nodeModules": {
+    "from": "frontend/technical/production_schedule_manage/node_modules",
+    "to": "frontend/node_modules"
+  },
+  "prefixes": {
+    "frontend/technical/types": "frontend/src/types",
+    "frontend/technical/css": "frontend/src/assets/css",
+    "frontend/technical": "frontend/src/views/technology",
+    "frontend/production/types": "frontend/src/types",
+    "frontend/production/views": "frontend/src/views/production",
+    "frontend/base-pc/components": "frontend/src/components",
+    "frontend/inventory": "frontend/src/views/inventory",
+    "frontend/package": "frontend/src/components/package",
+    "frontend/old-sale_return_order": "frontend/src/views/sales/sale_return_order_legacy",
+    "frontend/new-sale_return_order/return_arrival_management": "frontend/src/views/inventory/return_arrival_management_new",
+    "frontend/new-sale_return_order/purchase_warehousing": "frontend/src/views/purchase/purchase_warehousing",
+    "frontend/new-sale_return_order": "frontend/src/views/sales/sale_return_order_new",
+    "frontend/sale_order_manage": "frontend/src/views/sales/sale_order_manage",
+    "frontend/sale_return_order/components": "frontend/src/components",
+    "frontend/sale_return_order/return_arrival_management": "frontend/src/views/inventory/return_arrival_management",
+    "frontend/sale_return_order/tests": "frontend/tests/sales",
+    "frontend/sale_return_order/demo": "frontend/examples/sales",
+    "frontend/sale_return_order": "frontend/src/views/sales",
+    "backend/production/tests": "backend/Production/tests",
+    "backend/sale_return_order/tests": "backend/Sales/tests",
+    "backend/sale_return_order/tools": "backend/Sales/tools",
+    "backend/sale_return_order/data": "backend/Sales/data",
+    "backend/sale_return_order/ExcelTemplates": "backend/Sales/KingZon.OLCM.Sales.WebApi/ExcelTmp",
+    "backend/technical/craft/tests": "backend/Technical/tests/craft",
+    "backend/technical/production_schedule/tests": "backend/Technical/tests/production_schedule",
+    "backend/technical/craft/seed": "backend/Technical/sql"
+  },
+  "pathUpdates": [
+    "backend/Sales/tests/verify_month_sale_stat.py",
+    "docs/technical/CRAFT_CHANGELOG.md",
+    "backend/Technical/tests/craft/verify_mbom_sync.py",
+    "docs/technical/production_schedule.md",
+    "backend/Technical/tests/production_schedule/verify_quantity_query.py",
+    "frontend/src/views/inventory/return_arrival_management_new/add-return-arrival-detail.vue",
+    "frontend/src/views/inventory/return_arrival_management_new/add-return-arrival-order.vue",
+    "frontend/src/views/inventory/return_arrival_management_new/batch-inbound.vue",
+    "frontend/src/types/production.ts",
+    "frontend/src/views/production/dispatch_order_manage/__tests__/material-demand-by-bom.test.cjs",
+    "frontend/src/views/production/dispatch_order_manage/__tests__/material-demand-detail.test.cjs",
+    "frontend/src/views/production/dispatch_order_manage/material-demand-by-bom.md",
+    "frontend/src/views/sales/sale_data_stat/README.md",
+    "frontend/tests/sales/month-sale-stat.test.cjs",
+    "frontend/src/views/technology/craft_manage/component/__tests__/craft-lint.test.cjs",
+    "frontend/src/views/technology/craft_manage/component/__tests__/craft-manage.test.cjs",
+    "frontend/src/views/technology/production_schedule_manage/README.md"
+  ],
+  "contentChanges": [
+    "backend/Sales/tests/fixtures/month_sale_program.cs.txt",
+    "backend/Sales/tests/verify_month_sale_stat.py",
+    "backend/Production/tests/verify_bom_demand.py",
+    "backend/Production/tests/verify_dispatch_bom.py",
+    "docs/technical/CRAFT_CHANGELOG.md",
+    "backend/Technical/tests/craft/verify_mbom_sync.py",
+    "docs/technical/production_schedule.md",
+    "backend/Technical/tests/production_schedule/verify_quantity_query.py",
+    "frontend/src/views/inventory/return_arrival_management_new/add-return-arrival-detail.vue",
+    "frontend/src/views/inventory/return_arrival_management_new/add-return-arrival-order.vue",
+    "frontend/src/views/inventory/return_arrival_management_new/batch-inbound.vue",
+    "frontend/src/types/production.ts",
+    "frontend/src/views/production/dispatch_order_manage/__tests__/material-demand-by-bom.test.cjs",
+    "frontend/src/views/production/dispatch_order_manage/__tests__/material-demand-detail.test.cjs",
+    "frontend/src/views/production/dispatch_order_manage/material-demand-by-bom.md",
+    "frontend/src/views/sales/sale_data_stat/README.md",
+    "frontend/tests/sales/month-sale-stat.test.cjs",
+    "frontend/src/views/technology/craft_manage/component/__tests__/craft-lint.test.cjs",
+    "frontend/src/views/technology/craft_manage/component/__tests__/craft-manage.test.cjs",
+    "frontend/src/views/technology/production_schedule_manage/README.md",
+    "frontend/src/views/technology/production_schedule_manage/__tests__/production-schedule-checks.test.cjs",
+    "frontend/src/views/technology/production_schedule_manage/__tests__/production-schedule.test.cjs",
+    "frontend/package.json",
+    "frontend/src/types/enums.ts"
+  ],
+  "verification": {
+    "frontend": {
+      "total": 136,
+      "passed": 133,
+      "existingFailures": 3,
+      "newFailures": 0
+    },
+    "backendSuitesPassed": 5,
+    "missingFiles": []
+  }
+}

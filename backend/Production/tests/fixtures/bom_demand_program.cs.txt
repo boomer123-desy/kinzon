@@ -1,0 +1,65 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
+using System.Text.Json;
+using KingZon.OLCM.Base.Shared.DataBase.Entities;
+using KingZon.OLCM.Base.Shared.DataBase.Enum;
+using KingZon.OLCM.Production.Shared.DataBase.Entities;
+using KingZon.OLCM.Production.Shared.DataBase.Enum;
+using KingZon.OLCM.Production.WebApi.Dto;
+
+static void Check(bool condition, string message) { if (!condition) throw new Exception(message); }
+using var connection = new SqliteConnection("Data Source=:memory:");
+connection.Open();
+using var db = new BomDb(new DbContextOptionsBuilder<BomDb>().UseSqlite(connection).Options);
+db.Database.EnsureCreated();
+db.AddRange(new Unit { Id=100, Name="件" }, new Unit { Id=101, Name="kg" });
+db.AddRange(new Product { Id=1, ProductNo="P1", ProductName="产品", BaseUnitId=100 }, new Product { Id=41, ProductNo="M41", ProductName="原料", BaseUnitId=101 },
+    new Product { Id=42, ProductNo="P42", ProductName="规格产品", BaseUnitId=100 });
+db.Add(new ProductSpec { Id=421, ProductId=42, Code="S421", Name="规格料", SpecificationUnitId=101 });
+db.AddRange(new Production_MBom { Id=10, ProductId=1, Status=BomStatus.已生效 },
+    new Production_MBom { Id=11, ProductId=1, ProductSpecificationId=421, Status=BomStatus.已生效 },
+    new Production_MBom { Id=12, ProductId=1, IsDeleted=true }, new Production_MBom { Id=13, ProductId=1, Status=BomStatus.淘汰 });
+var outputUnits = "[{\"id\":20,\"unitId\":100,\"unitName\":\"箱\",\"ratio\":10}]";
+foreach (var version in new[] {
+    new Production_MBom_Version { Id=100, MBomId=10, Version="V1", IsMain=true, Status=BomStatus.已生效, TotalQuantity=2, UnitConversionId=20, UnitInfo=outputUnits },
+    new Production_MBom_Version { Id=101, MBomId=10, Version="V2", Status=BomStatus.待审核 },
+    new Production_MBom_Version { Id=102, MBomId=10, IsDeleted=true }, new Production_MBom_Version { Id=103, MBomId=10, Status=BomStatus.淘汰 },
+    new Production_MBom_Version { Id=104, MBomId=12 }, new Production_MBom_Version { Id=105, MBomId=13 },
+    new Production_MBom_Version { Id=106, MBomId=11, Version="规格版" } }) db.Add(version);
+var boxes = "[{\"id\":9,\"unitId\":200,\"unitName\":\"箱\",\"ratio\":12}]";
+var kg = "[{\"id\":-1,\"unitId\":101,\"unitName\":\"kg\",\"ratio\":1}]";
+db.AddRange(new Formula { Id=50, ProductId=1, Code="F50" }, new FormulaVersion { Id=500, FormulaId=50, Version="V1", TotalQuantity=10 },
+    new FormulaDetail { Id=900, FormulaVersionId=500, DetailType=FormulaDetailType.Product, DetailId=41, Quantity=2 });
+db.AddRange(new Production_MBom_Detail { Id=1000, VersionId=100, DetailType=BomDetailType.Formula, DetailId=500, Quantity=10, UnitInfo=kg, UnitConversionId=-1 },
+    new Production_MBom_Detail { Id=1001, VersionId=100, DetailType=BomDetailType.Product, DetailId=41, Quantity=20, UnitInfo=boxes, UnitConversionId=9 },
+    new Production_MBom_Detail { Id=1002, VersionId=100, DetailType=BomDetailType.Specication, DetailId=421, Quantity=2, UnitInfo=kg, UnitConversionId=-1, IsSubstitute=true, MainDetailId=1001 });
+db.SaveChanges();
+var productService = new ProductService();
+productService.Materials.AddRange(new[] { new Material { ProductId=41, ProductNo="M41", ProductName="原料", ProductUnit="kg", ProductUnitId=101, ProductMainUnitId=101 },
+    new Material { ProductId=42, SpecificationId=421, ProductNo="S421", ProductName="规格料", ProductUnit="kg", ProductUnitId=101, ProductMainUnitId=100 } });
+var controller = new Controller(productService, new Service<FormulaVersion>(db), new Service<Production_MBom_Version>(db), new Service<Base_FileStorage>(db));
+var optionResult = (OkObjectResult)await controller.GetProductionBomOptions(1);
+var options = JsonSerializer.SerializeToElement(optionResult.Value, JsonHelper.DefaultJsonSerializerOptions);
+Check(options.GetArrayLength()==2, "Options exclude deleted/obsolete versions and distinguish specifications");
+Check(options[0].GetProperty("versionId").GetInt64()==100, "Main version first");
+Check(options[0].GetProperty("unitInfoList")[0].GetProperty("ratio").GetDecimal()==10, "Typed output unit metadata");
+var specOptions = JsonSerializer.SerializeToElement(((OkObjectResult)await controller.GetProductionBomOptions(1,421)).Value, JsonHelper.DefaultJsonSerializerOptions);
+Check(specOptions.GetArrayLength()==1 && specOptions[0].GetProperty("versionId").GetInt64()==106, "Exact specification options");
+var result = (BomVersionDataDto)((OkObjectResult)await controller.GetProductionBomDataById(100,2.4m)).Value!;
+Check(result.DetailList.Count==2, "Same-product formula expands safely without changing collection during foreach");
+Check(result.DetailList.All(x=>x.Children.Count==0), "Only first-level consumption is returned");
+var direct = result.DetailList.Single(x=>x.Id==1001);
+Check(direct.Unit=="箱" && direct.CurQuantity==24, "Consumption keeps configured units rather than overriding with product base unit");
+Check(direct.DetailWithProductDto?.ProductId==41, "Physical product is available for unit queries");
+var substitute = direct.ReplaceData.Single();
+Check(substitute.DetailDataNo=="S421", "Specification material metadata is loaded using specification IDs");
+Check(substitute.DetailWithProductDto?.ProductId==42 && substitute.DetailWithProductDto.SpecificationId==421, "Specification exposes its physical product ID");
+Check(result.DetailList.Single(x=>x.FormulaDetailId==900).CurQuantity==2.4m, "Formula is scaled once by current output quantity");
+Check(result.DetailList.Single(x=>x.FormulaDetailId==900).BaseUnitName=="箱", "Lifted formula uses BOM output conversion ID rather than physical unit ID");
+Check(direct.BaseUnitName==null, "Direct material base unit is not overwritten by formula lifting");
+db.Set<Production_MBom_Version>().Single(x=>x.Id==100).UnitInfo="[]";
+db.SaveChanges();
+var missingUnitResult = (BomVersionDataDto)((OkObjectResult)await controller.GetProductionBomDataById(100,2.4m)).Value!;
+Check(missingUnitResult.DetailList.Count==2, "Missing output unit metadata does not throw during formula lifting");
+Console.WriteLine("BOM queries passed: option filters/units, safe formula lifting, first-level output, specification identity and consumption units.");

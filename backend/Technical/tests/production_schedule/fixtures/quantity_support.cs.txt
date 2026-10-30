@@ -1,0 +1,51 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using KingZon.Core.DataBase;
+using KingZon.OLCM.Base.Shared.DataBase.Entities;
+using KingZon.OLCM.Base.Shared.DataBase.Enum;
+using KingZon.OLCM.Inventory.Shared.DataBase.Entities;
+using KingZon.OLCM.Technical.Shared.DataBase.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace KingZon.Core { public static class JsonHelper { public static System.Text.Json.JsonSerializerOptions DefaultJsonSerializerOptions { get; } = new() { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }; } }
+namespace KingZon.Core.Web { public class KingZonControllerBase : Microsoft.AspNetCore.Mvc.ControllerBase { } }
+namespace KingZon.Core.DataBase {
+ public class BaseEntity { public long Id { get; set; } }
+ public interface ISoftDeletedEntity { bool IsDeleted { get; set; } }
+ public abstract class KingZonEntityTypeConfiguration<T> : IEntityTypeConfiguration<T> where T : class { public abstract void Configure(EntityTypeBuilder<T> builder); }
+}
+namespace KingZon.OLCM.Base.Shared.DataBase.Enum { public enum InventoryDataType { Product = 1, Specification = 2, Unsupported = 99 } public enum UnitConversionType { SpecToProduct = 1 } }
+namespace KingZon.OLCM.Technical.Shared.DataBase.Enum { public enum CraftOrderVersionStatus { 待审核 = 1, 已发布 = 2, 已废弃 = 3 } public enum NodeIOType { 输入 = 1, 输出 = 2 } }
+namespace KingZon.OLCM.Inventory.Shared.DataBase.Enum { public enum InventoryType { 入库 = 1, 出库 = 2 } public enum InventorySourceType { 直接入库 = 1, 异常入库 = 2 } }
+namespace KingZon.OLCM.Base.Shared.DataBase.Entities {
+ public class Base_Unit : BaseEntity { public string Name { get; set; } = ""; }
+ public class Base_Product : BaseEntity, ISoftDeletedEntity { public string ProductNo { get; set; } = ""; public string ProductName { get; set; } = ""; public string? MaterialSpecification { get; set; } public long BaseUnitId { get; set; } public Base_Unit BaseUnit { get; set; } = null!; public decimal SafetyStock { get; set; } public bool IsDeleted { get; set; } }
+ public class Base_ProductSpecification : BaseEntity, ISoftDeletedEntity { public long ProductId { get; set; } public Base_Product Product { get; set; } = null!; public string? Code { get; set; } public string? Name { get; set; } public string Specification { get; set; } = ""; public decimal SafetyStock { get; set; } public bool IsDeleted { get; set; } public long? SpecificationUnitId { get; set; } public Base_Unit? SpecificationUnit { get; set; } }
+ public class Base_UnitConversion : BaseEntity { public long SourceId { get; set; } public long TargetId { get; set; } public long FromUnitId { get; set; } public long ToUnitId { get; set; } public UnitConversionType ConversionType { get; set; } public decimal Ratio { get; set; } }
+ public class Base_Craft : BaseEntity { }
+}
+namespace KingZon.Mes.Workflow.Entity { public class WF_WorkflowTemplate : BaseEntity { } public class WF_NodeTemplate : BaseEntity { } }
+namespace KingZon.Mes.Workflow.Model { public class Placeholder { } }
+namespace KingZon.OLCM.Base.Shared.DataBase.JsonStructure { public class InventoryUnitInboundDto { public long Id { get; set; } public long UnitId { get; set; } public string UnitName { get; set; } = ""; public decimal Ratio { get; set; } public decimal Quantity { get; set; } } }
+namespace KingZon.OLCM.Inventory.Shared.DataBase.Entities {
+ // Inventory entity sources are absent; these fields mirror existing InventoryService call sites.
+ public class Inventory_Record : BaseEntity, ISoftDeletedEntity { public InventoryDataType DataType { get; set; } public long DataId { get; set; } public KingZon.OLCM.Inventory.Shared.DataBase.Enum.InventoryType InventoryType { get; set; } public KingZon.OLCM.Inventory.Shared.DataBase.Enum.InventorySourceType SourceType { get; set; } public decimal RemainQuantity { get; set; } public bool IsDeleted { get; set; } public List<Inventory_OccupyDetail> OccupyList { get; set; } = new(); }
+ public class Inventory_OccupyDetail : BaseEntity { public long InventoryRecordId { get; set; } public bool IsCompleted { get; set; } public decimal OccupyQuantity { get; set; } public decimal ReleaseQuantity { get; set; } }
+}
+namespace Kingzon.OLCM.Base.Services {
+ public class CommonService<T>(QueryDb db) where T : BaseEntity {
+  public IQueryable<T> GetAll() { var query = db.Set<T>().AsQueryable(); return typeof(ISoftDeletedEntity).IsAssignableFrom(typeof(T)) ? query.Where(x => !EF.Property<bool>(x, "IsDeleted")) : query; }
+ }
+}
+public class QueryDb(DbContextOptions<QueryDb> options) : DbContext(options) {
+ protected override void OnModelCreating(ModelBuilder model) {
+  model.ApplyConfiguration(new TechnicalCraftMap()); model.ApplyConfiguration(new TechnicalNodeSettingTemplateMap()); model.ApplyConfiguration(new TechnicalNodeSettingTemplateMaterialRLMap());
+  // The pre-existing craft-version map references absent timestamp columns; only map its new link here.
+  model.Entity<Technical_CraftOrderVersion>().HasIndex(x => x.BomVersionId).IsUnique();
+  model.Entity<Base_UnitConversion>();
+  model.Entity<Inventory_Record>().HasMany(x => x.OccupyList).WithOne().HasForeignKey(x => x.InventoryRecordId);
+ }
+}

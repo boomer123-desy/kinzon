@@ -1,0 +1,25 @@
+{
+  "backupDirectory": "C:\\Users\\Public\\Documents\\Wondershare\\CreatorTemp\\returnOrder-path-updates-tabpcly1",
+  "updatedFiles": [
+    "D:\\File\\项目文件\\实习\\returnOrder\\AGENTS.md",
+    "D:\\File\\项目文件\\实习\\returnOrder\\backend\\technical\\craft\\tests\\verify_mbom_sync.py",
+    "D:\\File\\项目文件\\实习\\returnOrder\\frontend\\technical\\production_schedule_manage\\README.md",
+    "D:\\File\\项目文件\\实习\\returnOrder\\backend\\technical\\craft\\CRAFT_CHANGELOG.md",
+    "D:\\File\\项目文件\\实习\\returnOrder\\frontend\\sale_return_order\\sale_data_stat\\README.md",
+    "D:\\File\\项目文件\\实习\\returnOrder\\backend\\sale_return_order\\tests\\verify_month_sale_stat.py",
+    "D:\\File\\项目文件\\实习\\returnOrder\\backend\\technical\\production_schedule\\tests\\verify_quantity_query.py",
+    "D:\\File\\项目文件\\实习\\returnOrder\\backend\\technical\\production_schedule\\README.md",
+    "D:\\File\\项目文件\\实习\\returnOrder\\frontend\\production\\views\\dispatch_order_manage\\material-demand-by-bom.md",
+    "D:\\File\\项目文件\\实习\\returnOrder\\frontend\\production\\views\\dispatch_order_manage\\__tests__\\material-demand-by-bom.test.cjs",
+    "C:\\Users\\11063\\.codex\\skills\\kingzon-project-style\\SKILL.md",
+    "C:\\Users\\11063\\.codex\\skills\\kingzon-project-style\\references\\backend.md",
+    "C:\\Users\\11063\\.codex\\skills\\kingzon-project-style\\references\\craft-and-schedule.md",
+    "C:\\Users\\11063\\.codex\\skills\\kingzon-project-style\\references\\frontend.md",
+    "C:\\Users\\11063\\.codex\\skills\\kingzon-project-style\\references\\kingzon-datagrid.md",
+    "D:\\File\\项目文件\\实习\\returnOrder\\backend\\production\\tests\\verify_bom_demand.py",
+    "D:\\File\\项目文件\\实习\\returnOrder\\backend\\production\\tests\\verify_dispatch_bom.py",
+    "D:\\File\\项目文件\\实习\\returnOrder\\frontend\\sale_return_order\\tests\\month-sale-stat.test.cjs",
+    "D:\\File\\项目文件\\实习\\returnOrder\\frontend\\production\\views\\dispatch_order_manage\\__tests__\\material-demand-detail.test.cjs"
+  ],
+  "baselineDirectory": "C:\\Users\\Public\\Documents\\Wondershare\\CreatorTemp\\returnOrder-before-move-1ztsp039"
+}

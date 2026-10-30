@@ -1,0 +1,5 @@
+Isolated report checks: C:\Users\Public\Documents\Wondershare\CreatorTemp\month-sale-stat-7h6nb80r
+Aspose XLSX checks passed: 4/5/6-week headers, all cell amounts/ratios, formulas, filtered/empty exports, styles, edits and save/reopen.
+Month report/detail checks passed: weekly reconciliation, customer/category filters, missing detail links, historical snapshots, year comparison and fiscal boundaries.
+Closing-month checks passed: March boundaries, January drilldowns, prior-year sales, leap/short months and Excel export.
+Tax/detail checks passed: sales source prices, both tax modes, returns only, missing links and matching Excel formulas.

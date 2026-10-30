@@ -1,0 +1,129 @@
+global using Microsoft.AspNetCore.Http;
+using KingZon.OLCM.Base.Shared.DataBase.Entities;
+using KingZon.OLCM.Common.DataBase.Entities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using System.Data.Common;
+
+public abstract class TestEntity
+{
+    public long Id { get; set; }
+    public bool IsDeleted { get; set; }
+}
+
+namespace KingZon.Core.Web { public class KingZonControllerBase : ControllerBase { } }
+namespace KingZon.Core.DataBase { public enum SystemParaType { 财务结算日期 } }
+namespace KingZon.OLCM.Common.DataBase.Enum { public enum SaleOrderStatus { 待下单, 进行中, 已完成 } }
+namespace KingZon.OLCM.Base.Shared.DataBase.Entities
+{
+    public class Base_Category : TestEntity { public string Name { get; set; } = ""; }
+    public class Base_Partner : TestEntity
+    {
+        public long? CategoryId { get; set; }
+        public Base_Category? Category { get; set; }
+        public string Name { get; set; } = "";
+        [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+        public string CustomerName { get => Name; set => Name = value; }
+    }
+}
+namespace KingZon.OLCM.Common.DataBase.Entities
+{
+    public class SaleOrder : TestEntity
+    {
+        public string OrderNo { get; set; } = "SO";
+        public string? CustomerOrderNo { get; set; }
+        public string? Remark { get; set; }
+        public long CustomerId { get; set; }
+        public Base_Partner Customer { get; set; } = null!;
+        public DateTime CreateTime { get; set; }
+        public decimal OrderTotalPrice { get; set; }
+        public decimal OrderTotalPriceHaveTax { get; set; }
+        public KingZon.OLCM.Common.DataBase.Enum.SaleOrderStatus Status { get; set; }
+    }
+    public class SaleOrderDetail : TestEntity
+    {
+        public long SaleOrderId { get; set; }
+        public long? HistoryProductId { get; set; }
+        public string? CustomerMaterialNo { get; set; }
+        public int PlaceOrderQuantity { get; set; }
+        public decimal Price { get; set; }
+        public decimal PriceHaveTax { get; set; }
+        public decimal TotalPrice { get; set; }
+        public decimal TotalPriceHaveTax { get; set; }
+        public decimal MoldCost { get; set; }
+        public string? Remark { get; set; }
+    }
+    public class HistoryProduct : TestEntity
+    {
+        public string ProductNo { get; set; } = "";
+        public string ProductName { get; set; } = "";
+        public string? CustomerMaterialNo { get; set; }
+        public string? Specification { get; set; }
+        public string? Version { get; set; }
+        public string Unit { get; set; } = "PCS";
+    }
+    public class DeliveryOrder : TestEntity
+    {
+        public string OrderNo { get; set; } = "DO";
+        public long CustomerId { get; set; }
+        public Base_Partner Customer { get; set; } = null!;
+        public DateTime DeliveryTime { get; set; }
+    }
+    public class DeliveryOrderDetail : TestEntity
+    {
+        public long SaleOrderDetailId { get; set; }
+        public long HistoryProductId { get; set; }
+        public string DetailNo { get; set; } = "";
+        public string? Remark { get; set; }
+        public long? DeliveryOrderId { get; set; }
+        public bool IsOutboundInventory { get; set; }
+        public decimal SalePrice { get; set; }
+        public int DeliveryQuantity { get; set; }
+        public int ReturnQuantity { get; set; }
+    }
+    public class SaleReturnOrder : TestEntity
+    {
+        public long CustomerId { get; set; }
+        public DateTime ReturnTime { get; set; }
+        public decimal OrderTotalPrice { get; set; }
+        public decimal OrderTotalPriceHaveTax { get; set; }
+    }
+}
+namespace Kingzon.OLCM.Common.Services
+{
+    public class SystemParaService
+    {
+        public int FinanceDate { get; set; } = 26;
+        public List<SystemParaInfo> GetSystermParaByTypesAndCode(List<KingZon.Core.DataBase.SystemParaType> types, string? code)
+            => [new SystemParaInfo { SystemPara = new SystemParaValue { DataValue = FinanceDate.ToString() } }];
+        public class SystemParaInfo { public SystemParaValue SystemPara { get; set; } = new(); }
+        public class SystemParaValue { public string DataValue { get; set; } = "26"; }
+    }
+    public class CommonService<T>(ReportDb db) where T : TestEntity
+    {
+        public IQueryable<T> GetAll(bool includeDeleted = false) => includeDeleted ? db.Set<T>() : db.Set<T>().Where(x => !x.IsDeleted);
+    }
+}
+public class ReportDb(DbContextOptions<ReportDb> options) : DbContext(options)
+{
+    protected override void OnModelCreating(ModelBuilder model)
+    {
+        model.Entity<Base_Partner>().HasOne(x => x.Category).WithMany().HasForeignKey(x => x.CategoryId);
+        model.Entity<SaleOrder>();
+        model.Entity<SaleOrderDetail>();
+        model.Entity<HistoryProduct>();
+        model.Entity<DeliveryOrder>();
+        model.Entity<DeliveryOrderDetail>();
+        model.Entity<SaleReturnOrder>();
+    }
+}
+public class QueryCounter : DbCommandInterceptor
+{
+    public int Count { get; set; }
+    public override ValueTask<InterceptionResult<DbDataReader>> ReaderExecutingAsync(DbCommand command, CommandEventData eventData, InterceptionResult<DbDataReader> result, CancellationToken cancellationToken = default)
+    {
+        Count++;
+        return ValueTask.FromResult(result);
+    }
+}

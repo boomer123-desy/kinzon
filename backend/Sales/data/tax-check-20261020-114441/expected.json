@@ -1,0 +1,99 @@
+{
+  "customer": "重庆诺贝尔福基机电有限公司",
+  "customerId": 873,
+  "reportMonth": "2026-04",
+  "period": [
+    "2026-03-26",
+    "2026-04-25"
+  ],
+  "orders": {
+    "orders": 6,
+    "amount": "48750.0000",
+    "taxAmount": "55087.5000"
+  },
+  "delivery": {
+    "details": 6,
+    "amount": "33651.0000",
+    "taxAmount": "38025.6300",
+    "returnAmount": "0.0000",
+    "taxReturnAmount": "0.0000"
+  },
+  "lastYearSales": {
+    "amount": "25349.6000",
+    "taxAmount": "28645.0480"
+  },
+  "weekly": [
+    {
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-SO-001",
+      "CreateTime": "2026-03-26 09:00:00",
+      "Price": "1.0000",
+      "PriceHaveTax": "1.1300",
+      "PlaceOrderQuantity": 6000,
+      "OrderTotalPrice": "6000.0000",
+      "OrderTotalPriceHaveTax": "6780.0000",
+      "DeliveryQuantity": 3300,
+      "deliveryAmount": "3300.0000",
+      "taxDeliveryAmount": "3729.0000"
+    },
+    {
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-SO-002",
+      "CreateTime": "2026-03-28 09:00:00",
+      "Price": "1.0000",
+      "PriceHaveTax": "1.1300",
+      "PlaceOrderQuantity": 6850,
+      "OrderTotalPrice": "6850.0000",
+      "OrderTotalPriceHaveTax": "7740.5000",
+      "DeliveryQuantity": 4315,
+      "deliveryAmount": "4315.0000",
+      "taxDeliveryAmount": "4875.9500"
+    },
+    {
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-SO-003",
+      "CreateTime": "2026-04-04 09:00:00",
+      "Price": "1.0000",
+      "PriceHaveTax": "1.1300",
+      "PlaceOrderQuantity": 7700,
+      "OrderTotalPrice": "7700.0000",
+      "OrderTotalPriceHaveTax": "8701.0000",
+      "DeliveryQuantity": 5467,
+      "deliveryAmount": "5467.0000",
+      "taxDeliveryAmount": "6177.7100"
+    },
+    {
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-SO-004",
+      "CreateTime": "2026-04-11 09:00:00",
+      "Price": "1.0000",
+      "PriceHaveTax": "1.1300",
+      "PlaceOrderQuantity": 8550,
+      "OrderTotalPrice": "8550.0000",
+      "OrderTotalPriceHaveTax": "9661.5000",
+      "DeliveryQuantity": 6754,
+      "deliveryAmount": "6754.0000",
+      "taxDeliveryAmount": "7632.0200"
+    },
+    {
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-SO-005",
+      "CreateTime": "2026-04-18 09:00:00",
+      "Price": "1.0000",
+      "PriceHaveTax": "1.1300",
+      "PlaceOrderQuantity": 9400,
+      "OrderTotalPrice": "9400.0000",
+      "OrderTotalPriceHaveTax": "10622.0000",
+      "DeliveryQuantity": 8178,
+      "deliveryAmount": "8178.0000",
+      "taxDeliveryAmount": "9241.1400"
+    },
+    {
+      "OrderNo": "KZ-DEMO-20261013174833-B11AF1-SO-006",
+      "CreateTime": "2026-04-25 09:00:00",
+      "Price": "1.0000",
+      "PriceHaveTax": "1.1300",
+      "PlaceOrderQuantity": 10250,
+      "OrderTotalPrice": "10250.0000",
+      "OrderTotalPriceHaveTax": "11582.5000",
+      "DeliveryQuantity": 5637,
+      "deliveryAmount": "5637.0000",
+      "taxDeliveryAmount": "6369.8100"
+    }
+  ]
+}

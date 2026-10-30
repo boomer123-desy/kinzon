@@ -1,0 +1,103 @@
+{
+  "database": "test_qibiao",
+  "audited_at": "2026-10-14T10:44:14.993143",
+  "period_start": "2026-03-26 00:00:00",
+  "period_end_exclusive": "2026-04-26 00:00:00",
+  "checks": 1487,
+  "difference_count": 0,
+  "customer_count": 51,
+  "category_count": 3,
+  "pending_status": 0,
+  "pending_orders_in_relevant_span": 0,
+  "totals": {
+    "orderAmount": {
+      "response": "5250119.219",
+      "database": "5250119.2190"
+    },
+    "deliveryAmount": {
+      "response": "3419120.6926",
+      "database": "3419120.6926"
+    },
+    "returnAmount": {
+      "response": 0,
+      "database": "0.0000"
+    },
+    "netDeliveryAmount": {
+      "response": "3419120.6926",
+      "database": "3419120.6926"
+    },
+    "januaryNetDeliveryAmount": {
+      "response": "685045.1525",
+      "database": "685045.1525"
+    },
+    "lastYearOrderAmount": {
+      "response": "6255041.9242",
+      "database": "6255041.9242"
+    },
+    "yearOnYearRate": {
+      "response": "-0.453382",
+      "database": "-0.453382"
+    },
+    "deliveryShareRate": {
+      "response": 1,
+      "database": "1.000000"
+    }
+  },
+  "differences": [],
+  "queries": [
+    {
+      "sql": "SELECT p.Id AS customerId,p.CategoryId AS categoryId,p.CustomerName AS customerName,\n                COALESCE(NULLIF(c.Name,''),'未分类') AS categoryName,SUM(CASE WHEN o.CreateTime >= %s AND o.CreateTime < %s THEN o.OrderTotalPrice ELSE 0 END) AS orderAmount,SUM(CASE WHEN o.CreateTime >= %s AND o.CreateTime < %s THEN o.OrderTotalPrice ELSE 0 END) AS lastYearOrderAmount,SUM(CASE WHEN o.CreateTime >= %s AND o.CreateTime < %s THEN o.OrderTotalPrice ELSE 0 END) AS orderWeek1,SUM(CASE WHEN o.CreateTime >= %s AND o.CreateTime < %s THEN o.OrderTotalPrice ELSE 0 END) AS orderWeek2,SUM(CASE WHEN o.CreateTime >= %s AND o.CreateTime < %s THEN o.OrderTotalPrice ELSE 0 END) AS orderWeek3,SUM(CASE WHEN o.CreateTime >= %s AND o.CreateTime < %s THEN o.OrderTotalPrice ELSE 0 END) AS orderWeek4,SUM(CASE WHEN o.CreateTime >= %s AND o.CreateTime < %s THEN o.OrderTotalPrice ELSE 0 END) AS orderWeek5,SUM(CASE WHEN o.CreateTime >= %s AND o.CreateTime < %s THEN o.OrderTotalPrice ELSE 0 END) AS orderWeek6\n                FROM SaleOrder o JOIN Base_Partner p ON p.Id=o.CustomerId\n                LEFT JOIN Base_Category c ON c.Id=p.CategoryId\n                WHERE p.IsDeleted=0 AND o.Status<>%s\n                AND ((o.CreateTime >= %s AND o.CreateTime < %s) OR (o.CreateTime >= %s AND o.CreateTime < %s))\n                GROUP BY p.Id,p.CategoryId,p.CustomerName,c.Name",
+      "params": [
+        "2026-03-26 00:00:00",
+        "2026-04-26 00:00:00",
+        "2025-03-26 00:00:00",
+        "2025-04-26 00:00:00",
+        "2026-03-26 00:00:00",
+        "2026-03-28 00:00:00",
+        "2026-03-28 00:00:00",
+        "2026-04-04 00:00:00",
+        "2026-04-04 00:00:00",
+        "2026-04-11 00:00:00",
+        "2026-04-11 00:00:00",
+        "2026-04-18 00:00:00",
+        "2026-04-18 00:00:00",
+        "2026-04-25 00:00:00",
+        "2026-04-25 00:00:00",
+        "2026-04-26 00:00:00",
+        0,
+        "2026-03-26 00:00:00",
+        "2026-04-26 00:00:00",
+        "2025-03-26 00:00:00",
+        "2025-04-26 00:00:00"
+      ]
+    },
+    {
+      "sql": "SELECT p.Id AS customerId,p.CategoryId AS categoryId,p.CustomerName AS customerName,\n                COALESCE(NULLIF(c.Name,''),'未分类') AS categoryName,SUM(CASE WHEN o.DeliveryTime >= %s AND o.DeliveryTime < %s THEN d.SalePrice*d.DeliveryQuantity ELSE 0 END) AS deliveryAmount,SUM(CASE WHEN o.DeliveryTime >= %s AND o.DeliveryTime < %s THEN d.SalePrice*d.ReturnQuantity ELSE 0 END) AS returnAmount,SUM(CASE WHEN o.DeliveryTime >= %s AND o.DeliveryTime < %s THEN d.SalePrice*(d.DeliveryQuantity-d.ReturnQuantity) ELSE 0 END) AS januaryNetDeliveryAmount,SUM(CASE WHEN o.DeliveryTime >= %s AND o.DeliveryTime < %s THEN d.SalePrice*d.DeliveryQuantity ELSE 0 END) AS deliveryWeek1,SUM(CASE WHEN o.DeliveryTime >= %s AND o.DeliveryTime < %s THEN d.SalePrice*d.DeliveryQuantity ELSE 0 END) AS deliveryWeek2,SUM(CASE WHEN o.DeliveryTime >= %s AND o.DeliveryTime < %s THEN d.SalePrice*d.DeliveryQuantity ELSE 0 END) AS deliveryWeek3,SUM(CASE WHEN o.DeliveryTime >= %s AND o.DeliveryTime < %s THEN d.SalePrice*d.DeliveryQuantity ELSE 0 END) AS deliveryWeek4,SUM(CASE WHEN o.DeliveryTime >= %s AND o.DeliveryTime < %s THEN d.SalePrice*d.DeliveryQuantity ELSE 0 END) AS deliveryWeek5,SUM(CASE WHEN o.DeliveryTime >= %s AND o.DeliveryTime < %s THEN d.SalePrice*d.DeliveryQuantity ELSE 0 END) AS deliveryWeek6\n                FROM DeliveryOrderDetail d JOIN DeliveryOrder o ON o.Id=d.DeliveryOrderId\n                JOIN Base_Partner p ON p.Id=o.CustomerId LEFT JOIN Base_Category c ON c.Id=p.CategoryId\n                WHERE p.IsDeleted=0 AND d.IsDeleted=0 AND d.IsOutboundInventory=1\n                AND ((o.DeliveryTime >= %s AND o.DeliveryTime < %s) OR (o.DeliveryTime >= %s AND o.DeliveryTime < %s))\n                GROUP BY p.Id,p.CategoryId,p.CustomerName,c.Name",
+      "params": [
+        "2026-03-26 00:00:00",
+        "2026-04-26 00:00:00",
+        "2026-03-26 00:00:00",
+        "2026-04-26 00:00:00",
+        "2026-01-26 00:00:00",
+        "2026-02-26 00:00:00",
+        "2026-03-26 00:00:00",
+        "2026-03-28 00:00:00",
+        "2026-03-28 00:00:00",
+        "2026-04-04 00:00:00",
+        "2026-04-04 00:00:00",
+        "2026-04-11 00:00:00",
+        "2026-04-11 00:00:00",
+        "2026-04-18 00:00:00",
+        "2026-04-18 00:00:00",
+        "2026-04-25 00:00:00",
+        "2026-04-25 00:00:00",
+        "2026-04-26 00:00:00",
+        "2026-03-26 00:00:00",
+        "2026-04-26 00:00:00",
+        "2026-01-26 00:00:00",
+        "2026-02-26 00:00:00"
+      ]
+    }
+  ],
+  "ranking_scope": "Contiguous ranks and January amount descending; name ordering within ties depends on host culture."
+}

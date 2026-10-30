@@ -1,0 +1,12 @@
+
+namespace KingZon.OLCM.Production.Shared.DataBase.Enum { public enum NodeType { 开始=11,生产=21,外协=31,入库=41,结束=51 } }
+namespace KingZon.OLCM.Base.Shared.DataBase.Entities {
+ public class Base_Department : BaseEntity {public string Name {get;set;}="生产部";}
+ public class Base_User : BaseEntity {public string Name {get;set;}="操作员";}
+ public class Base_Machine : BaseEntity {public string Code {get;set;}="M"; public string Name {get;set;}="设备"; public bool IsDeleted {get;set;} public bool IsStop {get;set;} public List<Base_Machine_Craft_RL> CraftRLs {get;set;}=new(); public List<Base_Machine_User_RL> UserRLs {get;set;}=new();}
+ public class Base_Machine_Craft_RL : BaseEntity {public long MachineId {get;set;} public long CraftId {get;set;}}
+ public class Base_Machine_User_RL : BaseEntity {public long MachineId {get;set;} public long UserId {get;set;} public Base_User User {get;set;}=null!;}
+}
+namespace KingZon.OLCM.Technical.Shared.DataBase.Entities {
+ public class Technical_NodeSettingTemplate_Machine_RL : BaseEntity {public long NodeSettingTemplateId {get;set;} public long MachineId {get;set;} public bool IsDeleted {get;set;}}
+}

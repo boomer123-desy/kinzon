@@ -1,0 +1,6 @@
+Isolated test directory: C:\Users\Public\Documents\Wondershare\CreatorTemp\schedule-quantity-checks-7hpml9aj
+PASS direct input materials, shared inventory, occupations and substitutes
+PASS five-level craft references, distinct version groups and ancestor filtering
+PASS specification recipe units and cross-process unit aggregation
+PASS fractional aggregation, empty recipe and source validation
+PASS 40 direct craft-material controller assertions

@@ -1,0 +1,80 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using KingZon.Core.DataBase;
+using KingZon.OLCM.Base.Service.Dto;
+using KingZon.OLCM.Base.Shared.DataBase.Enum;
+using KingZon.OLCM.Base.Shared.DataBase.Entities;
+using KingZon.OLCM.Production.Shared.DataBase.Entities;
+using KingZon.OLCM.Technical.Shared.DataBase.Entities;
+using KingZon.Mes.Workflow.Entity;
+using KingZon.Mes.Workflow.Model;
+namespace KingZon.Core { public static class JsonHelper { public static System.Text.Json.JsonSerializerOptions DefaultJsonSerializerOptions {get;}=new() {PropertyNamingPolicy=System.Text.Json.JsonNamingPolicy.CamelCase}; } }
+namespace KingZon.Core.DataBase {
+ public class BaseEntity { public long Id {get;set;} }
+ public interface ISoftDeletedEntity { bool IsDeleted {get;set;} }
+ public abstract class KingZonEntityTypeConfiguration<T>:IEntityTypeConfiguration<T> where T:class { public abstract void Configure(EntityTypeBuilder<T> builder); }
+ public interface IUnitOfWork { Task SaveChangeAsync(); }
+}
+namespace KingZon.OLCM.Base.Shared.DataBase.Enum { public enum InventoryDataType { Product=1, Specification=2, Unsupported=99 } }
+namespace KingZon.OLCM.Production.Shared.DataBase.Enum { public enum BomStatus { 待审核=1, 已生效=2, 淘汰=3 } public enum BomDetailType { Product=1, Formula=2, Specication=3, Bom=4 } }
+namespace KingZon.OLCM.Base.Shared.DataBase.Entities {
+ public class Base_Product { public long Id {get;set;} }
+ public class Base_ProductSpecification { public long Id {get;set;} }
+ public class Base_ProductPackage {}
+ public class Base_Craft:BaseEntity,ISoftDeletedEntity { public bool IsDeleted {get;set;} }
+ public class Base_Machine:BaseEntity,ISoftDeletedEntity { public bool IsDeleted {get;set;} public bool IsStop {get;set;} public List<MachineCraft> CraftRLs {get;set;}=new(); }
+ public class MachineCraft { public long Id {get;set;} public long MachineId {get;set;} public long CraftId {get;set;} }
+}
+namespace KingZon.Mes.Workflow.Entity {
+ public class WF_WorkflowTemplate { public long Id {get;set;} public string Name {get;set;}=""; public int Type {get;set;} }
+ public class WF_NodeTemplate { public long Id {get;set;} public long WorkflowTemplateId {get;set;} public string Name {get;set;}=""; }
+}
+namespace KingZon.Mes.Workflow.Model { public class NodeTemplateIM { public string Name {get;set;}=""; public int NodeTypeId {get;set;} public string Type {get;set;}=""; } }
+namespace KingZon.OLCM.Base.Service.Dto {
+ public class DataInfo { public string? DataName {get;set;} public long? DataUnitId {get;set;} public long? DataBaseUnitId {get;set;} public string? DataUnit {get;set;} public string? DataBaseUnitName {get;set;} public decimal? ToBaseUnitRatio {get;set;} public long? ToBaseUnitConversionId {get;set;} }
+}
+namespace KingZon.OLCM.Base.Shared.DataBase.JsonStructure {
+ public class InventoryUnitInboundDto { public long Id {get;set;} public long UnitId {get;set;} public string UnitName {get;set;}=""; public decimal Ratio {get;set;} public decimal Quantity {get;set;} }
+}
+namespace Kingzon.OLCM.Base.Services {
+ public class CommonService<T> where T:BaseEntity {
+  readonly CheckDb db;
+  public CommonService(CheckDb db) {this.db=db;}
+  public IQueryable<T> GetAll() { var q=db.Set<T>().AsQueryable(); return typeof(ISoftDeletedEntity).IsAssignableFrom(typeof(T))?q.Where(x=>!EF.Property<bool>(x,"IsDeleted")):q; }
+  public Task<T?> GetByIdAsync(long id)=>GetAll().FirstOrDefaultAsync(x=>EF.Property<long>(x,"Id")==id);
+  public async Task InsertAsync(T entity) { await db.Set<T>().AddAsync(entity); }
+  public async Task InsertAsync(List<T> entities) { await db.Set<T>().AddRangeAsync(entities); }
+  public void Delete(T entity,bool isSoftDelete=true) {if(isSoftDelete&&entity is ISoftDeletedEntity soft)soft.IsDeleted=true;else db.Remove(entity);}
+ }
+}
+public class WorkflowService(CheckDb db) {
+ public long Create(string name,int type) { var entity=new WF_WorkflowTemplate{Name=name,Type=type}; db.Add(entity); db.SaveChanges(); return entity.Id; }
+}
+public class NodeService(CheckDb db) {
+ public WF_NodeTemplate Create(long workflowId,NodeTemplateIM input) { var entity=new WF_NodeTemplate{WorkflowTemplateId=workflowId,Name=input.Name}; db.Add(entity); db.SaveChanges(); return entity; }
+}
+public class Work(CheckDb db):IUnitOfWork { public async Task SaveChangeAsync()=>await db.SaveChangesAsync(); }
+public class Utils {
+ public Dictionary<(InventoryDataType,long),DataInfo> Infos {get;}=new();
+ public Dictionary<(long,long?),List<GetProductUnitDto>> ProductUnits {get;}=new();
+ public DataInfo? GetDataInfo(InventoryDataType type,long id)=>Infos.GetValueOrDefault((type,id));
+}
+public class ProductService(Utils utils) {
+ public List<ProductIdDto> GetProductUnitList(List<ProductIdDto> products) {
+  foreach(var product in products) product.UnitList=utils.ProductUnits.GetValueOrDefault((product.ProductId,product.SpecificationId));
+  return products;
+ }
+}
+public class CheckDb(DbContextOptions<CheckDb> options):DbContext(options) {
+ protected override void OnModelCreating(ModelBuilder model) {
+  model.ApplyConfiguration(new ProductionMBomMap()); model.ApplyConfiguration(new ProductionMBomVersionMap());
+  model.ApplyConfiguration(new ProductionMBomDetailMap()); model.ApplyConfiguration(new TechnicalCraftMap());
+  model.ApplyConfiguration(new TechnicalNodeSettingTemplateMaterialRLMap());
+  model.ApplyConfiguration(new TechnicalNodeSettingTemplateMap()); model.ApplyConfiguration(new Technical_NodeTemplateSettingMachineRLMap());
+  // Version map refers to host-only InvalidTime/EffectiveTime columns; retain the version uniqueness constraint tested here.
+  model.Entity<Technical_CraftOrderVersion>().HasIndex(x=>new{x.CraftOrderId,x.SequenceNo}).IsUnique();
+  model.Entity<Technical_CraftOrderVersion>().HasIndex(x=>x.BomVersionId).IsUnique();
+  model.Entity<Technical_NodeSettingTemplate>().HasOne(x=>x.NodeTemplate).WithMany().HasForeignKey(x=>x.NodeTemplateId);
+  model.Entity<Base_Machine>().HasMany(x=>x.CraftRLs).WithOne().HasForeignKey(x=>x.MachineId);
+ }
+}

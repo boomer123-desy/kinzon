@@ -1,0 +1,88 @@
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using KingZon.OLCM.Base.Shared.DataBase.Entities;
+using KingZon.OLCM.Base.Shared.DataBase.Enum;
+using KingZon.OLCM.Production.Shared.DataBase.Entities;
+using KingZon.OLCM.Production.Shared.DataBase.Enum;
+
+static void Check(bool valid, string message) { if (!valid) throw new Exception(message); }
+using var connection = new SqliteConnection("Data Source=:memory:");
+connection.Open();
+connection.CreateFunction("IF", (bool condition, double yes, double no) => condition ? yes : no, isDeterministic: true);
+var options = new DbContextOptionsBuilder<PlanningDb>().UseSqlite(connection).Options;
+using var db = new PlanningDb(options);
+db.Database.EnsureCreated();
+db.AddRange(new Base_Product { Id=1 }, new Base_Product { Id=2 }, new Base_Unit { Id=1 },
+    new Base_Craft { Id=1 }, new Base_Department { Id=1 }, new Base_User { Id=1 }, new Base_Machine { Id=1 });
+var plan = new Production_Plan { Id=1, PlanNo="P1", PlanDate=DateTime.Today,
+    SourceDataType=ProductionPlanType.销售订单, SourceDataId=100,
+    ProductionPlanTime=DateTime.Today, RequiredDate=DateTime.Today.AddDays(5) };
+var a = new Production_Plan_Detail { Id=1, Plan=plan, ProductId=1, UnitId=1, ProductionPlanQuantity=30.125m, CraftOrderVersionId=101 };
+var b = new Production_Plan_Detail { Id=2, Plan=plan, ProductId=2, UnitId=1, ProductionPlanQuantity=50, CraftOrderVersionId=102 };
+var d1 = new Production_Plan_Demand { Id=1, PlanDetail=a, DemandKey="semi-A", DataType=InventoryDataType.Product, DataId=3, UnitId=1, RequiredQuantity=30, ProductionQuantity=30 };
+var d2 = new Production_Plan_Demand { Id=2, PlanDetail=b, DemandKey="semi-A", DataType=InventoryDataType.Product, DataId=3, UnitId=1, RequiredQuantity=50, ProductionQuantity=50 };
+db.AddRange(d1,d2,new Production_Dispatch_Order { Id=1 },new Production_Dispatch_Order { Id=2 });
+db.SaveChanges();
+db.Add(new Production_Plan_Material_RL { Id=1, PlanDetailId=1, CraftOrderVersionId=101, NodeTemplateSettingId=1010,
+    DataType=InventoryDataType.Product, DataId=3, UnitId=1, RequiredQuantity=1.123456m,
+    PurchaseQuantity=0.5m, InventoryQuantity=0.25m, ReturnQuantity=0.1m, ReturnOutboundQuantity=0.05m });
+db.SaveChanges();
+db.ChangeTracker.Clear();
+var savedPlan = db.Set<Production_Plan>().Include(x=>x.DetailList).Single();
+Check(savedPlan.DetailList.Count==2, "One plan retains multiple finished-product details");
+Check(savedPlan.DetailList.Single(x=>x.Id==1).ProductionPlanQuantity==30.125m, "Fractional finished-product quantities retained");
+Check(savedPlan.CompleteTime==null, "Incomplete plans have no fabricated completion time");
+Check(savedPlan.SourceDataType==ProductionPlanType.销售订单 && savedPlan.SourceDataId==100, "Source belongs to the plan header");
+var savedMaterial = db.Set<Production_Plan_Material_RL>().Include(x=>x.PlanDetail).Single();
+Check(savedMaterial.RequiredQuantity==1.123456m && savedMaterial.InventoryQuantity==0.25m && savedMaterial.ReturnOutboundQuantity==0.05m,
+    "Per-process material quantities and supply progress retain precision and finished-product ownership");
+db.AddRange(new Production_Dispatch_PlanRL { DispatchOrderId=1, PlanDemandId=1, DispatchQuantity=30, Quantity=30 },
+    new Production_Dispatch_PlanRL { DispatchOrderId=1, PlanDemandId=2, DispatchQuantity=50, Quantity=50 });
+db.SaveChanges();
+Check(db.Set<Production_Dispatch_PlanRL>().AsEnumerable().Sum(x=>x.Quantity)==80, "One dispatch allocates 30/50 to two product demands");
+db.AddRange(new Production_NodeSetting { Id=1, DispatchOrderId=1, Order=10, NodeName="Mix", CraftId=1, PlanQuantity=80, ReciveQuantity=12, CompleteQuantity=5 },
+    new Production_NodeSetting { Id=2, DispatchOrderId=1, Order=20, NodeName="Finish", CraftId=1, PlanQuantity=80, IsCompletionNode=true },
+    new Production_NodeSetting { Id=3, DispatchOrderId=2, Order=10, NodeName="Other order", CraftId=1 });
+db.SaveChanges();
+db.AddRange(new Production_NodeSetting_RL { DispatchOrderId=1, SourceNodeSettingId=1, TargetNodeSettingId=2 },
+    new Production_NodeSetting_MachineRL { Id=1, NodeSettingId=1, MachineId=1, DispatchQuantity=80, ReciveQuantity=12, CompleteQuantity=5 },
+    new Production_NodeSetting_UserRL { NodeSettingId=1, UserId=1, Quantity=80 },
+    new Production_Dispatch_OperationRecord { RecordNo="R1", DispatchOrderId=1, NodeSettingId=1, NodeSettingMachineId=1, DepartmentId=1, OperateUserId=1, Price=2, IncomeQuantity=3 },
+    new Production_Dispatch_OperationRecord { RecordNo="LEGACY", DispatchOrderId=1, DepartmentId=1, OperateUserId=1 },
+    new Production_Material_Receive_Demand { Id=1, DispatchOrderId=1, NodeSettingId=1, UnitId=1, ConvUnitInfo="[]" });
+db.SaveChanges();
+db.ChangeTracker.Clear();
+Check(db.Set<Production_NodeSetting>().Single(x=>x.Id==1).DoingQuantity==7, "Preserves host process computed quantity");
+Check(db.Set<Production_NodeSetting_MachineRL>().Single().DoingQuantity==7, "Preserves host machine computed quantity");
+Check(db.Set<Production_Dispatch_OperationRecord>().Single(x=>x.RecordNo=="R1").TotalPrice==6, "Existing report income computed column retained");
+Check(db.Set<Production_Dispatch_OperationRecord>().Single(x=>x.RecordNo=="LEGACY").NodeSettingId==null, "Legacy whole-order reports remain valid");
+
+void Reject(Action<PlanningDb> create, string message)
+{
+    using var test = new PlanningDb(options);
+    create(test);
+    try { test.SaveChanges(); }
+    catch (DbUpdateException) { return; }
+    throw new Exception(message);
+}
+Reject(x=>x.Add(new Production_Dispatch_PlanRL { DispatchOrderId=1, PlanDemandId=1, Quantity=1 }), "Duplicate allocation pair accepted");
+Reject(x=>x.Add(new Production_Plan_Demand { PlanDetailId=1, Revision=1, DemandKey="semi-A", UnitId=1 }), "Duplicate demand path accepted");
+Reject(x=>x.Add(new Production_Plan_Demand { PlanDetailId=2, ParentId=1, Revision=1, DemandKey="wrong-parent", UnitId=1 }), "Demand parent from another plan detail accepted");
+Reject(x=>x.Add(new Production_NodeSetting_RL { DispatchOrderId=1, SourceNodeSettingId=1, TargetNodeSettingId=3 }), "Cross-order process edge accepted");
+Reject(x=>x.Add(new Production_Dispatch_OperationRecord { RecordNo="BAD", DispatchOrderId=2, NodeSettingId=1, DepartmentId=1, OperateUserId=1 }), "Cross-order report accepted");
+Reject(x=>x.Add(new Production_Dispatch_OperationRecord { RecordNo="BAD-MACHINE", DispatchOrderId=1, NodeSettingId=2, NodeSettingMachineId=1, DepartmentId=1, OperateUserId=1 }), "Machine report linked to a different process accepted");
+Reject(x=>x.Add(new Production_Material_Receive_Demand { DispatchOrderId=2, NodeSettingId=1, UnitId=1, ConvUnitInfo="[]" }), "Cross-order material demand accepted");
+using (var first = new PlanningDb(options))
+using (var second = new PlanningDb(options))
+{
+    var x = first.Set<Production_Plan_Demand>().Single(x=>x.Id==1);
+    var y = second.Set<Production_Plan_Demand>().Single(x=>x.Id==1);
+    x.AllocationRevision++;
+    first.SaveChanges();
+    y.AllocationRevision++;
+    bool conflict=false;
+    try { second.SaveChanges(); } catch (DbUpdateConcurrencyException) { conflict=true; }
+    Check(conflict, "Concurrent allocation revision updates must conflict");
+}
+Check(!db.Model.GetEntityTypes().SelectMany(x=>x.GetProperties()).Any(x=>x.IsShadowProperty()), "Mappings must not introduce shadow FK columns");
+Console.WriteLine("PASS production planning: multi-source allocations, demand identity, process resources, host computed fields, legacy reports, FK boundaries and allocation concurrency.");

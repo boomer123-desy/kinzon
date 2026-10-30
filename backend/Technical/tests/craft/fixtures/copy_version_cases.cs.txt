@@ -1,0 +1,145 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
+using KingZon.Core;
+using KingZon.Mes.Workflow.Entity;
+using KingZon.OLCM.Base.Shared.DataBase.Entities;
+using KingZon.OLCM.Base.Shared.DataBase.Enum;
+using KingZon.OLCM.Base.Shared.DataBase.JsonStructure;
+using KingZon.OLCM.Production.Shared.DataBase.Entities;
+using KingZon.OLCM.Production.Shared.DataBase.Enum;
+using KingZon.OLCM.Technical.Shared.DataBase.Entities;
+using KingZon.OLCM.Technical.Shared.DataBase.Enum;
+using KingZon.OLCM.Technical.WebApi.Dto;
+
+var syntax=CSharpSyntaxTree.ParseText(File.ReadAllText(args[0]));
+var syntaxErrors=syntax.GetDiagnostics().Where(x=>x.Severity==DiagnosticSeverity.Error).ToArray();
+if(syntaxErrors.Length>0)throw new Exception(string.Join("\n",syntaxErrors.Select(x=>x.ToString())));
+var checks=1;
+void Assert(bool condition,string message) { if(!condition)throw new Exception(message);checks++; }
+long ResponseId(IActionResult result) => JsonSerializer.SerializeToElement(((OkObjectResult)result).Value).GetProperty("Id").GetInt64();
+CopyCraftVersionDto Request(long target=2) => new(){CraftOrderId=target,SourceCraftOrderId=1,SourceVersionId=1};
+async Task Reject(Func<Task> action,string message) { try {await action();throw new Exception("Expected failure: "+message);} catch(Exception ex) when(ex.Message.Contains(message)) {checks++;} }
+async Task Scenario(string name,Func<CheckDb,CopyController,Utils,Task> run) {
+ await using var connection=new SqliteConnection("Data Source=:memory:"); await connection.OpenAsync();
+ var options=new DbContextOptionsBuilder<CheckDb>().UseSqlite(connection)
+  .ConfigureWarnings(w=>w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.AmbientTransactionWarning)).Options;
+ await using var db=new CheckDb(options); await db.Database.EnsureCreatedAsync(); var utils=new Utils();
+ foreach(var id in new long[]{100,101,102,103,200}) {
+  db.Add(new Base_Product{Id=id});
+  utils.Infos[(InventoryDataType.Product,id)]=new(){DataName=$"P{id}",DataUnitId=1,DataBaseUnitId=1,DataUnit="kg"};
+  utils.ProductUnits[(id,null)]=new(){new(){Code="-1",UnitId=1,Value="1",Text="kg"}};
+ }
+ db.Add(new Base_Craft{Id=7});
+ db.Add(new Base_Machine{Id=8,CraftRLs=new(){new(){MachineId=8,CraftId=7}}});
+ db.Add(new Base_Machine{Id=9,CraftRLs=new(){new(){MachineId=9,CraftId=7}}});
+ for(var id=1;id<=3;id++)db.Add(new WF_WorkflowTemplate{Id=id,Name=$"W{id}"});
+ db.Add(new Technical_CraftOrder{Id=1,Code="SOURCE",Name="来源工艺单",ProductId=100});
+ db.Add(new Technical_CraftOrder{Id=2,Code="TARGET",Name="目标工艺单",ProductId=200});
+ db.Add(new Technical_CraftOrder{Id=3,Code="REF",Name="引用工艺单",ProductId=103});
+ db.Add(new Technical_CraftOrderVersion{Id=1,CraftOrderId=1,SequenceNo=4,Version="V4",Status=CraftOrderVersionStatus.已发布,IsMain=true,WorkflowTemplateId=1,Remark="来源备注"});
+ db.Add(new Technical_CraftOrderVersion{Id=2,CraftOrderId=2,SequenceNo=5,Version="V5",Status=CraftOrderVersionStatus.已发布,IsMain=true,WorkflowTemplateId=2});
+ db.Add(new Technical_CraftOrderVersion{Id=3,CraftOrderId=3,SequenceNo=1,Version="V1",Status=CraftOrderVersionStatus.已发布,IsMain=true,WorkflowTemplateId=3});
+ for(var id=10;id<=12;id++)db.Add(new WF_NodeTemplate{Id=id,WorkflowTemplateId=1,Name=$"N{id}"});
+ db.Add(new Technical_NodeSettingTemplate{Id=10,CraftOrderVersionId=1,NodeTemplateId=10,Sequence=10,Code="010",Name="加工",CraftId=7,IsInbound=true,IsReportWork=true,TheoreticalWorkHours=2.5m,Description="加工说明"});
+ db.Add(new Technical_NodeSettingTemplate{Id=11,CraftOrderVersionId=1,NodeTemplateId=11,Sequence=20,Code="020",Name="外协",CraftId=7,IsOutsource=true,IsInbound=false,IsReportWork=false,TheoreticalWorkHours=3.125m,Description="外协说明"});
+ db.Add(new Technical_NodeSettingTemplate{Id=12,CraftOrderVersionId=1,NodeTemplateId=12,Sequence=30,Code="030",Name="已删工序",IsDeleted=true});
+ db.Add(new Technical_NodeSettingTemplate_Machine_RL{Id=20,NodeSettingTemplateId=10,MachineId=8,TheoreticalWorkHours=2.25m});
+ db.Add(new Technical_NodeSettingTemplate_Machine_RL{Id=21,NodeSettingTemplateId=11,MachineId=9,TheoreticalWorkHours=3.125m});
+ db.Add(new Technical_NodeSettingTemplate_Machine_RL{Id=22,NodeSettingTemplateId=10,MachineId=9,IsDeleted=true});
+ Technical_NodeSettingTemplate_Material_RL Material(long id,long node,long data,decimal quantity,NodeIOType io=NodeIOType.输入,long? instead=null) => new(){Id=id,NodeSettingTemplateId=node,DataId=data,DataType=InventoryDataType.Product,IOType=io,Quantity=quantity,UnitId=1,UnitConversionId=-1,UnitListInfo="[{\"id\":-1,\"unitId\":1,\"unitName\":\"kg\",\"ratio\":1,\"quantity\":2.25}]",LossRate=0.125m,SortNo=(int)id,Remark="物料说明",InsteadSourceId=instead};
+ db.Add(Material(1001,10,101,2.25m)); db.Add(Material(1002,10,102,3.5m,instead:1001));
+ db.Add(Material(1003,10,100,1,NodeIOType.输出));
+ var referenced=Material(1004,11,103,4); referenced.RefCraftOrderVersionId=3; db.Add(referenced);
+ db.Add(Material(1005,11,100,1,NodeIOType.输出)); db.Add(Material(1006,12,102,99));
+ await db.SaveChangesAsync(); var controller=new CopyController(db,utils);
+ await controller.Sync((await db.Set<Technical_CraftOrderVersion>().FindAsync(3L))!);
+ await controller.Sync((await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!);
+ await controller.Sync((await db.Set<Technical_CraftOrderVersion>().FindAsync(2L))!);
+ await run(db,controller,utils); Console.WriteLine("PASS "+name);
+}
+await Scenario("cross-order copy preserves business data and creates independent workflow, nodes, materials and BOM",async(db,controller,utils)=>{
+ var source=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;
+ var sourceBom=source.BomVersionId; var originalRows=await db.Set<Technical_NodeSettingTemplate_Material_RL>().Where(x=>x.NodeSettingTemplateId==10||x.NodeSettingTemplateId==11).AsNoTracking().ToListAsync();
+ var id=ResponseId(await controller.CopyCraftVersion(Request())); var copy=(await db.Set<Technical_CraftOrderVersion>().FindAsync(id))!;
+ Assert(copy.Id!=source.Id&&copy.CraftOrderId==2&&copy.SequenceNo==6&&copy.Version=="V6","target next version");
+ Assert(copy.Status==CraftOrderVersionStatus.暂存&&!copy.IsMain&&copy.Remark=="来源备注","draft metadata and existing main preserved");
+ Assert(copy.WorkflowTemplateId!=source.WorkflowTemplateId&&copy.BomVersionId!=sourceBom,"workflow and BOM version independent");
+ var nodes=await db.Set<Technical_NodeSettingTemplate>().Where(x=>x.CraftOrderVersionId==id).OrderBy(x=>x.Sequence).ToListAsync();
+ Assert(nodes.Count==2&&nodes.All(x=>x.Id>12&&x.NodeTemplateId>12),"deleted process excluded and IDs regenerated");
+ Assert(nodes[0].Code=="010"&&nodes[0].Name=="加工"&&nodes[0].CraftId==7&&nodes[0].IsInbound&&nodes[0].IsReportWork&&nodes[0].TheoreticalWorkHours==2.5m&&nodes[0].Description=="加工说明","production properties copied");
+ Assert(nodes[1].IsOutsource&&!nodes[1].IsInbound&&!nodes[1].IsReportWork&&nodes[1].TheoreticalWorkHours==3.125m,"outsource flags retained independently");
+ Assert(await db.Set<WF_NodeTemplate>().CountAsync(x=>x.WorkflowTemplateId==copy.WorkflowTemplateId)==2,"new nodes belong to new workflow");
+ var nodeIds=nodes.Select(x=>x.Id).ToList();var machines=await db.Set<Technical_NodeSettingTemplate_Machine_RL>().Where(x=>nodeIds.Contains(x.NodeSettingTemplateId)).ToListAsync();
+ Assert(machines.Count==2&&machines.All(x=>x.Id>22)&&machines.Single(x=>x.MachineId==8).TheoreticalWorkHours==2.25m,"machines and hours cloned, deleted relationship excluded");
+ var materials=await db.Set<Technical_NodeSettingTemplate_Material_RL>().Where(x=>nodeIds.Contains(x.NodeSettingTemplateId)).ToListAsync();
+ Assert(materials.Count==5&&materials.All(x=>x.Id>1006),"both input and output material rows independently created");
+ var main=materials.Single(x=>x.DataId==101);var sub=materials.Single(x=>x.DataId==102);
+ Assert(sub.InsteadSourceId==main.Id&&sub.NodeSettingTemplateId==main.NodeSettingTemplateId,"substitute references copied main");
+ foreach(var material in materials) {
+  var old=originalRows.Single(x=>x.SortNo==material.SortNo);
+  Assert(material.DataId==old.DataId&&material.DataType==old.DataType&&material.IOType==old.IOType&&material.Quantity==old.Quantity&&material.LossRate==old.LossRate&&material.Remark==old.Remark,"material amounts, order, losses and remarks retained");
+  Assert(material.UnitId==old.UnitId&&material.UnitConversionId==old.UnitConversionId&&material.UnitListInfo==old.UnitListInfo&&material.RefCraftOrderVersionId==old.RefCraftOrderVersionId,"unit snapshots and referenced versions retained");
+ }
+ var copiedBom=(await db.Set<Production_MBom_Version>().FindAsync(copy.BomVersionId))!;
+ Assert((await db.Set<Production_MBom>().FindAsync(copiedBom.MBomId))!.ProductId==200&&copiedBom.Status==BomStatus.待审核,"BOM uses target product and draft state");
+ var bomRows=await db.Set<Production_MBom_Detail>().Where(x=>x.VersionId==copy.BomVersionId).ToListAsync();
+ Assert(bomRows.Count==3&&bomRows.Any(x=>x.DetailType==BomDetailType.Bom)&&!bomRows.Any(x=>x.DetailType==BomDetailType.Product&&x.DetailId==100),"BOM aggregates inputs only and retains child BOM");
+ var bomMain=bomRows.Single(x=>x.DetailType==BomDetailType.Product&&x.DetailId==101);
+ Assert(bomRows.Single(x=>x.IsSubstitute).MainDetailId==bomMain.Id,"BOM substitute references new BOM main");
+ main.Quantity=9;await db.SaveChangesAsync();
+ Assert((await db.Set<Technical_NodeSettingTemplate_Material_RL>().FindAsync(1001L))!.Quantity==2.25m&&source.BomVersionId==sourceBom&&source.Status==CraftOrderVersionStatus.已发布,"editing copy leaves source unchanged");
+});
+await Scenario("same-order copying accepts every visible state and retains the original main",async(db,controller,utils)=>{
+ var source=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;
+ var sequence=4;
+ foreach(var state in Enum.GetValues<CraftOrderVersionStatus>()) {
+  source.Status=state;await db.SaveChangesAsync();var id=ResponseId(await controller.CopyCraftVersion(Request(1)));
+  var copy=(await db.Set<Technical_CraftOrderVersion>().FindAsync(id))!;
+  Assert(copy.SequenceNo==++sequence&&copy.Status==CraftOrderVersionStatus.暂存&&!copy.IsMain,"all non-deleted statuses copy to new draft");
+ }
+ Assert(source.IsMain,"copy never transfers source main flag");
+});
+await Scenario("invalid IDs, mismatched source and deleted records reject before insertion",async(db,controller,utils)=>{
+ await Reject(()=>controller.CopyCraftVersion(new()),"目标工艺单");
+ await Reject(()=>controller.CopyCraftVersion(new(){CraftOrderId=2}),"来源工艺单及版本");
+ await Reject(()=>controller.CopyCraftVersion(new(){CraftOrderId=2,SourceCraftOrderId=2,SourceVersionId=1}),"不匹配");
+ await Reject(()=>controller.CopyCraftVersion(new(){CraftOrderId=2,SourceCraftOrderId=1,SourceVersionId=999}),"不存在或已删除");
+ await Reject(()=>controller.CopyCraftVersion(Request(999)),"目标工艺单不存在");
+ var source=(await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!;source.IsDeleted=true;await db.SaveChangesAsync();
+ await Reject(()=>controller.CopyCraftVersion(Request()),"来源工艺单版本不存在");source.IsDeleted=false;
+ var order=(await db.Set<Technical_CraftOrder>().FindAsync(1L))!;order.IsDeleted=true;await db.SaveChangesAsync();
+ await Reject(()=>controller.CopyCraftVersion(Request()),"来源工艺单版本不存在");order.IsDeleted=false;
+ var target=(await db.Set<Technical_CraftOrder>().FindAsync(2L))!;target.IsDeleted=true;await db.SaveChangesAsync();
+ await Reject(()=>controller.CopyCraftVersion(Request()),"目标工艺单不存在");
+ Assert(await db.Set<Technical_CraftOrderVersion>().CountAsync()==3&&await db.Set<WF_WorkflowTemplate>().CountAsync()==3,"invalid requests create no version or workflow");
+});
+await Scenario("late BOM validation failure can roll back all copied records",async(db,controller,utils)=>{
+ utils.ProductUnits[(200,null)]=new(){new(){Code="-1",UnitId=1,Value="0",Text="bad unit"}};
+ await using(var tx=await db.Database.BeginTransactionAsync()) {
+  await Reject(()=>controller.CopyCraftVersion(Request()),"有效转换关系");await tx.RollbackAsync();
+ }
+ db.ChangeTracker.Clear();
+ Assert(await db.Set<Technical_CraftOrderVersion>().CountAsync()==3&&await db.Set<WF_WorkflowTemplate>().CountAsync()==3,"version/workflow rollback");
+ Assert(await db.Set<Technical_NodeSettingTemplate>().CountAsync()==3&&await db.Set<WF_NodeTemplate>().CountAsync()==3,"business/workflow nodes rollback");
+ Assert(await db.Set<Technical_NodeSettingTemplate_Material_RL>().CountAsync()==6&&await db.Set<Technical_NodeSettingTemplate_Machine_RL>().CountAsync()==3,"materials/machines rollback");
+ Assert(await db.Set<Production_MBom_Version>().CountAsync()==3,"new BOM version rollback");
+});
+await Scenario("empty new version still creates its default process and first-version main",async(db,controller,utils)=>{
+ db.Add(new Technical_CraftOrder{Id=4,Code="NEW",Name="新工艺单",ProductId=101});await db.SaveChangesAsync();
+ var id=ResponseId(await controller.CreateCraftVersion(new(){CraftOrderId=4,Remark="新建备注"}));
+ var version=(await db.Set<Technical_CraftOrderVersion>().FindAsync(id))!;
+ var node=await db.Set<Technical_NodeSettingTemplate>().SingleAsync(x=>x.CraftOrderVersionId==id);
+ Assert(version.SequenceNo==1&&version.IsMain&&version.Status==CraftOrderVersionStatus.暂存&&version.Remark=="新建备注","create metadata unchanged");
+ Assert(node.Code=="10"&&node.Name=="新工序"&&node.Sequence==10,"default empty process retained");
+ Assert(!await db.Set<Technical_NodeSettingTemplate_Material_RL>().AnyAsync(x=>x.NodeSettingTemplateId==node.Id),"empty creation does not copy materials");
+});
+await Scenario("malformed substitute references are rejected instead of silently losing rows",async(db,controller,utils)=>{
+ var sub=(await db.Set<Technical_NodeSettingTemplate_Material_RL>().FindAsync(1002L))!;sub.InsteadSourceId=1004;await db.SaveChangesAsync();
+ await Reject(()=>controller.CopyCraftVersion(Request()),"未关联本工序主料");
+ Assert(await db.Set<Technical_CraftOrderVersion>().CountAsync()==3,"bad source leaves target unchanged");
+});
+Console.WriteLine($"PASS {checks} copy-version assertions (SQLite with host service stubs)");

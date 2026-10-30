@@ -1,0 +1,372 @@
+{
+  "year": 2026,
+  "month": 3,
+  "startDate": "2026-03-26T00:00:00",
+  "endDate": "2026-04-25T00:00:00",
+  "weeks": [
+    {
+      "weekNo": 1,
+      "startDate": "2026-03-26T00:00:00",
+      "endDate": "2026-03-27T00:00:00",
+      "days": 2
+    },
+    {
+      "weekNo": 2,
+      "startDate": "2026-03-28T00:00:00",
+      "endDate": "2026-04-03T00:00:00",
+      "days": 7
+    },
+    {
+      "weekNo": 3,
+      "startDate": "2026-04-04T00:00:00",
+      "endDate": "2026-04-10T00:00:00",
+      "days": 7
+    },
+    {
+      "weekNo": 4,
+      "startDate": "2026-04-11T00:00:00",
+      "endDate": "2026-04-17T00:00:00",
+      "days": 7
+    },
+    {
+      "weekNo": 5,
+      "startDate": "2026-04-18T00:00:00",
+      "endDate": "2026-04-24T00:00:00",
+      "days": 7
+    },
+    {
+      "weekNo": 6,
+      "startDate": "2026-04-25T00:00:00",
+      "endDate": "2026-04-25T00:00:00",
+      "days": 1
+    }
+  ],
+  "orderAmount": 4208055.809,
+  "deliveryAmount": 0,
+  "returnAmount": 15347.0372,
+  "netDeliveryAmount": -15347.0372,
+  "januaryNetDeliveryAmount": -22991.4212,
+  "lastYearNetDeliveryAmount": -21886.8108,
+  "previousMonthNetDeliveryAmount": -32105.061,
+  "yearOnYearRate": 0.2988,
+  "monthOnMonthRate": 0.521975,
+  "orderWeeks": [
+    {
+      "weekNo": 1,
+      "amount": 528337.9208
+    },
+    {
+      "weekNo": 2,
+      "amount": 992416.3406
+    },
+    {
+      "weekNo": 3,
+      "amount": 359492.521
+    },
+    {
+      "weekNo": 4,
+      "amount": 1207099.7006
+    },
+    {
+      "weekNo": 5,
+      "amount": 1120709.326
+    },
+    {
+      "weekNo": 6,
+      "amount": 0
+    }
+  ],
+  "deliveryWeeks": [
+    {
+      "weekNo": 1,
+      "amount": 0
+    },
+    {
+      "weekNo": 2,
+      "amount": 0
+    },
+    {
+      "weekNo": 3,
+      "amount": 0
+    },
+    {
+      "weekNo": 4,
+      "amount": 0
+    },
+    {
+      "weekNo": 5,
+      "amount": 0
+    },
+    {
+      "weekNo": 6,
+      "amount": 0
+    }
+  ],
+  "categories": [
+    {
+      "orderAmount": 4208055.809,
+      "deliveryAmount": 0,
+      "returnAmount": 15347.0372,
+      "netDeliveryAmount": -15347.0372,
+      "januaryNetDeliveryAmount": -22991.4212,
+      "lastYearNetDeliveryAmount": -21886.8108,
+      "previousMonthNetDeliveryAmount": -32105.061,
+      "yearOnYearRate": 0.2988,
+      "monthOnMonthRate": 0.521975,
+      "orderWeeks": [
+        {
+          "weekNo": 1,
+          "amount": 528337.9208
+        },
+        {
+          "weekNo": 2,
+          "amount": 992416.3406
+        },
+        {
+          "weekNo": 3,
+          "amount": 359492.521
+        },
+        {
+          "weekNo": 4,
+          "amount": 1207099.7006
+        },
+        {
+          "weekNo": 5,
+          "amount": 1120709.326
+        },
+        {
+          "weekNo": 6,
+          "amount": 0
+        }
+      ],
+      "deliveryWeeks": [
+        {
+          "weekNo": 1,
+          "amount": 0
+        },
+        {
+          "weekNo": 2,
+          "amount": 0
+        },
+        {
+          "weekNo": 3,
+          "amount": 0
+        },
+        {
+          "weekNo": 4,
+          "amount": 0
+        },
+        {
+          "weekNo": 5,
+          "amount": 0
+        },
+        {
+          "weekNo": 6,
+          "amount": 0
+        }
+      ],
+      "categoryId": 1,
+      "categoryName": "示例分类",
+      "customers": [
+        {
+          "orderAmount": 81584,
+          "deliveryAmount": 0,
+          "returnAmount": 0,
+          "netDeliveryAmount": 0,
+          "januaryNetDeliveryAmount": 0,
+          "lastYearNetDeliveryAmount": -6834,
+          "previousMonthNetDeliveryAmount": 0,
+          "yearOnYearRate": 1,
+          "monthOnMonthRate": null,
+          "orderWeeks": [
+            {
+              "weekNo": 1,
+              "amount": 0
+            },
+            {
+              "weekNo": 2,
+              "amount": 20565
+            },
+            {
+              "weekNo": 3,
+              "amount": 19050
+            },
+            {
+              "weekNo": 4,
+              "amount": 0
+            },
+            {
+              "weekNo": 5,
+              "amount": 41969
+            },
+            {
+              "weekNo": 6,
+              "amount": 0
+            }
+          ],
+          "deliveryWeeks": [
+            {
+              "weekNo": 1,
+              "amount": 0
+            },
+            {
+              "weekNo": 2,
+              "amount": 0
+            },
+            {
+              "weekNo": 3,
+              "amount": 0
+            },
+            {
+              "weekNo": 4,
+              "amount": 0
+            },
+            {
+              "weekNo": 5,
+              "amount": 0
+            },
+            {
+              "weekNo": 6,
+              "amount": 0
+            }
+          ],
+          "customerId": 30,
+          "customerName": "示例客户30",
+          "rank": 30
+        },
+        {
+          "orderAmount": 364629.4226,
+          "deliveryAmount": 0,
+          "returnAmount": 1551,
+          "netDeliveryAmount": -1551,
+          "januaryNetDeliveryAmount": -830.4,
+          "lastYearNetDeliveryAmount": 0,
+          "previousMonthNetDeliveryAmount": 0,
+          "yearOnYearRate": null,
+          "monthOnMonthRate": null,
+          "orderWeeks": [
+            {
+              "weekNo": 1,
+              "amount": 37359.6208
+            },
+            {
+              "weekNo": 2,
+              "amount": 75860.0406
+            },
+            {
+              "weekNo": 3,
+              "amount": 119308.618
+            },
+            {
+              "weekNo": 4,
+              "amount": 98721.1676
+            },
+            {
+              "weekNo": 5,
+              "amount": 33379.9756
+            },
+            {
+              "weekNo": 6,
+              "amount": 0
+            }
+          ],
+          "deliveryWeeks": [
+            {
+              "weekNo": 1,
+              "amount": 0
+            },
+            {
+              "weekNo": 2,
+              "amount": 0
+            },
+            {
+              "weekNo": 3,
+              "amount": 0
+            },
+            {
+              "weekNo": 4,
+              "amount": 0
+            },
+            {
+              "weekNo": 5,
+              "amount": 0
+            },
+            {
+              "weekNo": 6,
+              "amount": 0
+            }
+          ],
+          "customerId": 47,
+          "customerName": "示例客户47",
+          "rank": 47
+        },
+        {
+          "orderAmount": 2659206.963,
+          "deliveryAmount": 0,
+          "returnAmount": 13796.0372,
+          "netDeliveryAmount": -13796.0372,
+          "januaryNetDeliveryAmount": -4776.1602,
+          "lastYearNetDeliveryAmount": -13470.8108,
+          "previousMonthNetDeliveryAmount": -5582.181,
+          "yearOnYearRate": -0.024143,
+          "monthOnMonthRate": -1.471442,
+          "orderWeeks": [
+            {
+              "weekNo": 1,
+              "amount": 404371.82
+            },
+            {
+              "weekNo": 2,
+              "amount": 605021.78
+            },
+            {
+              "weekNo": 3,
+              "amount": 50518.98
+            },
+            {
+              "weekNo": 4,
+              "amount": 872696.333
+            },
+            {
+              "weekNo": 5,
+              "amount": 726598.05
+            },
+            {
+              "weekNo": 6,
+              "amount": 0
+            }
+          ],
+          "deliveryWeeks": [
+            {
+              "weekNo": 1,
+              "amount": 0
+            },
+            {
+              "weekNo": 2,
+              "amount": 0
+            },
+            {
+              "weekNo": 3,
+              "amount": 0
+            },
+            {
+              "weekNo": 4,
+              "amount": 0
+            },
+            {
+              "weekNo": 5,
+              "amount": 0
+            },
+            {
+              "weekNo": 6,
+              "amount": 0
+            }
+          ],
+          "customerId": 48,
+          "customerName": "示例客户48",
+          "rank": 48
+        }
+      ]
+    }
+  ]
+}

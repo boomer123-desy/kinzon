@@ -1,0 +1,138 @@
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using KingZon.OLCM.Base.Shared.DataBase.Entities;
+using KingZon.OLCM.Base.Shared.DataBase.Enum;
+using KingZon.OLCM.Inventory.Shared.DataBase.Entities;
+using KingZon.OLCM.Inventory.Shared.DataBase.Enum;
+using KingZon.OLCM.Technical.Shared.DataBase.Entities;
+using KingZon.OLCM.Technical.Shared.DataBase.Enum;
+using KingZon.OLCM.Technical.WebApi.Dto;
+using KingZon.OLCM.Technical.WebApi.Controllers;
+
+var checks = 0;
+void Assert(bool valid, string message) { if (!valid) throw new Exception(message); checks++; }
+Technical_NodeSettingTemplate_Material_RL Material(long id, long node, long material, decimal quantity,
+    long? reference = null, long? main = null, NodeIOType io = NodeIOType.输入)
+ => new() { Id = id, NodeSettingTemplateId = node, DataId = material, DataType = InventoryDataType.Product,
+    Quantity = quantity, UnitId = 1, UnitListInfo = "[]", RefCraftOrderVersionId = reference, InsteadSourceId = main, IOType = io };
+Inventory_Record Stock(long id, long material, decimal quantity, InventoryDataType type = InventoryDataType.Product)
+ => new() { Id = id, DataId = material, DataType = type, InventoryType = InventoryType.入库,
+    SourceType = InventorySourceType.直接入库, RemainQuantity = quantity };
+ProductionScheduleManageController Controller(QueryDb db) => new(new(db), new(db), new(db), new(db), new(db), new(db), new(db), new(db));
+async Task<ProductionScheduleQuantityResultDto> Query(ProductionScheduleManageController controller, ProductionScheduleQuantityQueryDto query)
+ => (ProductionScheduleQuantityResultDto)((OkObjectResult)await controller.GetMaterialQuantityTree(query)).Value!;
+IEnumerable<ScheduleMaterialNodeDto> Flatten(IEnumerable<ScheduleMaterialNodeDto> nodes) => nodes.SelectMany(x => new[] { x }.Concat(Flatten(x.Children)));
+void AddVersion(QueryDb db, long versionId, long productId) {
+ db.Add(new Technical_CraftOrder { Id = versionId, ProductId = productId, Code = $"CO{versionId}", Name = $"Order{versionId}" });
+ db.Add(new Technical_CraftOrderVersion { Id = versionId, CraftOrderId = versionId, Version = "V1", WorkflowTemplateId = 1 });
+ db.Add(new Technical_NodeSettingTemplate { Id = versionId, CraftOrderVersionId = versionId, Sequence = 10, NodeTemplateId = 1 });
+}
+async Task Scenario(string name, Func<QueryDb, ProductionScheduleManageController, Task> run) {
+ await using var connection = new SqliteConnection("Data Source=:memory:"); await connection.OpenAsync();
+ await using var db = new QueryDb(new DbContextOptionsBuilder<QueryDb>().UseSqlite(connection).Options); await db.Database.EnsureCreatedAsync();
+ db.Add(new Base_Unit { Id = 1, Name = "PCS" }); db.Add(new Base_Unit { Id = 2, Name = "BOX" });
+ db.Add(new KingZon.Mes.Workflow.Entity.WF_WorkflowTemplate { Id = 1 }); db.Add(new KingZon.Mes.Workflow.Entity.WF_NodeTemplate { Id = 1 });
+ for (long id = 100; id <= 108; id++) db.Add(new Base_Product { Id = id, ProductNo = $"P{id}", ProductName = $"Product{id}", BaseUnitId = 1 });
+ AddVersion(db, 1, 100); await db.SaveChangesAsync(); await run(db, Controller(db)); Console.WriteLine("PASS " + name);
+}
+async Task Reject(Func<Task> action, string fragment) {
+ try { await action(); } catch (Exception e) when (e.Message.Contains(fragment)) { checks++; return; }
+ throw new Exception("Expected rejection: " + fragment);
+}
+await Scenario("direct input materials, shared inventory, occupations and substitutes", async (db, controller) => {
+ AddVersion(db, 2, 101);
+ db.Add(new Technical_NodeSettingTemplate { Id = 20, CraftOrderVersionId = 1, Sequence = 20, NodeTemplateId = 1 });
+ db.Add(new Technical_NodeSettingTemplate { Id = 30, CraftOrderVersionId = 1, Sequence = 30, NodeTemplateId = 1, IsDeleted = true });
+ db.AddRange(Material(1, 1, 101, 1, reference: 2), Material(2, 1, 102, 0.4m), Material(3, 20, 102, 0.6m),
+    Material(4, 2, 102, 2), Material(5, 1, 103, 1, main: 2), Material(6, 20, 103, 2, main: 3),
+    Material(7, 1, 104, 99, io: NodeIOType.输出), Material(8, 30, 104, 88));
+ db.Add(Stock(1, 101, 4)); var materialStock = Stock(2, 102, 20);
+ materialStock.OccupyList.Add(new() { OccupyQuantity = 5, ReleaseQuantity = 2 });
+ materialStock.OccupyList.Add(new() { OccupyQuantity = 100, IsCompleted = true }); db.Add(materialStock);
+ var extra = Stock(3, 102, 2); extra.OccupyList.Add(new() { OccupyQuantity = 1, ReleaseQuantity = 5 }); db.Add(extra);
+ (await db.Set<Base_Product>().FindAsync(102L))!.SafetyStock = 1;
+ var abnormal = Stock(4, 102, 100); abnormal.SourceType = InventorySourceType.异常入库; db.Add(abnormal);
+ var outbound = Stock(5, 102, 100); outbound.InventoryType = InventoryType.出库; db.Add(outbound);
+ var deleted = Stock(6, 102, 100); deleted.IsDeleted = true; db.Add(deleted); await db.SaveChangesAsync();
+ var result = await Query(controller, new() { CraftVersionId = 1, Quantity = 10 });
+ Assert(result.Quantity == 10 && result.CraftOrderCode == "CO1" && result.QuantityBasis == "inventory", "root metadata");
+ Assert((await db.Set<Technical_CraftOrderVersion>().FindAsync(1L))!.BomVersionId == null, "no manufacturing BOM required");
+ var semi = result.Nodes[0]; var child = semi.Children.Single(); var material = result.Nodes[1];
+ Assert(semi.Gross == 10 && semi.Available == 4 && semi.Net == 6, "semi inventory reduces production");
+ Assert(child.Gross == 12, "children follow parent shortage rather than gross quantity");
+ Assert(child.Stock == 22 && child.Occupied == 3 && child.SafetyStock == 1, "normal stock and unreleased occupation only");
+ Assert(child.Available == 12 && material.Available == 6 && material.Net == 4, "shared material allocated once");
+ Assert(child.Id != material.Id && child.ParentId == semi.Id, "stable separate demand paths");
+ Assert(material.MaterialRlIds.SequenceEqual(new long[] { 2, 3 }) && material.NodeSettingTemplateIds.SequenceEqual(new long[] { 1, 20 }), "all contributing process/material IDs retained");
+ Assert(result.NodeCount == 3 && result.Materials.Count == 2, "outputs, deleted nodes and substitutes are not demands");
+ Assert(material.Substitutes.Single().DataId == 103 && material.Substitutes.Single().QuantityPerParentUnit == 3, "substitute quantities aggregated");
+ Assert(material.Substitutes.Single().MaterialRlIds.SequenceEqual(new long[] { 5, 6 }), "substitute material IDs retained");
+ var summary = result.Materials.Single(x => x.DataId == 102);
+ Assert(summary.Gross == 22 && summary.Available == 18 && summary.Net == 4 && summary.Stock == 22 && summary.Occupied == 3 && summary.OccurrenceCount == 2, "summary does not duplicate inventory");
+ Assert(material.Transit == null && material.InProduction == null && material.ScheduledTotal == null, "unqueried supply is null");
+ Assert(!db.ChangeTracker.Entries().Any(x => x.State != EntityState.Unchanged), "query does not stage writes");
+ var filtered = await Query(controller, new() { CraftVersionId = 1, Quantity = 10, Keyword = "P102", ShortageOnly = true });
+ Assert(filtered.Nodes.Count == 1 && filtered.Nodes.Single().Id == material.Id && filtered.Materials.Single(x => x.DataId == 102).Net == 4, "filter follows full allocation");
+ var zero = await Query(controller, new() { CraftVersionId = 1, Quantity = 0.5m });
+ Assert(zero.Nodes[0].Children.Single().Gross == 0 && zero.Nodes[0].Children.Single().Status == "无需需求", "stocked parent creates no child production demand");
+ var first = (await db.Set<Technical_NodeSettingTemplate_Material_RL>().FindAsync(2L))!; first.Quantity = 0.8m; await db.SaveChangesAsync();
+ var updated = await Query(controller, new() { CraftVersionId = 1, Quantity = 10 });
+ Assert(updated.Nodes[1].Gross == 14 && updated.Nodes[1].Id == material.Id, "quantity changes read directly and keep demand ID");
+});
+await Scenario("five-level craft references, distinct version groups and ancestor filtering", async (db, controller) => {
+ for (long id = 2; id <= 5; id++) AddVersion(db, id, 100 + id);
+ for (long id = 1; id <= 4; id++) db.Add(Material(id, id, 101 + id, 2, reference: id + 1));
+ db.Add(Material(5, 5, 106, 3));
+ // Another version for the same product: retain two demand paths instead of merging different recipes.
+ AddVersion(db, 6, 102); db.Add(Material(6, 1, 102, 1, reference: 6)); db.Add(Material(7, 6, 103, 2, reference: 3));
+ await db.SaveChangesAsync(); var result = await Query(controller, new() { CraftVersionId = 1, Quantity = 1 });
+ var flat = Flatten(result.Nodes).ToList(); Assert(flat.Count == 10 && flat.Max(x => x.Level) == 5, "five levels and shared craft references preserved");
+ Assert(flat.Where(x => x.DataId == 106).Sum(x => x.Gross) == 72, "recursive material coefficients");
+ Assert(flat.Select(x => x.Id).Distinct().Count() == flat.Count, "same referenced materials have separate full paths");
+ Assert(result.Nodes.Count == 2 && result.Nodes[0].CraftVersionId == 2 && result.Nodes[1].CraftVersionId == 6, "same material with different craft versions stays separate");
+ var filtered = await Query(controller, new() { CraftVersionId = 1, Quantity = 1, Keyword = "P106" });
+ Assert(filtered.Nodes.Count == 2 && Flatten(filtered.Nodes).Count() == 10, "matching leaves retain ancestors");
+ var other = await Query(controller, new() { CraftVersionId = 1, Quantity = 1 });
+ Assert(Flatten(other.Nodes).Select(x => (x.Id, x.Gross, x.Available)).SequenceEqual(flat.Select(x => (x.Id, x.Gross, x.Available))), "deterministic repeat query");
+});
+await Scenario("specification recipe units and cross-process unit aggregation", async (db, controller) => {
+ db.Add(new Base_ProductSpecification { Id = 201, ProductId = 100, Code = "BOX100", Name = "Box", Specification = "10 PCS", SpecificationUnitId = 2 });
+ db.Add(new Base_UnitConversion { Id = 9, SourceId = 201, TargetId = 100, FromUnitId = 2, ToUnitId = 1, ConversionType = UnitConversionType.SpecToProduct, Ratio = 10 });
+ (await db.Set<Technical_CraftOrder>().FindAsync(1L))!.SpecificationId = 201;
+ AddVersion(db, 2, 100); (db.ChangeTracker.Entries<Technical_CraftOrder>().Single(x => x.Entity.Id == 2).Entity).SpecificationId = 201;
+ var semi = Material(1, 1, 201, 20, reference: 2); semi.DataType = InventoryDataType.Specification; db.Add(semi);
+ var converted = Material(2, 2, 101, 1.5m); converted.UnitId = 2; converted.UnitConversionId = 8;
+ converted.UnitListInfo = "[{\"id\":8,\"unitId\":2,\"ratio\":10}]"; db.Add(converted); db.Add(Material(3, 2, 101, 5));
+ db.Add(Stock(1, 201, 10, InventoryDataType.Specification)); db.Add(Stock(2, 100, 100)); await db.SaveChangesAsync();
+ var result = await Query(controller, new() { CraftVersionId = 1, Quantity = 2 });
+ Assert(result.QuantityUnit == "BOX" && result.QuantityUnitId == 2 && result.Product.Unit == "PCS", "production unit differs explicitly from row base units");
+ Assert(result.Nodes[0].Gross == 40 && result.Nodes[0].Stock == 10 && result.Nodes[0].Net == 30, "spec stock remains isolated from product stock");
+ Assert(result.Nodes[0].Children[0].Gross == 60 && result.Nodes[0].Children[0].MaterialRlIds.Count == 2, "different units summed before referenced output conversion");
+ semi.Quantity = 2; semi.UnitId = 2; await db.SaveChangesAsync();
+ Assert((await Query(controller, new() { CraftVersionId = 1, Quantity = 2 })).Nodes[0].Gross == 40, "spec default conversion used when snapshot is absent");
+});
+await Scenario("fractional aggregation, empty recipe and source validation", async (db, controller) => {
+ Assert((await Query(controller, new() { CraftVersionId = 1, Quantity = 1 })).Nodes.Count == 0, "empty recipe queried without BOM creation");
+ db.Add(Material(1, 1, 101, 0.00003m)); db.Add(Material(2, 1, 101, 0.00003m)); await db.SaveChangesAsync();
+ Assert((await Query(controller, new() { CraftVersionId = 1, Quantity = 1 })).Nodes.Single().Gross == 0.0001m, "aggregate quantities before rounding");
+ await Reject(() => Query(controller, new() { CraftVersionId = 1, Quantity = 0 }), "生产数量");
+ await Reject(() => Query(controller, new() { CraftVersionId = 1, Quantity = 1.00001m }), "生产数量");
+ await Reject(() => Query(controller, new() { CraftVersionId = 999, Quantity = 1 }), "工序单版本不存在");
+ var row = (await db.Set<Technical_NodeSettingTemplate_Material_RL>().FindAsync(1L))!;
+ row.DataId = 100; row.RefCraftOrderVersionId = 1; await db.SaveChangesAsync(); await Reject(() => Query(controller, new() { CraftVersionId = 1, Quantity = 1 }), "循环引用");
+ AddVersion(db, 2, 101); await db.SaveChangesAsync(); row.DataId = 101; row.RefCraftOrderVersionId = 2;
+ (await db.Set<Technical_CraftOrderVersion>().FindAsync(2L))!.IsDeleted = true; await db.SaveChangesAsync();
+ await Reject(() => Query(controller, new() { CraftVersionId = 1, Quantity = 1 }), "工序单版本不存在");
+ (await db.Set<Technical_CraftOrderVersion>().FindAsync(2L))!.IsDeleted = false; row.DataId = 102; await db.SaveChangesAsync();
+ await Reject(() => Query(controller, new() { CraftVersionId = 1, Quantity = 1 }), "不匹配");
+ row.RefCraftOrderVersionId = null; row.UnitId = 2; row.UnitListInfo = "bad json"; await db.SaveChangesAsync();
+ await Reject(() => Query(controller, new() { CraftVersionId = 1, Quantity = 1 }), "单位快照格式无效");
+ row.UnitListInfo = "[]"; await db.SaveChangesAsync(); await Reject(() => Query(controller, new() { CraftVersionId = 1, Quantity = 1 }), "基本单位转换关系");
+ row.UnitId = 1; row.Quantity = -1; await db.SaveChangesAsync(); await Reject(() => Query(controller, new() { CraftVersionId = 1, Quantity = 1 }), "负数");
+ row.Quantity = 1; row.DataType = InventoryDataType.Unsupported; await db.SaveChangesAsync();
+ await Reject(() => Query(controller, new() { CraftVersionId = 1, Quantity = 1 }), "仅支持");
+ row.DataType = InventoryDataType.Product; (await db.Set<Base_Product>().FindAsync(102L))!.IsDeleted = true; await db.SaveChangesAsync();
+ await Reject(() => Query(controller, new() { CraftVersionId = 1, Quantity = 1 }), "物料不存在");
+});
+Console.WriteLine($"PASS {checks} direct craft-material controller assertions");
