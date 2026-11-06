@@ -1,49 +1,39 @@
 <template>
-    <Panel class="schedule-process-card" :bodyStyle="{ padding: expanded ? '6px' : '0' }" style="margin-bottom: 6px">
+    <Panel class="schedule-process-card" :class="{ 'schedule-process-compact': compact }" :bodyStyle="{ padding: expanded ? '6px' : '0' }" style="margin-bottom: 6px">
         <template #header>
             <div class="schedule-process-heading" @dragover.prevent @drop.prevent.stop="$emit('dropProcess', process.key)">
-                <span :draggable="canEdit" :title="editable ? '拖动调整工序顺序' : '工序调整由系统参数控制'"
-                    class="schedule-process-drag" @dragstart="startDrag" @dragend="$emit('dragEnd')">↕</span>
+                <span :draggable="canEdit" title="拖动调整工序顺序" class="schedule-process-drag"
+                    @dragstart="startDrag" @dragend="$emit('dragEnd')">↕</span>
                 <div class="schedule-process-title-row">
                     <LinkButton plain :disabled="saving" class="schedule-process-title"
                         :title="`${process.code || index + 1} · ${process.name || '新工序'}`" @click="$emit('toggle')">
                         {{ process.code || index + 1 }} · {{ process.name || '新工序' }}
                     </LinkButton>
+                    <span v-if="compact" class="schedule-process-type">{{ process.isOutsource ? '外协' : '内部生产' }}{{ process.isInbound ? ' · 入库' : '' }}</span>
                 </div>
                 <div class="schedule-process-tools">
                     <MenuButton text="更多" :plain="true" :disabled="!canEdit">
                         <Menu>
-                            <MenuItem text="上移" :disabled="!canEdit || index === 0" @click="processAction('up')" />
-                            <MenuItem text="下移" :disabled="!canEdit || index === count - 1" @click="processAction('down')" />
-                            <MenuItem text="复制" :disabled="!canEdit" @click="processAction('copy')" />
-                            <MenuItem text="删除" :disabled="!canEdit" @click="processAction('remove')" />
+                            <MenuItem text="上移" :disabled="!canEdit || index === 0" @click="moveProcess(-1)" />
+                            <MenuItem text="下移" :disabled="!canEdit || index === count - 1" @click="moveProcess(1)" />
+                            <MenuItem text="复制" :disabled="!canEdit" @click="copyProcess" />
+                            <MenuItem text="删除" :disabled="!canEdit" @click="removeProcess" />
                         </Menu>
                     </MenuButton>
                     <LinkButton plain :disabled="saving" @click.stop="$emit('toggle')">{{ expanded ? '收起' : '展开' }}</LinkButton>
                 </div>
                 <div class="schedule-process-summary">
-                    <span>{{ process.isOutsource ? '外协' : '内部生产' }}{{ process.isInbound ? ' · 入库' : '' }}</span>
+                    <span v-if="!compact">{{ process.isOutsource ? '外协' : '内部生产' }}{{ process.isInbound ? ' · 入库' : '' }}</span>
                     <span>设备 {{ process.machines.length }} 台</span><span>人员 {{ userCount }} 人 / {{ allocationCount }} 条分配</span>
-                    <span>物料 {{ process.materials.length }} 项</span><span>人工 {{ humanHours }} 人时</span>
+                    <span>物料 {{ process.materials.length }} 项</span><span>{{ compact ? '派工工时' : '工时' }} {{ humanHours }} h</span><span v-if="compact">参考工时 —</span>
                 </div>
             </div>
         </template>
         <div v-if="expanded">
-            <Form :model="process" :labelWidth="68" labelAlign="right" class="schedule-process-form">
-                <FormField name="craftId" label="加工工艺:" style="min-width: 0; margin: 0">
-                    <ComboBox :modelValue="process.craftId" :data="crafts" valueField="id" textField="name"
-                        :editable="false" :disabled="!canEdit" style="width: 100%; height: 28px"
-                        @update:modelValue="update({ craftId: Number($event) || 0 })" />
-                </FormField>
-                <div class="schedule-process-flags">
-                    <label><CheckBox :modelValue="process.isInbound" :disabled="!canEdit"
-                        @update:modelValue="update({ isInbound: $event })" /> 入库</label>
-                    <label><CheckBox :modelValue="process.isOutsource" :disabled="!canEdit"
-                        @update:modelValue="update({ isOutsource: $event })" /> 外协</label>
-                    <label><CheckBox :modelValue="process.isReportWork" :disabled="!canEdit"
-                        @update:modelValue="update({ isReportWork: $event })" /> 是否报工</label>
-                </div>
-            </Form>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 4px">
+                <span>加工工艺：{{ craftName }}</span>
+                <span>是否报工：{{ process.isReportWork ? '是' : '否' }}</span>
+            </div>
             <div v-if="!process.isOutsource || process.machines.length" class="schedule-process-section">
                 <ScheduleMachine :modelValue="process.machines" :quantity="quantity" :machineOptions="machineOptions"
                     :disabled="saving" @update:modelValue="$emit('updateProcess', { machines: $event })" />
@@ -70,24 +60,22 @@ export default defineComponent({
         crafts: { type: Array as PropType<Array<{ id: number; name: string }>>, default: () => [] },
         machineOptions: { type: Array as PropType<ScheduleMachineOptionDto[]>, default: () => [] },
         index: { type: Number, required: true }, count: { type: Number, required: true },
-        quantity: { type: Number, required: true }, editable: Boolean, saving: Boolean, expanded: Boolean
+        quantity: { type: Number, required: true }, editable: Boolean, saving: Boolean, expanded: Boolean, compact: Boolean
     },
-    emits: ['toggle', 'move', 'copy', 'remove', 'materials', 'updateProcess', 'dragStart', 'dragEnd', 'dropProcess'],
+    emits: ['copy', 'toggle', 'move', 'remove', 'materials', 'updateProcess', 'dragStart', 'dragEnd', 'dropProcess'],
     computed: {
+        craftName(): string { return this.crafts.find(craft => craft.id === this.process.craftId)?.name ?? '—' },
         canEdit(): boolean { return this.editable && !this.saving },
         userCount(): number { return new Set(this.process.machines.flatMap(machine => machine.users.map(user => user.userId))).size },
         allocationCount(): number { return this.process.machines.reduce((sum, machine) => sum + machine.users.length, 0) },
-        humanHours(): number { return Number(this.process.machines.reduce((sum, machine) => sum + machine.users.reduce((n, user) => n + (Number(user.hours) || 0), 0), 0).toFixed(4)) }
+        humanHours(): number { return Number(this.process.machines.reduce((sum, machine) => sum + (machine.users.length ? machine.users.reduce((n, user) => n + (Number(user.hours) || 0), 0) : (Number(machine.hours) || 0)), 0).toFixed(4)) }
     },
     methods: {
-        processAction(action: 'up' | 'down' | 'copy' | 'remove') {
-            if (!this.canEdit) return
-            if (action === 'up' && this.index > 0) this.$emit('move', -1)
-            else if (action === 'down' && this.index < this.count - 1) this.$emit('move', 1)
-            else if (action === 'copy') this.$emit('copy')
-            else if (action === 'remove') this.$emit('remove')
+        copyProcess() { if (this.canEdit) this.$emit('copy') },
+        removeProcess() { if (this.canEdit) this.$emit('remove') },
+        moveProcess(step: number) {
+            if (this.canEdit && this.index + step >= 0 && this.index + step < this.count) this.$emit('move', step)
         },
-        update(changes: Partial<ScheduleProcessEditDto>) { if (this.canEdit) this.$emit('updateProcess', changes) },
         startDrag(event: DragEvent) {
             if (!this.canEdit) { event.preventDefault(); return }
             event.dataTransfer?.setData('application/x-schedule-process', this.process.key)
@@ -107,8 +95,13 @@ export default defineComponent({
 .schedule-process-title :deep(.l-btn-text) { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .schedule-process-summary { grid-column: 2 / -1; display: flex; flex-wrap: wrap; gap: 2px 8px; padding: 2px 4px; font-size: 12px; font-weight: normal; color: #777; line-height: 18px; overflow-wrap: anywhere; }
 .schedule-process-tools { display: flex; align-items: center; flex-shrink: 0; gap: 2px; }
-.schedule-process-form { display: flex; flex-direction: column; gap: 6px; }
-.schedule-process-flags { display: flex; flex-wrap: wrap; gap: 6px 12px; padding-left: 4px; }
-.schedule-process-flags label { display: flex; align-items: center; gap: 4px; }
 .schedule-process-section { border-top: 1px solid #e5e7eb; margin-top: 6px; padding-top: 6px; min-width: 0; }
+.schedule-process-compact { border: 1px solid #dce1e7; border-radius: 4px; overflow: hidden; margin-bottom: 8px !important; }
+.schedule-process-compact :deep(.panel-header) { border: 0; padding: 6px 8px; }
+.schedule-process-compact :deep(.panel-body) { border: 0; }
+.schedule-process-compact .schedule-process-heading { min-height: 44px; align-items: center; padding: 0; }
+.schedule-process-compact .schedule-process-title-row { align-items: center; gap: 4px; }
+.schedule-process-type { flex-shrink: 0; font-weight: normal; font-size: 12px; color: #777; }
+.schedule-process-compact .schedule-process-summary { flex-wrap: nowrap; overflow: hidden; white-space: nowrap; padding: 0 4px; gap: 8px; }
+.schedule-process-compact .schedule-process-summary span { flex-shrink: 0; }
 </style>

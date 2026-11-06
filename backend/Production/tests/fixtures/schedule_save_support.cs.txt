@@ -1,0 +1,92 @@
+using KingZon.Core.DataBase;
+using KingZon.Mes.Workflow.Entity;
+using KingZon.Mes.Workflow.Enum;
+using KingZon.OLCM.Base.Shared.DataBase.Entities;
+using KingZon.OLCM.Base.Shared.DataBase.Enum;
+using KingZon.OLCM.Production.Shared.DataBase.Entities;
+using KingZon.OLCM.Technical.Shared.DataBase.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace KingZon.Core { public static class JsonHelper { public static System.Text.Json.JsonSerializerOptions DefaultJsonSerializerOptions = new(System.Text.Json.JsonSerializerDefaults.Web); } }
+namespace KingZon.Core.Web { public class KingZonControllerBase : Microsoft.AspNetCore.Mvc.ControllerBase {} }
+namespace KingZon.Core.Infrastructure { public class ServiceAttribute : Attribute {} }
+namespace Npgsql.Replication.PgOutput { public class Placeholder {} }
+namespace KingZon.Mes.Workflow.Model { public class Placeholder {} }
+namespace Kingzon.OLCM.Base.Services { public class Placeholder {} }
+namespace KingZon.Core.DataBase {
+ public class BaseEntity { public long Id {get;set;} public virtual DateTime CreateTime {get;set;} }
+ public interface ISoftDeletedEntity { bool IsDeleted {get;set;} }
+ public abstract class KingZonEntityTypeConfiguration<T> : IEntityTypeConfiguration<T> where T:class { public abstract void Configure(EntityTypeBuilder<T> builder); }
+ public interface IRepository<T> where T:class { IQueryable<T> Table {get;} T GetById(long id); void Insert(T value); void Insert(IEnumerable<T> values); void Delete(T value); }
+ public class Repo<T>(QueryDb db) : IRepository<T> where T:class {
+  public IQueryable<T> Table => db.Set<T>(); public T GetById(long id)=>db.Set<T>().Find(id)!;
+  public void Insert(T value)=>db.Add(value); public void Insert(IEnumerable<T> values)=>db.AddRange(values); public void Delete(T value)=>db.Remove(value);
+ }
+ public class CommonService<T>(IRepository<T> repository) where T:class {
+  public IQueryable<T> GetAll()=>repository.Table;
+  public Task InsertAsync(T value){repository.Insert(value);return Task.CompletedTask;}
+  public Task InsertAsync(IEnumerable<T> values){repository.Insert(values);return Task.CompletedTask;}
+ }
+ public interface IUnitOfWork { Task SaveChangeAsync(); void SaveChange(); }
+ public class UnitWork(QueryDb db):IUnitOfWork {public async Task SaveChangeAsync()=>await db.SaveChangesAsync(); public void SaveChange()=>db.SaveChanges();}
+}
+namespace KingZon.OLCM.Base.DataBase.Enum { public enum TableName { DispatchOrder=1 } }
+namespace KingZon.OLCM.Base.Service { public class SequenceService {int next=1;public string GenerateCode(KingZon.OLCM.Base.DataBase.Enum.TableName name)=>"TEST-"+next++;} }
+namespace KingZon.OLCM.Base.Shared.DataBase.Enum {
+ public enum InventoryDataType { Product=1,Specification=2 } public enum InventoryDataStatus {None=0}
+ public enum UnitConversionType { Product=1,ProductSpec=2,SpecToProduct=3 }
+}
+namespace KingZon.OLCM.Technical.Shared.DataBase.Enum { public enum CraftOrderVersionStatus { 暂存=0,待审核=1,已发布=2,已废弃=3 } public enum NodeIOType {输入=1,输出=2} }
+namespace KingZon.OLCM.Production.Shared.DataBase.Enum { public enum MaterialDemandType {领料需求=1,补料需求=2} }
+namespace KingZon.OLCM.Inventory.Shared.DataBase.Enum { public enum InventoryType {入库=1,出库=2} public enum InventorySourceType {直接入库=1,异常入库=2} }
+namespace KingZon.OLCM.Base.Shared.DataBase.JsonStructure { public class InventoryUnitInboundDto { public long Id{get;set;} public long UnitId{get;set;} public string UnitName{get;set;}=""; public decimal Ratio{get;set;} public decimal Quantity{get;set;} } }
+namespace KingZon.OLCM.Base.Shared.DataBase.Entities {
+ public class Base_Unit:BaseEntity {public string Name{get;set;}="";}
+ public class Base_Product:BaseEntity {public string ProductNo{get;set;}="";public string ProductName{get;set;}="";public string? MaterialSpecification{get;set;} public bool IsDeleted{get;set;} public long BaseUnitId{get;set;} public Base_Unit BaseUnit{get;set;}=null!; public decimal SafetyStock{get;set;} }
+ public class Base_ProductSpecification:BaseEntity {public long ProductId{get;set;} public Base_Product Product{get;set;}=null!; public string? Code{get;set;} public string? Name{get;set;} public string Specification{get;set;}="";public decimal SafetyStock{get;set;} public bool IsDeleted{get;set;} public long? SpecificationUnitId{get;set;} public Base_Unit? SpecificationUnit{get;set;} }
+ public class Base_UnitConversion:BaseEntity {public long SourceId{get;set;} public long TargetId{get;set;} public long FromUnitId{get;set;}public Base_Unit FromUnit{get;set;}=null!;public long ToUnitId{get;set;} public UnitConversionType ConversionType{get;set;} public decimal Ratio{get;set;} }
+ public class Base_Craft:BaseEntity {public string Name{get;set;}="加工";}
+ public class Base_Department {public int Id{get;set;} public string Name{get;set;}="部门";}
+ public class Base_User {public int Id{get;set;} public string Name{get;set;}="人员";}
+ public class Base_ProductPackage:BaseEntity{} public class Base_Partner:BaseEntity{}
+ public class Base_Machine:BaseEntity {public string Code{get;set;}="M"; public string Name{get;set;}="设备";public bool IsDeleted{get;set;}public bool IsStop{get;set;}public List<MachineCraft> CraftRLs{get;set;}=new(); public List<MachineUser> UserRLs{get;set;}=new();}
+ public class MachineCraft:BaseEntity {public long MachineId{get;set;}public long CraftId{get;set;}}
+ public class MachineUser:BaseEntity {public long MachineId{get;set;}public int UserId{get;set;}public Base_User User{get;set;}=null!;}
+}
+namespace KingZon.OLCM.Inventory.Shared.DataBase.Entities {
+ public class Inventory_Record:BaseEntity {public InventoryDataType DataType{get;set;} public long DataId{get;set;} public KingZon.OLCM.Inventory.Shared.DataBase.Enum.InventoryType InventoryType{get;set;}public KingZon.OLCM.Inventory.Shared.DataBase.Enum.InventorySourceType SourceType{get;set;}public decimal RemainQuantity{get;set;}public List<InventoryOccupy> OccupyList{get;set;}=new();}
+ public class InventoryOccupy:BaseEntity {public long InventoryRecordId{get;set;}public bool IsCompleted{get;set;}public decimal OccupyQuantity{get;set;}public decimal ReleaseQuantity{get;set;}}
+}
+namespace KingZon.Mes.Workflow.Enum {public enum PermissionType {用户=1}public enum OperatorType {通过=1,驳回=2}}
+namespace KingZon.Mes.Workflow.Entity {
+ public class WF_NodeTemplateLink {public long PreviousId{get;set;}public long NextId{get;set;}public WF_NodeTemplate Previous{get;set;}=null!;public WF_NodeTemplate Next{get;set;}=null!;}
+ public class WF_NodePermission:BaseEntity {public long NodeId{get;set;}public WF_Node Node{get;set;}=null!;public PermissionType PermissionType{get;set;}public long PermissionId{get;set;}}
+ public class WF_NodePermissionTemplate:BaseEntity {public long NodeTemplateId{get;set;}public PermissionType PermissionType{get;set;}public long PermissionId{get;set;}}
+ public class WF_Operation:BaseEntity {public long NodeId{get;set;}public WF_Node Node{get;set;}=null!;public DateTime OperateTime{get;set;}public long UserId{get;set;}public OperatorType Type{get;set;}public string? RejectReason{get;set;}}
+}
+public class QueryDb(DbContextOptions<QueryDb> options):DbContext(options) {
+ protected override void OnModelCreating(ModelBuilder model){
+  model.ApplyConfiguration(new TechnicalCraftMap()); model.Entity<Technical_CraftOrderVersion>();
+  model.ApplyConfiguration(new NodeTemplateMap());model.ApplyConfiguration(new WorkflowTemplateMap());
+  model.ApplyConfiguration(new WF_NodeTemplate_ProductionMap());model.ApplyConfiguration(new WF_NodeTemplate_Material_RLMap());
+  model.Entity<WF_NodeTemplate_Machine_RL>();model.ApplyConfiguration(new NodeMap());
+  model.ApplyConfiguration(new WF_Node_ProductionExtMap());model.ApplyConfiguration(new WF_Node_MachineRLMap());
+  model.ApplyConfiguration(new Production_Dispatch_OrderMap());model.ApplyConfiguration(new Production_Material_Receive_DemandMap());
+  model.ApplyConfiguration(new Production_Machine_Material_Receive_DemandMap());model.ApplyConfiguration(new WF_Node_ProductionExt_MaterialRLMap());
+  model.Entity<WF_NodeLink>().HasKey(x=>new{x.PreviousId,x.NextId});
+  model.Entity<WF_NodeLink>().HasOne(x=>x.Previous).WithMany(x=>x.NextLines).HasForeignKey(x=>x.PreviousId);
+  model.Entity<WF_NodeLink>().HasOne(x=>x.Next).WithMany(x=>x.PreviousLines).HasForeignKey(x=>x.NextId);
+  model.Entity<WF_NodeTemplateLink>().HasKey(x=>new{x.PreviousId,x.NextId});
+  model.Entity<WF_NodeTemplateLink>().HasOne(x=>x.Previous).WithMany(x=>x.NextLineTemplates).HasForeignKey(x=>x.PreviousId);
+  model.Entity<WF_NodeTemplateLink>().HasOne(x=>x.Next).WithMany(x=>x.PreviousLineTemplates).HasForeignKey(x=>x.NextId);
+  model.Entity<WF_NodeTemplate>().HasMany(x=>x.NodePermissionTemplates).WithOne().HasForeignKey(x=>x.NodeTemplateId);
+  model.Entity<WF_NodePermission>();model.Entity<WF_Operation>();model.Entity<Base_UnitConversion>();
+  model.Entity<Base_Machine>().HasMany(x=>x.CraftRLs).WithOne().HasForeignKey(x=>x.MachineId);
+  model.Entity<Base_Machine>().HasMany(x=>x.UserRLs).WithOne().HasForeignKey(x=>x.MachineId);
+  model.Entity<KingZon.OLCM.Inventory.Shared.DataBase.Entities.Inventory_Record>().HasMany(x=>x.OccupyList).WithOne().HasForeignKey(x=>x.InventoryRecordId);
+  // SQLite does not implement MySQL IF expressions or ambient transactions. Quantity formula fields are not under test here.
+  foreach(var entity in model.Model.GetEntityTypes()) foreach(var property in entity.GetDeclaredProperties())
+   if(property.GetComputedColumnSql()!=null || property.ValueGenerated==Microsoft.EntityFrameworkCore.Metadata.ValueGenerated.OnAddOrUpdate){property.SetComputedColumnSql(null);property.ValueGenerated=Microsoft.EntityFrameworkCore.Metadata.ValueGenerated.Never;}
+ }
+}

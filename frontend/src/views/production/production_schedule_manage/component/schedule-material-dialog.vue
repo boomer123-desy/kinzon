@@ -1,6 +1,6 @@
 <template>
-    <Dialog ref="dialog" :title="processName + ' · 工序物料'" :modal="true" :closed="true"
-        :dialogStyle="{ width: '1200px', maxWidth: '96vw', height: '70vh' }" @close="$emit('close')">
+    <Dialog ref="dialog" :title="processName + ' · 工序物料'" :modal="true" :closed="true" :closable="!saving"
+        :dialogStyle="{ width: '1200px', maxWidth: '96vw', height: '70vh' }" @close="onClose">
         <div class="kingzon-page-content" style="min-height: 0; padding: 5px; box-sizing: border-box">
             <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 5px 0">
                 <span>已配置 {{ rows.length }} 项物料</span><span>齐套 {{ readyCount }} 项</span>
@@ -53,7 +53,7 @@
 import { defineComponent, type PropType } from 'vue'
 import ResourceLibrary from '@/views/technology/craft_manage/component/resource-library.vue'
 import type { MaterialResource } from '@/types/craft'
-import { ScheduleMaterialEditDto, ScheduleUnitOptionDto, type ScheduleMaterialAvailabilityDto } from '@/types/production-schedule'
+import { ScheduleMaterialEditDto, ScheduleUnitOptionDto, type ScheduleMaterialAvailabilityDto } from '@/types/schedule'
 
 interface DialogRef { open(): void; close(): void }
 export default defineComponent({
@@ -65,7 +65,7 @@ export default defineComponent({
         craftId: { type: Number, default: 0 }, quantity: { type: Number, default: 0 }, checkingStock: Boolean, saving: Boolean, stockError: { type: String, default: '' }
     },
     emits: ['update:modelValue', 'preview', 'close', 'checkStock'],
-    data() { return { rows: [] as ScheduleMaterialEditDto[], nextKey: 1, error: '' } },
+    data() { return { rows: [] as ScheduleMaterialEditDto[], nextKey: 1, error: '', opened: false, closing: false } },
     computed: {
         readyCount(): number { return this.rows.filter(row => this.stockRow(row)?.shortage === 0).length },
         shortageCount(): number { return this.rows.filter(row => (this.stockRow(row)?.shortage ?? 0) > 0).length },
@@ -73,11 +73,26 @@ export default defineComponent({
     },
     methods: {
         open() {
+            this.opened = true
+            this.closing = false
             this.error = ''
             this.rows = this.modelValue.map(row => new ScheduleMaterialEditDto(JSON.parse(JSON.stringify(row))))
             this.preview(); (this.$refs.dialog as DialogRef).open()
         },
-        cancel() { (this.$refs.dialog as DialogRef).close(); this.$emit('close') },
+        close() {
+            this.opened = false
+            ;(this.$refs.dialog as DialogRef).close()
+        },
+        cancel() { if (!this.saving) this.close() },
+        async onClose() {
+            if (this.closing) return
+            this.closing = true
+            this.opened = false
+            // EasyUI 下一次更新才清理遮罩，完成后再通知父组件关闭编辑状态。
+            await this.$nextTick()
+            if (!this.opened) this.$emit('close')
+            this.closing = false
+        },
         preview() { this.error = ''; this.$emit('preview', this.rows) },
         stockRow(row: ScheduleMaterialEditDto) { return this.availability[`${this.processKey}/${row.key}`] },
         unitOptions(material: ScheduleMaterialEditDto) {

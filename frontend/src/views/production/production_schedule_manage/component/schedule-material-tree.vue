@@ -78,7 +78,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
-import type { ScheduleNodeDto, ScheduleTreeRowDto, MaterialRequirementDto, PlanContextDto } from '@/types/production-schedule'
+import type { ScheduleNodeDto, ScheduleTreeRowDto, MaterialRequirementDto, PlanContextDto } from '@/types/schedule'
 import { materialCellValue, materialQuantityTip, materialStatusClass } from '../schedule'
 
 export default defineComponent({

@@ -369,6 +369,8 @@ export class TimelineDataDto {
 
 export class ScheduleListRowDto {
     id: string = ''
+    title: string = ''
+    statusText: string = ''
     quantity: number | null = null
     start: string = ''
     end: string = ''
@@ -421,6 +423,8 @@ export class ReceiptFormDto {
 
 /** 独立排产编辑器：字段与 ProductionScheduleDto.cs 对齐。 */
 export class ProductionSchedulePostDto {
+    rootCraftVersionId: number = 0
+    rootDispatchOrderId: number | null = null
     departmentId: number | null = null
     craftVersionId: number = 0
     quantity: number = 1
@@ -496,6 +500,8 @@ export class SchedulePersonEditDto {
 
 export class ScheduleMachineEditDto {
     machineId: number = 0
+    quantity: number = 0
+    hours: number = 0
     users: Array<SchedulePersonEditDto> = []
     constructor(init?: Partial<ScheduleMachineEditDto>) { Object.assign(this, init) }
 }
@@ -534,4 +540,62 @@ export class ScheduleMaterialAvailabilityDto {
     allocated: number | null = null
     shortage: number | null = null
     constructor(init?: Partial<ScheduleMaterialAvailabilityDto>) { Object.assign(this, init) }
+}
+
+/** 实际排产单查询结果，状态文字取自后端枚举。 */
+export class SavedScheduleMachineDto {
+    id: number = 0
+    machineId: number = 0
+    machineName: string = ''
+    userId: number | null = null
+    userName: string = ''
+    quantity: number = 0
+    hours: number = 0
+    actualWorkHours: number = 0
+    constructor(init?: Partial<SavedScheduleMachineDto>) { Object.assign(this, init) }
+}
+export class SavedScheduleMaterialDto {
+    id: number = 0
+    code: string = ''
+    name: string = ''
+    demandQuantity: number = 0
+    unitName: string = ''
+    baseDemandQuantity: number = 0
+    baseReceiveQuantity: number = 0
+    baseReturnQuantity: number = 0
+
+    constructor(init?: Partial<SavedScheduleMaterialDto>) { Object.assign(this, init) }
+}
+
+export class SavedScheduleProcessDto {
+    materials: Array<SavedScheduleMaterialDto> = []
+    id: number = 0
+    order: number = 0
+    name: string = ''
+    craftName: string = ''
+    planWorkHours: number = 0
+    actualWorkHours: number = 0
+    reciveQuantity: number = 0
+    completeQuantity: number = 0
+    materialCount: number = 0
+    machines: SavedScheduleMachineDto[] = []
+    constructor(init?: Partial<SavedScheduleProcessDto>) { Object.assign(this, init) }
+}
+export class SavedScheduleDto {
+    rootDispatchOrderId: number | null = null
+    canStart: boolean = false
+    canDelete: boolean = false
+    id: number = 0
+    orderNo: string = ''
+    craftVersionId: number = 0
+    quantity: number = 0
+    start: string = ''
+    end: string | null = null
+    statusText: string = ''
+    dispatchUnit: string = '{}'
+    departmentName: string = ''
+    urgent: boolean = false
+    remark: string | null = null
+    processes: SavedScheduleProcessDto[] = []
+    constructor(init?: Partial<SavedScheduleDto>) { Object.assign(this, init) }
 }

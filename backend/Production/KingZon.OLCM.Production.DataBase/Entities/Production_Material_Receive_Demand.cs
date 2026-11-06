@@ -29,11 +29,10 @@ namespace KingZon.OLCM.Production.Shared.DataBase.Entities
                .OnDelete(DeleteBehavior.Restrict)
                .HasForeignKey(x => x.UnitConversionId)
                .IsRequired(false);
-            builder.HasOne(builder => builder.NodeSetting)
+            builder.HasOne(builder => builder.Node)
               .WithMany()
               .OnDelete(DeleteBehavior.Restrict)
-              .HasForeignKey(x => new { x.NodeSettingId, x.DispatchOrderId })
-              .HasPrincipalKey(x => new { x.Id, x.DispatchOrderId })
+              .HasForeignKey(x => x.NodeId)
               .IsRequired(false);
             builder.HasOne(builder => builder.Supplier)
               .WithMany()
@@ -68,7 +67,7 @@ namespace KingZon.OLCM.Production.Shared.DataBase.Entities
         /// <summary>
         /// 工序
         /// </summary>
-        public long? NodeSettingId { get; set; }
+        public long? NodeId { get; set; }
         /// <summary>
         /// 需求数量
         /// </summary>
@@ -152,7 +151,7 @@ namespace KingZon.OLCM.Production.Shared.DataBase.Entities
         public Production_Dispatch_Order DispatchOrder { get; set; } = null!;
         public Base_Unit Unit { get; set; } = null!;
         public Base_UnitConversion? UnitConversion { get; set; }
-        public Production_NodeSetting? NodeSetting { get; set; }
+        public WF_Node_ProductionExt? Node { get; set; }
         public Base_Partner? Supplier { get; set; }
 
         #endregion

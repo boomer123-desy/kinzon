@@ -21,13 +21,8 @@ namespace KingZon.Mes.Workflow.Entity
     /// </summary>
     public partial class WF_NodeType
     : BaseEntity
-
-
     {
-        public WF_NodeType()
-        {
-        }
-
+       
         [Column(Order = 1)]
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -35,18 +30,18 @@ namespace KingZon.Mes.Workflow.Entity
         public new long Id { get; set; }
 
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
 
-        public string Area { get; set; }
+        public string? Area { get; set; }
 
 
-        public string Action { get; set; }
+        public string? Action { get; set; }
 
 
-        public string Controller { get; set; }
+        public string? Controller { get; set; }
 
-        public NodeTypeEnum NodeTypeEnum { get; set; }
+        public NodeType Type { get; set; }
 
         /// <summary>
         /// 对应的工作流类型Id
@@ -55,6 +50,6 @@ namespace KingZon.Mes.Workflow.Entity
         /// <summary>
         /// 对应的工作流类型
         /// </summary>
-        public virtual WF_WorkflowType WorkflowType { get; set; }
+        public virtual WF_WorkflowType WorkflowType { get; set; } = null!;
     }
 }

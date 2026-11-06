@@ -2,8 +2,9 @@
 using KingZon.Core;
 using KingZon.Core.DataBase;
 using KingZon.Core.Web;
+using KingZon.Mes.Workflow.Entity;
 using KingZon.Mes.Workflow.Model;
-using KingZon.Mes.Workflow.Service.Interface;
+using KingZon.Mes.Workflow.Service;
 using KingZon.OLCM.Base.Service;
 using KingZon.OLCM.Base.Service.Dto;
 using KingZon.OLCM.Base.Shared.DataBase.Entities;
@@ -11,16 +12,13 @@ using KingZon.OLCM.Base.Shared.DataBase.Enum;
 using KingZon.OLCM.Base.Shared.DataBase.JsonStructure;
 using KingZon.OLCM.Production.Shared.DataBase.Entities;
 using KingZon.OLCM.Production.Shared.DataBase.Enum;
-using KingZon.OLCM.Production.Shared.DataBase.JsonStructure;
 using KingZon.OLCM.Purchase.DataBase.Entities;
 using KingZon.OLCM.Technical.Shared.DataBase.Entities;
 using KingZon.OLCM.Technical.Shared.DataBase.Enum;
 using KingZon.OLCM.Technical.WebApi.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
-using System.Linq;
 using System.Text.Json;
 using System.Transactions;
 
@@ -35,9 +33,9 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
     {
         private readonly CommonService<Technical_CraftOrder> _craftOrderService;
         private readonly CommonService<Technical_CraftOrderVersion> _craftVersionService;
-        private readonly CommonService<Technical_NodeSettingTemplate> _nodeSettingService;
-        private readonly CommonService<Technical_NodeSettingTemplate_Machine_RL> _machineRLService;
-        private readonly CommonService<Technical_NodeSettingTemplate_Material_RL> _materialRLService;
+        private readonly CommonService<WF_NodeTemplate_ProductionExt> _nodeSettingService;
+        private readonly CommonService<WF_NodeTemplate_Machine_RL> _machineRLService;
+        private readonly CommonService<WF_NodeTemplate_Material_RL> _materialRLService;
         private readonly CommonService<Production_MBom> _mBomService;
         private readonly CommonService<Production_MBom_Version> _mBomVersionService;
         private readonly CommonService<Production_MBom_Detail> _mBomDetailService;
@@ -45,10 +43,7 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
         private readonly CommonService<Base_Machine> _machineService;
         private readonly ProductService _productService;
         private readonly CommonService<Base_ProductSpecification> _specificationService;
-        private readonly IWorkflowTemplateService _workflowTemplateService;
-        private readonly IWorkflowTypeService _workflowTypeService;
-        private readonly INodeTypeService _nodeTypeService;
-        private readonly INodeTemplateService _nodeTemplateService;
+        private readonly WorkflowTemplateService _workflowTemplateService;
         private readonly IRepository<Base_Goods> _goodsRepository;
         private readonly IRepository<Purchase_Order_Detail> _purchasedDetailRepository;
         private readonly FileStorageService _fileStorageService;
@@ -58,9 +53,9 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
         public CraftOrderManageController(
             CommonService<Technical_CraftOrder> craftOrderService,
             CommonService<Technical_CraftOrderVersion> craftVersionService,
-            CommonService<Technical_NodeSettingTemplate> nodeSettingService,
-            CommonService<Technical_NodeSettingTemplate_Machine_RL> machineRLService,
-            CommonService<Technical_NodeSettingTemplate_Material_RL> materialRLService,
+            CommonService<WF_NodeTemplate_ProductionExt> nodeSettingService,
+            CommonService<WF_NodeTemplate_Machine_RL> machineRLService,
+            CommonService<WF_NodeTemplate_Material_RL> materialRLService,
             CommonService<Production_MBom> mBomService,
             CommonService<Production_MBom_Version> mBomVersionService,
             CommonService<Production_MBom_Detail> mBomDetailService,
@@ -68,10 +63,8 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
             CommonService<Base_Machine> machineService,
             ProductService productService,
             CommonService<Base_ProductSpecification> specificationService,
-            IWorkflowTemplateService workflowTemplateService,
-            IWorkflowTypeService workflowTypeService,
-            INodeTypeService nodeTypeService,
-            INodeTemplateService nodeTemplateService,
+            WorkflowTemplateService workflowTemplateService,
+            NodeTemplateService nodeTemplateService,
             IRepository<Base_Goods> goodsRepository,
             IRepository<Purchase_Order_Detail> purchasedDetailRepository,
             FileStorageService fileStorageService,
@@ -91,9 +84,6 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
             _productService = productService;
             _specificationService = specificationService;
             _workflowTemplateService = workflowTemplateService;
-            _workflowTypeService = workflowTypeService;
-            _nodeTypeService = nodeTypeService;
-            _nodeTemplateService = nodeTemplateService;
             _goodsRepository = goodsRepository;
             _purchasedDetailRepository = purchasedDetailRepository;
             _fileStorageService = fileStorageService;
@@ -257,6 +247,8 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
             {
                 return BadRequest("工序单Id不能为空");
             }
+            var result = _workflowTemplateService.Create("test", (long)CraftOrderWorkflowType.工序单版本);
+            _unitOfWork.SaveChange();
             return Ok(await GetCraftOrderInfoAsync(craftOrderId));
         }
 
@@ -318,7 +310,6 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
                 MaterialName = materialInfo.DataName ?? "",
                 MaterialType = materialInfo.DataProductType,
                 NodeSettingTemplateId = materialRl.NodeSettingTemplateId,
-                RefCraftOrderVersionId = materialRl.RefCraftOrderVersionId,
             }, false, false, null);
 
             var materials = materialJoinQuery.ToList();
@@ -353,7 +344,6 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
                                 dataId = m.DataId,
                                 dataType = m.DataType,
                                 materialType = m.MaterialType,
-                                refCraftOrderVersionId = m.RefCraftOrderVersionId,
                                 state =  m.MaterialType != ProductType.物料.ToString() ? "closed" : "open",
                                 children = m.MaterialType != ProductType.物料.ToString() ? new List<object>() :  null
                             }).ToList()
@@ -372,12 +362,11 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
                                 dataId = m.DataId,
                                 dataType = m.DataType,
                                 materialType = m.MaterialType,
-                                refCraftOrderVersionId = m.RefCraftOrderVersionId,
                                 state = m.MaterialType != ProductType.物料.ToString() ? "closed" : "open",
                                 children = m.MaterialType != ProductType.物料.ToString() ? new List<object>() :  null
                             }).ToList()
                         }
-                    }.Take(node.IsInbound || node.IsOutsource ? 2 : 1).ToArray()
+                    }.Take(node.IsInbound ? 2 : 1).ToArray()
                 };
             }).ToList();
 
@@ -737,7 +726,7 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
                 .ToDictionary(group => group.Key, group => group.Select(machine => new NodeMachineSettingDto
                 {
                     MachineId = machine.MachineId,
-                    TheoreticalWorkHours = machine.TheoreticalWorkHours
+                    TheoreticalWorkHours = machine.WorkHours
                 }).ToList());
 
             var materialQuery = _materialRLService.GetAll().Where(x => nodeIds.Contains(x.NodeSettingTemplateId));
@@ -811,10 +800,9 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
                     Name = node.Name,
                     IsOutsource = node.IsOutsource,
                     IsInbound = node.IsInbound,
-                    TheoreticalWorkHours = node.TheoreticalWorkHours,
-                    IsReportWork = node.IsReportWork,
+                    TheoreticalWorkHours = node.WorkHours,
+                    IsReportWork = node.IsReport,
                     Description = node.Description,
-                    NodeTemplateId = node.NodeTemplateId,
                     CraftId = node.CraftId,
                     CraftName = node.Craft?.Name,
                     MachineIds = machineGroups.TryGetValue(node.Id, out var machines) ? machines.Select(machine => machine.MachineId).ToList() : new List<long>(),
@@ -847,19 +835,18 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
             }
             if (version.Status is not (CraftOrderVersionStatus.暂存 or CraftOrderVersionStatus.待审核))
             {
-                throw new Exception("仅暂存的版本允许编辑，请先取消发布或恢复版本");
+                throw new Exception("仅待审核或暂存的版本允许编辑");
             }
 
             using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
             version.Remark = postData.Remark;
-            version.Status = CraftOrderVersionStatus.暂存;
 
-            if (postData.IsMain && !version.IsMain)
-            {
-                await ClearOtherMainVersionsAsync(version.CraftOrderId, version.Id);
-                version.IsMain = true;
-            }
+            //if (postData.IsMain && !version.IsMain)
+            //{
+            //    await ClearOtherMainVersionsAsync(version.CraftOrderId, version.Id);
+            //    version.IsMain = true;
+            //}
 
             // 工序明细依赖版本对应的工作流模板。新增工序时会先创建 WF_NodeTemplate，
             // 再把生成的 Id 写入 Technical_NodeSettingTemplate。
@@ -876,72 +863,40 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
         }
 
         /// <summary>
-        /// 新建工序单版本（默认建立一道工序，不复制工序）：版本号自动取最大序号 +1（V1、V2…）；
-        /// 该工序单还没有主版本时自动设为主版本，状态为暂存。
+        /// 切换主版本
         /// </summary>
-        [HttpPost("CreateCraftVersion")]
+        [HttpGet("ChangeMainVersion")]
+        public async Task<IActionResult> ChangeMainVersion([FromQuery]long versionId )
+        {
+            var version = await _craftVersionService.GetByIdAsync(versionId)
+                ?? throw new Exception("工序单版本不存在，请刷新后重试");
+            if(version.Status != CraftOrderVersionStatus.已发布)
+            {
+                throw new Exception("未发布版本，不能设为主版本");
+            }
+            await ClearOtherMainVersionsAsync(version.CraftOrderId, version.Id);
+            version.IsMain = true;
+            await _unitOfWork.SaveChangeAsync();
+            return Ok("保存成功");
+        }
+
+            /// <summary>
+            /// 新建工序单版本（默认建立一道工序，不复制工序）：版本号自动取最大序号 +1（V1、V2…）；
+            /// 该工序单还没有主版本时自动设为主版本，状态为待审核。
+            /// </summary>
+            [HttpPost("CreateCraftVersion")]
         public async Task<IActionResult> CreateCraftVersion([FromBody] CreateCraftVersionDto postData)
         {
             if (postData == null || postData.CraftOrderId <= 0)
             {
                 throw new Exception("请先选择工序单");
             }
-            using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            var entity = await CreateCraftVersionAsync(postData.CraftOrderId, postData.Remark,
-                new List<NodeSettingTemplateDto>
-                {
-                    new NodeSettingTemplateDto { Code = "10", Name = "新工序", Sequence = 10 }
-                });
-            transaction.Complete();
-            return Ok(new
-            {
-                Id = entity.Id,
-                SequenceNo = entity.SequenceNo,
-                Version = entity.Version,
-                BomVersionId = entity.BomVersionId,
-                IsMain = entity.IsMain,
-                Status = entity.Status,
-            });
-        }
 
-        /// <summary>复制所选版本的工序、设备及物料，在目标工艺单下建立独立的暂存版本。</summary>
-        [HttpPost("CopyCraftVersion")]
-        public async Task<IActionResult> CopyCraftVersion([FromBody] CopyCraftVersionDto postData)
-        {
-            if (postData == null || postData.CraftOrderId <= 0)
-                throw new Exception("请先选择目标工艺单");
-            if (postData.SourceCraftOrderId <= 0 || postData.SourceVersionId <= 0)
-                throw new Exception("请选择来源工艺单及版本");
 
             using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            var source = await _craftVersionService.GetAll().AsNoTracking()
-                .Where(x => x.Id == postData.SourceVersionId && !x.IsDeleted && !x.CraftOrder.IsDeleted)
-                .Select(x => new { x.CraftOrderId, x.Remark })
-                .FirstOrDefaultAsync()
-                ?? throw new Exception("来源工艺单版本不存在或已删除，请重新选择");
-            if (source.CraftOrderId != postData.SourceCraftOrderId)
-                throw new Exception("来源版本与所选工艺单不匹配，请重新选择");
 
-            var nodes = await GetCopyNodeSettingsAsync(postData.SourceVersionId);
-            var entity = await CreateCraftVersionAsync(postData.CraftOrderId, source.Remark, nodes);
-            transaction.Complete();
-            return Ok(new
-            {
-                Id = entity.Id,
-                SequenceNo = entity.SequenceNo,
-                Version = entity.Version,
-                BomVersionId = entity.BomVersionId,
-                IsMain = entity.IsMain,
-                Status = entity.Status,
-            });
-        }
-
-        private async Task<Technical_CraftOrderVersion> CreateCraftVersionAsync(
-            long craftOrderId, string? remark, List<NodeSettingTemplateDto> nodes)
-        {
-            var craftOrder = await _craftOrderService.GetAll()
-                .FirstOrDefaultAsync(x => x.Id == craftOrderId && !x.IsDeleted)
-                ?? throw new Exception("目标工艺单不存在或已删除，请刷新后重试");
+            var craftOrder = await _craftOrderService.GetByIdAsync(postData.CraftOrderId)
+                ?? throw new Exception("工序单不存在，请刷新后重试");
 
             var maxSequenceNo = await _craftVersionService.GetAll()
                 .Where(x => x.CraftOrderId == craftOrder.Id)
@@ -954,106 +909,48 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
             var sequenceNo = maxSequenceNo + 1;
 
             // 一个工序单版本对应一个独立的工作流模板，类型固定为“工序单版本”。
-            var workflowTemplateId = _workflowTemplateService.Create(
-                $"{craftOrder.Code}-{sequenceNo}",
-                (int)CraftOrderWorkflowType.工序单版本);
+            //var workflowTemplateId = _workflowTemplateService.Create(
+            //    $"{craftOrder.Code}-{sequenceNo}",
+            //    (int)CraftOrderWorkflowType.工序单版本);
 
-            var entity = new Technical_CraftOrderVersion
-            {
-                CraftOrderId = craftOrder.Id,
-                SequenceNo = sequenceNo,
-                Version = $"V{sequenceNo}",
-                IsMain = !hasMainVersion,
-                WorkflowTemplateId = workflowTemplateId,
-                Status = CraftOrderVersionStatus.暂存,
-                Remark = remark,
-            };
+            //var entity = new Technical_CraftOrderVersion
+            //{
+            //    CraftOrderId = craftOrder.Id,
+            //    SequenceNo = sequenceNo,
+            //    Version = $"V{sequenceNo}",
+            //    IsMain = !hasMainVersion,
+            //    WorkflowTemplateId = workflowTemplateId,
+            //    Status = CraftOrderVersionStatus.暂存,
+            //    Remark = postData.Remark,
+            //};
 
-            entity.CraftOrder = craftOrder;
+            //entity.CraftOrder = craftOrder;
 
-            await _craftVersionService.InsertAsync(entity);
+            //await _craftVersionService.InsertAsync(entity);
+            //await _unitOfWork.SaveChangeAsync();
+
+            //await SaveNodeSettingsAsync(entity.Id, workflowTemplateId, new List<NodeSettingTemplateDto>
+            //{
+            //    new NodeSettingTemplateDto { Code = "10", Name = "新工序", Sequence = 10 }
+            //});
             await _unitOfWork.SaveChangeAsync();
-
-            await SaveNodeSettingsAsync(entity.Id, workflowTemplateId, nodes);
+            //await SyncMBomAsync(entity);
             await _unitOfWork.SaveChangeAsync();
-            await SyncMBomAsync(entity);
-            await _unitOfWork.SaveChangeAsync();
-            return entity;
-        }
+            transaction.Complete();
 
-        private async Task<List<NodeSettingTemplateDto>> GetCopyNodeSettingsAsync(long sourceVersionId)
-        {
-            var nodes = await _nodeSettingService.GetAll().AsNoTracking()
-                .Where(x => x.CraftOrderVersionId == sourceVersionId && !x.IsDeleted)
-                .OrderBy(x => x.Sequence).ThenBy(x => x.Id)
-                .ToListAsync();
-            var nodeIds = nodes.Select(x => x.Id).ToList();
-            var machines = await _machineRLService.GetAll().AsNoTracking()
-                .Where(x => nodeIds.Contains(x.NodeSettingTemplateId) && !x.IsDeleted)
-                .ToListAsync();
-            var machinesByNode = machines.ToLookup(x => x.NodeSettingTemplateId);
-            var materials = await _materialRLService.GetAll().AsNoTracking()
-                .Where(x => nodeIds.Contains(x.NodeSettingTemplateId))
-                .OrderBy(x => x.SortNo).ThenBy(x => x.Id)
-                .ToListAsync();
-            var mainMaterials = materials.Where(x => !x.InsteadSourceId.HasValue).ToList();
-            var mainKeys = mainMaterials.Select(x => (x.NodeSettingTemplateId, x.Id)).ToHashSet();
-            if (materials.Any(x => x.InsteadSourceId.HasValue
-                && !mainKeys.Contains((x.NodeSettingTemplateId, x.InsteadSourceId.Value))))
-                throw new Exception("来源版本存在未关联本工序主料的替料，请先修复后复制");
-            var materialsByNode = mainMaterials.ToLookup(x => x.NodeSettingTemplateId);
-            var substitutes = materials.Where(x => x.InsteadSourceId.HasValue)
-                .ToLookup(x => x.InsteadSourceId!.Value);
-
-            // 仅复制业务字段，所有工序、工作流节点、物料及替料主明细 Id 均由保存过程重新生成。
-            return nodes.Select(node => new NodeSettingTemplateDto
+            return Ok(new
             {
-                Sequence = node.Sequence,
-                Code = node.Code,
-                Name = node.Name,
-                IsOutsource = node.IsOutsource,
-                IsInbound = node.IsInbound,
-                TheoreticalWorkHours = node.TheoreticalWorkHours,
-                IsReportWork = node.IsReportWork,
-                Description = node.Description,
-                CraftId = node.CraftId,
-                MachineIds = machinesByNode[node.Id].Select(x => x.MachineId).ToList(),
-                MachineSettings = machinesByNode[node.Id].Select(x => new NodeMachineSettingDto
-                {
-                    MachineId = x.MachineId,
-                    TheoreticalWorkHours = x.TheoreticalWorkHours
-                }).ToList(),
-                Materials = materialsByNode[node.Id].Select(material =>
-                {
-                    var copy = CopyNodeMaterial(material);
-                    copy.Substitutes = substitutes[material.Id].Select(CopyNodeMaterial).ToList();
-                    return copy;
-                }).ToList()
-            }).ToList();
-        }
-
-        private static NodeMaterialRLDto CopyNodeMaterial(Technical_NodeSettingTemplate_Material_RL material)
-        {
-            return new NodeMaterialRLDto
-            {
-                DataId = material.DataId,
-                DataType = material.DataType,
-                IOType = material.IOType,
-                Quantity = material.Quantity,
-                UnitId = material.UnitId,
-                UnitConversionId = material.UnitConversionId,
-                UnitList = JsonSerializer.Deserialize<List<InventoryUnitInboundDto>>(
-                    string.IsNullOrWhiteSpace(material.UnitListInfo) ? "[]" : material.UnitListInfo,
-                    JsonHelper.DefaultJsonSerializerOptions) ?? new(),
-                LossRate = material.LossRate,
-                SortNo = material.SortNo,
-                RefCraftOrderVersionId = material.RefCraftOrderVersionId,
-                Remark = material.Remark,
-            };
+                //Id = entity.Id,
+                //SequenceNo = entity.SequenceNo,
+                //Version = entity.Version,
+                //BomVersionId = entity.BomVersionId,
+                //IsMain = entity.IsMain,
+                //Status = entity.Status,
+            });
         }
 
         /// <summary>
-        /// 发布工序单版本（暂存 -> 已发布），当前跳过审核，保留主版本选择。
+        /// 发布工序单版本（待审核 -> 已通过）：校验后设为已通过并设为主版本，可按需把旧主版本置为已废弃。
         /// </summary>
         [HttpPost("PublishCraftVersion")]
         public async Task<IActionResult> PublishCraftVersion([FromBody] PublishCraftVersionDto postData)
@@ -1087,11 +984,6 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
             {
                 throw new Exception("存在未命名的工序，请先完善后再发布");
             }
-            var lastNode = nodes.OrderBy(x => x.Sequence).Last();
-            if (!lastNode.IsReportWork || !(lastNode.IsInbound || lastNode.IsOutsource))
-            {
-                throw new Exception("最后一道工序必须是报工工序且为入库或外协，请检查后发布");
-            }
 
             using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
@@ -1118,18 +1010,15 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
                 ?? throw new Exception("工序单版本不存在，请刷新后重试");
             if (version.Status != CraftOrderVersionStatus.已发布)
             {
-                throw new Exception("仅已发布的版本可以废弃");
+                throw new Exception("仅已通过的版本可以废弃");
             }
             if (version.IsMain)
             {
-                throw new Exception("主版本不能直接废弃，请先切换主版本后再操作");
+                throw new Exception("主版本不能直接废弃，请先发布新版本后再操作");
             }
 
-            using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             version.Status = CraftOrderVersionStatus.已废弃;
-            await SyncMBomMetadataAsync(version);
             await _unitOfWork.SaveChangeAsync();
-            transaction.Complete();
             return Ok("废弃成功");
         }
 
@@ -1179,7 +1068,7 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
 
 
         /// <summary>
-        /// 取消发布（已发布 -> 暂存）：清除主版本标记，允许重新编辑后再发布。
+        /// 取消发布（已发布 -> 待审核）：清除主版本标记，允许重新编辑后再发布。
         /// </summary>
         [HttpPost("UnpublishCraftVersion")]
         public async Task<IActionResult> UnpublishCraftVersion([FromBody] IdLongObject postData)
@@ -1202,17 +1091,14 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
                 throw new Exception("该版本已被引用无法取消发布");
             }
 
-            using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             version.Status = CraftOrderVersionStatus.暂存;
-            version.IsMain = false;
             await SyncMBomMetadataAsync(version);
             await _unitOfWork.SaveChangeAsync();
-            transaction.Complete();
             return Ok("取消发布成功");
         }
 
         /// <summary>
-        /// 删除整个工序单（软删版本、工序、设备，物料明细物理清理）。
+        /// 删除整个工序单（级联软删所有版本、工序、物料、设备）
         /// </summary>
         [HttpPost("DeleteCraftOrder")]
         public async Task<IActionResult> DeleteCraftOrder([FromBody] IdLongObject postData)
@@ -1233,6 +1119,8 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
                 .Where(x => x.CraftOrderId == id)
                 .ToListAsync();
 
+            var workFlowTemplateIds = new List<long>();
+
             foreach (var version in versions)
             {
                 if(_materialRLService.GetAll().Any(x => x.RefCraftOrderVersionId == version.Id))
@@ -1240,7 +1128,7 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
                     throw new Exception("该工序单已经被引用，无法删除");
                 }
 
-                // 工序和设备保留历史记录；物料关联没有软删除字段，物理清理。
+                // 软删该版本下的工序及其设备、物料
                 var nodeTemplates = await _nodeSettingService.GetAll()
                     .Where(x => x.CraftOrderVersionId == version.Id)
                     .ToListAsync();
@@ -1255,10 +1143,10 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
                         .ToListAsync();
                     foreach (var rl in machineRls)
                     {
-                        rl.IsDeleted = true;
+                        _machineRLService.Delete(rl,false);
                     }
 
-                    // 清理物料关联
+                    // 软删物料关联
                     var materialRls = await _materialRLService.GetAll()
                         .Where(x => nodeIds.Contains(x.NodeSettingTemplateId))
                         .ToListAsync();
@@ -1270,19 +1158,25 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
                     DeleteNodeFiles(nodeIds);
                 }
 
-                // 软删除的工序仍引用 NodeTemplateId，保留工作流节点及连线。
+                // 软删工序
                 foreach (var node in nodeTemplates)
                 {
-                    node.IsDeleted = true;
+                    _nodeSettingService.Delete(node,false);
                 }
                 // 软删版本
-                version.IsDeleted = true;
+                _craftVersionService.Delete(version, false);
                 await ArchiveMBomVersionAsync(version);
+                workFlowTemplateIds.Add(version.WorkflowTemplateId);
             }
 
             // 软删工序单
-            craftOrder.IsDeleted = true;
+            _craftOrderService.Delete(craftOrder);
             await _unitOfWork.SaveChangeAsync();
+
+            foreach(var wfid in workFlowTemplateIds)
+            {
+                _workflowTemplateService.Delete(wfid);
+            }
 
             transaction.Complete();
 
@@ -1307,7 +1201,7 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
             foreach (var input in activeInput)
             {
                 input.Code = input.Code?.Trim() ?? string.Empty;
-                if (!input.IsInbound && !input.IsOutsource)
+                if (!input.IsInbound)
                 {
                     var outputs = (input.Materials ?? new()).Where(row => row.IOType == NodeIOType.输出)
                         .Select(row => row.Id).Where(id => id > 0).ToHashSet();
@@ -1374,10 +1268,10 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
             }
 
             // 2) 新增 / 更新工序头
-            var toApply = new List<(Technical_NodeSettingTemplate Node, NodeSettingTemplateDto Input)>();
+            var toApply = new List<(WF_NodeTemplate_ProductionExt Node, NodeSettingTemplateDto Input)>();
             foreach (var input in activeInput)
             {
-                Technical_NodeSettingTemplate node;
+                WF_NodeTemplate_ProductionExt node;
                 if (input.Id > 0)
                 {
                     node = existing.FirstOrDefault(x => x.Id == input.Id)
@@ -1387,21 +1281,21 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
                     node.Name = input.Name ?? string.Empty;
                     node.IsOutsource = input.IsOutsource;
                     node.IsInbound = input.IsInbound;
-                    node.TheoreticalWorkHours = input.TheoreticalWorkHours;
-                    node.IsReportWork = input.IsReportWork;
+                    node.WorkHours = input.TheoreticalWorkHours;
+                    node.IsReport = input.IsReportWork;
                     node.Description = input.Description;
                     node.CraftId = input.CraftId;
                     // 兼容历史工序：以前保存过但没有工作流节点模板时，在本次保存补建。
-                    if (node.NodeTemplateId <= 0)
-                    {
-                        node.NodeTemplateId = CreateProcessNodeTemplate(workflowTemplateId, input);
-                    }
+                    //if (node.NodeTemplateId <= 0)
+                    //{
+                    //    node.NodeTemplateId = CreateProcessNodeTemplate(workflowTemplateId, input);
+                    //}
                 }
                 else
                 {
                     // 先落工作流节点模板，后落业务工序；NodeTemplateId 不接受前端伪造值。
-                    var nodeTemplateId = CreateProcessNodeTemplate(workflowTemplateId, input);
-                    node = new Technical_NodeSettingTemplate
+                    //var nodeTemplateId = CreateProcessNodeTemplate(workflowTemplateId, input);
+                    node = new WF_NodeTemplate_ProductionExt
                     {
                         CraftOrderVersionId = craftOrderVersionId,
                         Sequence = input.Sequence,
@@ -1409,10 +1303,9 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
                         Name = input.Name ?? string.Empty,
                         IsOutsource = input.IsOutsource,
                         IsInbound = input.IsInbound,
-                        TheoreticalWorkHours = input.TheoreticalWorkHours,
-                        IsReportWork = input.IsReportWork,
+                        WorkHours = input.TheoreticalWorkHours,
+                        IsReport = input.IsReportWork,
                         Description = input.Description,
-                        NodeTemplateId = nodeTemplateId,
                         CraftId = input.CraftId,
                     };
                     await _nodeSettingService.InsertAsync(node);
@@ -1450,29 +1343,7 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
         }
 
         /// <summary>
-        /// 为工序单版本中的一道工序建立对应的工作流节点模板。
-        /// 节点类型来自工序单自己的枚举（流程开始=1、工序节点=10、流程结束=99），
-        /// 当前业务工序均使用“工序节点”。
-        /// </summary>
-        private long CreateProcessNodeTemplate(long workflowTemplateId, NodeSettingTemplateDto input)
-        {
-            if (workflowTemplateId <= 0)
-            {
-                throw new Exception("工序单版本未关联工作流模板，无法保存工序");
-            }
-
-            var nodeTemplate = new NodeTemplateIM
-            {
-                Name = input.Name?.Trim() ?? string.Empty,
-                NodeTypeId = (int)CraftOrderNodeType.节点,
-                Type = CraftOrderNodeType.节点.ToString(),
-            };
-
-            return _nodeTemplateService.Create(workflowTemplateId, nodeTemplate).Id;
-        }
-
-        /// <summary>
-        /// 软删某道工序的全部设备（Machine_RL）
+        /// 删某道工序的全部设备（Machine_RL）
         /// </summary>
         private async Task SoftDeleteNodeMachinesAsync(long nodeSettingId)
         {
@@ -1498,11 +1369,11 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
                 return;
             }
 
-            var newRls = distinctMachineIds.Select(machineId => new Technical_NodeSettingTemplate_Machine_RL
+            var newRls = distinctMachineIds.Select(machineId => new WF_NodeTemplate_Machine_RL
             {
                 NodeSettingTemplateId = nodeSettingId,
                 MachineId = machineId,
-                TheoreticalWorkHours = settings.FirstOrDefault(setting => setting.MachineId == machineId)?.TheoreticalWorkHours ?? 0,
+                WorkHours = settings.FirstOrDefault(setting => setting.MachineId == machineId)?.TheoreticalWorkHours ?? 0,
             }).ToList();
             await _machineRLService.InsertAsync(newRls);
         }
@@ -1549,7 +1420,7 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
             var mainItems = (materials ?? new List<NodeMaterialRLDto>())
                 .Where(x => x.DataId > 0 && x.InsteadSourceId == null)
                 .ToList();
-            var created = new List<(Technical_NodeSettingTemplate_Material_RL Entity, NodeMaterialRLDto Input)>();
+            var created = new List<(WF_NodeTemplate_Material_RL Entity, NodeMaterialRLDto Input)>();
             foreach (var input in mainItems)
             {
                 var entity = CreateMaterialEntity(nodeSettingId, input, null);
@@ -1558,7 +1429,7 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
             }
             await _unitOfWork.SaveChangeAsync();
 
-            var substituteEntities = new List<Technical_NodeSettingTemplate_Material_RL>();
+            var substituteEntities = new List<WF_NodeTemplate_Material_RL>();
             foreach (var (main, input) in created)
             {
                 foreach (var substitute in input.Substitutes ?? new List<NodeMaterialRLDto>())
@@ -1576,10 +1447,10 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
             }
         }
 
-        private static Technical_NodeSettingTemplate_Material_RL CreateMaterialEntity(
+        private static WF_NodeTemplate_Material_RL CreateMaterialEntity(
             long nodeSettingId, NodeMaterialRLDto input, long? insteadSourceId)
         {
-            return new Technical_NodeSettingTemplate_Material_RL
+            return new WF_NodeTemplate_Material_RL
             {
                 NodeSettingTemplateId = nodeSettingId,
                 DataId = input.DataId,
@@ -1597,7 +1468,7 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
             };
         }
 
-        /// <summary>删除工序时同步移除以工序 Id 关联的作业指导书及其他工序文件。</summary>
+        /// <summary>删除工序时同步移除文件服务中以工序 Id 关联的附件。</summary>
         private void DeleteNodeFiles(IEnumerable<long> nodeIds)
         {
             var ids = nodeIds.Where(id => id > 0).Distinct().ToList();
@@ -1606,9 +1477,7 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
                 return;
             }
             var files = _fileStorageService.GetAll()
-                .Where(file => ids.Contains(file.SourceId)
-                    && (file.SourceType == FileStorageSourceType.工序文件
-                        || file.SourceType == FileStorageSourceType.工序作业指导书))
+                .Where(file => file.SourceType == FileStorageSourceType.工序文件 && ids.Contains(file.SourceId))
                 .ToList();
             if (files.Count > 0)
             {
@@ -1617,8 +1486,8 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
         }
 
         /// <summary>
-        /// 删除工序单版本（软删除）。
-        /// 暂存和已废弃版本可删除；主版本需先切换后再删；删除时级联软删其下工序与设备。
+        /// 删除工序单版本（删除）。
+        /// 仅待审核的草稿版本可删除；主版本需先切换后再删；删除时级联软删其下工序与设备。
         /// </summary>
         [HttpPost("DeleteCraftVersion")]
         public async Task<IActionResult> DeleteCraftVersion([FromBody] IdLongObject postData)
@@ -1631,54 +1500,64 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
 
             var version = await _craftVersionService.GetByIdAsync(id)
                 ?? throw new Exception("工序单版本不存在，请刷新后重试");
-            if (version.Status is not (CraftOrderVersionStatus.暂存 or CraftOrderVersionStatus.待审核 or CraftOrderVersionStatus.已废弃))
+            if (version.Status == CraftOrderVersionStatus.已发布)
             {
-                throw new Exception("仅暂存或已废弃的版本可以删除");
+                throw new Exception("已发布版本不可以删除");
             }
             if (version.IsMain)
             {
                 throw new Exception("主版本不能删除，请先切换主版本或删除整个工序单");
             }
+
             if (await _materialRLService.GetAll().AnyAsync(x => x.RefCraftOrderVersionId == id))
             {
                 throw new Exception("该版本已被工序物料引用，不能删除");
             }
 
-            using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-
-            // 级联软删该版本下的工序及其设备
-            var nodeTemplates = await _nodeSettingService.GetAll()
-                .Where(x => x.CraftOrderVersionId == version.Id)
-                .ToListAsync();
-            if (nodeTemplates.Count > 0)
+            try
             {
-                var nodeIds = nodeTemplates.Select(x => x.Id).ToList();
-                var machineRls = await _machineRLService.GetAll()
-                    .Where(x => nodeIds.Contains(x.NodeSettingTemplateId))
-                    .ToListAsync();
-                foreach (var rl in machineRls)
-                {
-                    rl.IsDeleted = true;
-                }
-                var materialRls = await _materialRLService.GetAll()
-                    .Where(x => nodeIds.Contains(x.NodeSettingTemplateId))
-                    .ToListAsync();
-                foreach (var rl in materialRls)
-                {
-                    _materialRLService.Delete(rl, false);
-                }
-                DeleteNodeFiles(nodeIds);
-            }
-            foreach (var node in nodeTemplates)
-            {
-                node.IsDeleted = true;
-            }
+                var workflowTemplateId = version.WorkflowTemplateId;
 
-            // 工序和版本是软删除，仍保留模板外键；工作流节点、连线及模板一并保留。
-            version.IsDeleted = true;
-            await ArchiveMBomVersionAsync(version);
-            await _unitOfWork.SaveChangeAsync();
-            transaction.Complete();
+                // 级联软删该版本下的工序及其设备
+                var nodeTemplates = await _nodeSettingService.GetAll()
+                    .Where(x => x.CraftOrderVersionId == version.Id)
+                    .ToListAsync();
+                if (nodeTemplates.Count > 0)
+                {
+                    var nodeIds = nodeTemplates.Select(x => x.Id).ToList();
+                    var machineRls = await _machineRLService.GetAll()
+                        .Where(x => nodeIds.Contains(x.NodeSettingTemplateId))
+                        .ToListAsync();
+                    foreach (var rl in machineRls)
+                    {
+                        _machineRLService.Delete(rl, false);
+                    }
+                    var materialRls = await _materialRLService.GetAll()
+                        .Where(x => nodeIds.Contains(x.NodeSettingTemplateId))
+                        .ToListAsync();
+                    foreach (var rl in materialRls)
+                    {
+                        _materialRLService.Delete(rl, false);
+                    }
+                    DeleteNodeFiles(nodeIds);
+                }
+                foreach (var node in nodeTemplates)
+                {
+                    _nodeSettingService.Delete(node, false);
+                    //_nodeTemplateService.Delete(node.NodeTemplateId);
+                }
+
+                _craftVersionService.Delete(version, false);
+                await ArchiveMBomVersionAsync(version);
+                await _unitOfWork.SaveChangeAsync();
+                // 删除工艺单版本对应的workflowTemplate
+                _workflowTemplateService.Delete(workflowTemplateId);
+            }
+            catch (DbUpdateException)
+            {
+                throw new Exception("该版本已被引用，不能删除");
+            }
+            
             return Ok("删除成功");
         }
 
@@ -1694,6 +1573,10 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
         // 必须在工艺版本保存的同一个事务内调用，使用已落库的工序物料作为唯一数据源。
         private async Task SyncMBomAsync(Technical_CraftOrderVersion craftVersion)
         {
+            if(craftVersion.Status != CraftOrderVersionStatus.已发布)
+            {
+                return;
+            }
             var craftOrder = await _craftOrderService.GetByIdAsync(craftVersion.CraftOrderId)
                 ?? throw new Exception("工艺单不存在，无法同步制造BOM");
             Production_MBom bom;
@@ -1883,7 +1766,7 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
 
         }
 
-        private MBomMaterialTotal ReadMBomMaterial(Technical_NodeSettingTemplate_Material_RL material,
+        private MBomMaterialTotal ReadMBomMaterial(WF_NodeTemplate_Material_RL material,
             Dictionary<(InventoryDataType Type, long Id), DataInfo> cache)
         {
             var type = material.DataType switch
@@ -1959,7 +1842,7 @@ namespace KingZon.OLCM.Technical.WebApi.Controllers
             bom.IsMain = craft.IsMain;
             bom.Status = craft.Status switch
             {
-                CraftOrderVersionStatus.暂存 or CraftOrderVersionStatus.待审核 => BomStatus.待审核,
+                CraftOrderVersionStatus.待审核 or CraftOrderVersionStatus.暂存 => BomStatus.待审核,
                 CraftOrderVersionStatus.已发布 => BomStatus.已生效,
                 CraftOrderVersionStatus.已废弃 => BomStatus.淘汰,
                 _ => throw new Exception("无法识别工艺版本状态"),

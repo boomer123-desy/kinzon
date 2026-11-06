@@ -1,7 +1,6 @@
 <template>
     <Loading v-show="isLoading" />
     <div class="kingzon-page" style="min-height: 0; min-width: 0">
-        <div class="kingzon-page-title"><span>工序单排产管理</span></div>
         <div class="kingzon-page-body" style="flex: 1; min-height: 0; overflow: hidden">
             <div class="kingzon-page-content" style="min-height: 0">
                 <div class="kingzon-page-fill"
@@ -15,19 +14,8 @@
                             <LinkButton @click="openGantt()">工序甘特图</LinkButton>
                         </div>
                         <Panel title="计划信息" :collapsible="true" :bodyStyle="{ padding: '0' }" style="flex-shrink: 0">
-                            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 5px">
-                                <LinkButton :disabled="isLoading" @click="openCraftPicker">选择工序单</LinkButton>
-                                <span>{{ product.orderCode || '请先选择工序单及版本' }}</span>
-                                <span v-if="queryError" style="color: var(--color-red)" role="alert">{{ queryError
-                                }}</span>
-                            </div>
                             <KingZonShowForm :formData="showFormData" columnWidth="20%" lableWidth="100px" />
                             <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 24px; padding: 5px">
-                                <div style="display: flex; align-items: center; gap: 8px">
-                                    <span>产品数量</span>
-                                    <NumberBox v-model="quantityInput" :min="0.0001" :max="99999999.9999" :precision="4"
-                                        :spinners="true" style="width: 90px" /><span>{{ product.unit }}</span>
-                                </div>
                                 <div style="display: flex; align-items: center; gap: 8px">
                                     <span>半成品</span><strong>{{ semiNodes.length }}</strong><span>待排产</span><strong
                                         style="color: var(--color-yellow)">{{
@@ -41,21 +29,16 @@
                                 <div style="display: flex; align-items: center; gap: 8px"
                                     title="库存缺量为 0 的有效需求节点数 / 总有效需求节点数">
                                     <span>需求满足率</span><strong>{{ quantityResult ? kitRate + '%' : '—'
-                                    }}</strong><small>库存口径</small>
+                                        }}</strong><small>库存口径</small>
+                                    <LinkButton plain :disabled="!quantityResult || isLoading" @click="openRootSchedule">顶层排产单详情</LinkButton>
                                 </div>
                             </div>
-                            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 5px">
-                                <label>计划开始
-                                    <DateTimeBox v-model="startInput" format="yyyy-MM-dd HH:mm" style="width: 170px" />
-                                </label>
-                                <label>需求交期
-                                    <DateTimeBox v-model="endInput" format="yyyy-MM-dd HH:mm" style="width: 170px" />
-                                </label>
+                            <!-- <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 5px">
                                 <span>需求版本 R{{ revision }}</span><span v-if="staleOrderCount"
                                     style="color: var(--color-yellow)">{{
                                         staleOrderCount }}
                                     张旧版本排产单待复核</span>
-                            </div>
+                            </div> -->
                         </Panel>
                         <div
                             style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 5px 0; flex-shrink: 0">
@@ -79,24 +62,25 @@
                         <div class="kingzon-text-grey"
                             style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 8px 0; flex-shrink: 0">
                             <span>共 {{ quantityResult?.nodeCount ?? 0 }} 个需求节点 ·
-                                缺量仅抵扣可分配库存</span><span>在途、在制、排产数量未查询</span>
+                                缺量仅抵扣可分配库存</span><span>在途量暂不计算</span>
                         </div>
                     </div>
                     <div
                         style="display: flex; flex-direction: column; flex: 32 1 0; min-width: 380px; min-height: 0; overflow: hidden">
-                        <ScheduleOrderList v-if="selectedSemi" :node="selectedSemi" :dataList="scheduleListRows"
-                            :selectedRow="selectedListRow" :selectedOrder="selectedOrder" :hasDraft="!!currentDraft"
-                            :readOnly="!!quantityResult" :shortage="shortage(selectedSemi)" @select="selectListRow"
-                            @add="openSchedule(selectedSemi)" @cancelDraft="cancelDraftRow" @cancelOrder="cancelOrder"
-                            @openGantt="openGantt" />
-                        <div v-else class="kingzon-text-grey" style="padding: 24px 8px; text-align: center">
+                        <KeepAlive :key="`${selectedCraftVersionId}:${rootScheduleId}`">
+                            <ScheduleOrderList v-if="selectedSemi" :key="selectedSemi.id" :node="selectedSemi"
+                                :dataList="scheduleListRows" :selectedRow="selectedListRow" :readOnly="!!quantityResult"
+                                :craftVersionId="selectedCraftVersionId" :allowProcessEdit="allowProcessEdit"
+                                :savedOrders="savedOrders" :loading="ordersLoading" :error="ordersError" :busy="!!savingDraftId || orderActionLoading"
+                                :savingDraftId="savingDraftId" :canAdd="canAddSchedule" :addDisabledReason="addDisabledReason"
+                                :initialQuantity="isRootSelected ? quantity : 1" :quantityReadOnly="isRootSelected"
+                                :shortage="shortage(selectedSemi)" @select="selectListRow" @add="openSchedule(selectedSemi)"
+                                @submitDraft="submitDraft" @cancelDraft="cancelDraftRow" @cancelOrder="cancelOrder"
+                                @openGantt="openGantt" @refresh="loadScheduleOrders" @startOrder="startSavedOrder" @deleteOrder="deleteSavedOrder" />
+                        </KeepAlive>
+                        <div v-if="!selectedSemi" class="kingzon-text-grey" style="padding: 24px 8px; text-align: center">
                             点击左侧半成品，查看排产单并创建排产
                         </div>
-                        <CreateSchedule v-for="draft in drafts"
-                            v-show="selectedId === draft.nodeId && selectedOrderId === draft.id" :key="draft.id"
-                            :craftVersionId="draftNode(draft.nodeId).serverMaterial?.craftVersionId ?? selectedCraftVersionId"
-                            :allowProcessEdit="allowProcessEdit" style="flex: 1 1 0; height: 0; min-height: 0; overflow: hidden"
-                            @submit="$emit('scheduleSubmit', $event)" @cancel="closeScheduleDraft" />
                     </div>
                 </div>
             </div>
@@ -158,7 +142,6 @@
 import { ProductionScheduleStatus, ScheduleReceiptStatus, MaterialRequirementStatus } from '@/types/enums'
 import { defineComponent } from 'vue'
 import { ShowFormDataType } from '@/types/enums'
-import CreateSchedule from './component/create-schedule.vue'
 import ScheduleGantt from './component/schedule-gantt.vue'
 import ScheduleOrderList from './component/schedule-order-list.vue'
 import ScheduleMaterialTree from './component/schedule-material-tree.vue'
@@ -181,7 +164,10 @@ import {
     materialCellValue
 } from './schedule'
 import {
-    type ScheduleNodeDto,
+    ProductionSchedulePostDto,
+    ScheduleNodeDto,
+    MaterialNodeDto,
+    SavedScheduleDto,
     type ScheduleSubmissionDto,
     type ScheduleTreeRowDto,
     type ScheduleOrderDto,
@@ -193,20 +179,24 @@ import {
     ScheduleListRowDto,
     ScheduleDraftDto,
     ReceiptFormDto
-} from '@/types/production-schedule'
+} from '@/types/schedule'
 
 export default defineComponent({
     name: 'ProductionScheduleManage',
     emits: ['scheduleSubmit'],
-    components: { CreateSchedule, ScheduleGantt, ScheduleOrderList, ScheduleMaterialTree },
+    components: { ScheduleGantt, ScheduleOrderList, ScheduleMaterialTree },
     props: {
-        craftVersionId: { type: Number, default: 9168 },
+        craftVersionId: { type: Number, default: 9225 },
         allowProcessEdit: { type: Boolean, default: false },
         initialQuantity: { type: Number, default: 100 }
     },
     data() {
         return {
             isLoading: false,
+            rootScheduleId: 0,
+            savedOrders: [] as SavedScheduleDto[],
+            ordersLoading: false, ordersError: '', ordersRequest: 0,
+            savingDraftId: '', orderActionLoading: false,
             product: new ScheduleProductDto(),
             quantityResult: null as QuantityResultDto | null,
             queryError: '',
@@ -246,6 +236,7 @@ export default defineComponent({
         this.init()
     },
     beforeUnmount() {
+        this.ordersRequest++
         this.requestToken++
         this.craftListToken++
         this.versionRequestToken++
@@ -327,10 +318,22 @@ export default defineComponent({
                 .filter((order) => order.snapshot?.revision !== this.revision).length
         },
         selectedSemi(): ScheduleNodeDto | undefined {
+            if (this.isRootSelected && this.quantityResult) return new ScheduleNodeDto({
+                id: 'root-product', name: this.product.name, code: this.product.code, unit: this.product.unit, kind: 'semi',
+                serverMaterial: new MaterialNodeDto({ craftVersionId: this.selectedCraftVersionId })
+            })
             return this.semiNodes.find((node) => node.id === this.selectedId)
         },
+        isRootSelected(): boolean { return this.selectedId === 'root-product' },
+        canAddSchedule(): boolean {
+            return this.isRootSelected ? !this.rootScheduleId && !this.drafts.some(draft => draft.nodeId === 'root-product') : this.rootScheduleId > 0
+        },
+        addDisabledReason(): string {
+            if (this.isRootSelected) return this.rootScheduleId ? '顶层排产单已生成，排产数量为计划数量' : '顶层排产数量固定为计划数量，保存后才可对子级排产'
+            return this.rootScheduleId ? '' : '请先生成顶层排产单，再对子级排产'
+        },
         currentDraft(): ScheduleDraftDto | undefined {
-            return this.drafts.find((draft) => draft.nodeId === this.selectedId)
+            return this.drafts.find((draft) => draft.nodeId === this.selectedId && draft.id === this.selectedOrderId)
         },
         selectedOrder(): ScheduleOrderDto | undefined {
             return this.selectedSemi?.orders.find((order) => order.id === this.selectedOrderId)
@@ -340,7 +343,12 @@ export default defineComponent({
                 id: order.id, quantity: order.quantity, start: order.start, end: order.end,
                 status: order.status ?? ProductionScheduleStatus.已排产, draft: false
             })) as ScheduleListRowDto[]
-            if (this.currentDraft) rows.push(new ScheduleListRowDto({ id: this.currentDraft.id, status: ProductionScheduleStatus.草稿, draft: true }))
+            rows.push(...this.savedOrders.map(order => new ScheduleListRowDto({
+                id: `saved-${order.id}`, title: order.orderNo, quantity: order.quantity,
+                start: order.start, end: order.end ?? '', statusText: order.statusText
+            })))
+            rows.push(...this.drafts.filter(draft => draft.nodeId === this.selectedId).map(draft =>
+                new ScheduleListRowDto({ id: draft.id, status: ProductionScheduleStatus.草稿, draft: true })))
             return rows
         },
         selectedListRow(): ScheduleListRowDto | null {
@@ -397,6 +405,7 @@ export default defineComponent({
 
         },
         changeCraftVersion(value: number) {
+            if (this.savingDraftId || this.orderActionLoading) return this.showNotice('正在保存，请稍后切换工艺版本')
             const id = Number(value)
             if (id === this.selectedCraftVersionId && this.quantityResult?.craftVersionId === id) return
             this.requestToken++
@@ -407,6 +416,11 @@ export default defineComponent({
             if (this.selectedCraftVersionId) this.loadMaterialQuantities()
         },
         clearQuantityView() {
+            this.rootScheduleId = 0
+            this.savedOrders = []
+            this.ordersRequest++
+            this.ordersLoading = false
+            this.ordersError = ''
             this.nodes = []
             this.quantityResult = null
             this.selectedId = ''
@@ -424,6 +438,8 @@ export default defineComponent({
                 return this.showNotice('请先选择工序单及工艺版本')
             if (!validProductionQuantity(quantity))
                 return this.showNotice('产品数量须大于0、不超过99999999.9999且最多4位小数')
+            if (this.rootScheduleId && quantity !== this.quantity)
+                return this.showNotice('顶层排产单已生成，不能修改当前计划数量')
             const start = this.startInput, end = this.endInput
             if (!start || !end || !Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || end <= start)
                 return this.showNotice('请选择有效的计划时间，交期必须晚于开始时间')
@@ -451,11 +467,11 @@ export default defineComponent({
                     customerCode: '', technicalCode: '', owner: ''
                 })
                 this.expandedIds = this.allNodes.filter(node => node.children.length).map(node => node.id)
-                this.selectedId = this.allNodes.some(node => node.id === this.selectedId) ? this.selectedId : ''
-                this.selectedOrderId = ''
-                this.scheduleTarget = null
-                this.drafts = []
+                this.selectedId = this.isRootSelected || this.allNodes.some(node => node.id === this.selectedId) ? this.selectedId : 'root-product'
+                this.selectOrder(this.scheduleListRows.some(row => row.id === this.selectedOrderId) ? this.selectedOrderId : '')
                 this.materialTarget = null
+                if (this.isRootSelected && !this.rootScheduleId) this.openRootSchedule()
+                else await this.loadScheduleOrders()
             } catch (error) {
                 if (token === this.requestToken) {
                     this.queryError = this.quantityResult ? '查询失败，请重试；数量为上次成功查询结果' : '查询失败，请重试'
@@ -469,6 +485,7 @@ export default defineComponent({
             return (node.receipts ?? []).filter((receipt) => receipt.status === ScheduleReceiptStatus.待入库)
         },
         shortage(node: ScheduleNodeDto): number {
+            if (node.id === 'root-product') return this.quantity
             return this.requirements[node.id]?.net ?? 0
         },
         cellValue(node: ScheduleNodeDto, key: string): string | number {
@@ -486,23 +503,110 @@ export default defineComponent({
         },
         selectRow(row: ScheduleTreeRowDto | null) {
             this.selectedId = row?.id ?? ''
+            this.savedOrders = []
+            this.loadScheduleOrders()
             this.scheduleError = ''
-            this.selectOrder(this.currentDraft?.id ?? this.selectedSemi?.orders[0]?.id ?? '')
+            const current = this.scheduleListRows.find(item => item.id === this.selectedOrderId)
+            this.selectOrder(current?.id ?? this.drafts.find(draft => draft.nodeId === this.selectedId)?.id ?? this.selectedSemi?.orders[0]?.id ?? '')
         },
         selectOrder(id: string) {
             this.selectedOrderId = id
-            this.scheduleTarget = id === this.currentDraft?.id ? (this.selectedSemi ?? null) : null
+            this.scheduleTarget = this.currentDraft ? (this.selectedSemi ?? null) : null
             this.scheduleError = ''
         },
         selectListRow(row: ScheduleListRowDto | null) {
             this.selectOrder(row?.id ?? '')
         },
-        cancelDraftRow(id: string) {
-            this.selectOrder(id)
-            this.closeScheduleDraft()
+        async cancelDraftRow(id: string) {
+            if (this.savingDraftId === id) return
+            const draft = this.drafts.find(item => item.id === id)
+            if (!draft) return
+            try {
+                await this.$kingzon_messager.showConfim('该排产单尚未保存，关闭后将丢失编辑内容，确认关闭？')
+                if (this.drafts.includes(draft) && this.savingDraftId !== id) this.closeScheduleDraft(id)
+            } catch { /* 取消关闭，保留草稿。 */ }
         },
-        draftNode(id: string): ScheduleNodeDto {
-            return this.allNodes.find((node) => node.id === id)!
+        async submitDraft(id: string, value: ProductionSchedulePostDto) {
+            if (this.currentDraft?.id !== id || this.savingDraftId || this.orderActionLoading) return
+            const draft = this.currentDraft, root = draft.nodeId === 'root-product'
+            if (!root && !this.rootScheduleId) return this.showNotice('请先生成顶层排产单，再对子级排产')
+            if (root && (this.rootScheduleId || value.quantity !== this.quantity || value.craftVersionId !== this.selectedCraftVersionId))
+                return this.showNotice('顶层排产单只能生成一张，数量必须等于计划数量')
+            const versionId = this.selectedSemi?.serverMaterial?.craftVersionId ?? this.selectedCraftVersionId
+            if (value.craftVersionId !== versionId) return this.showNotice('草稿工艺版本与当前选择不一致')
+            const postData = new ProductionSchedulePostDto({ ...value,
+                rootCraftVersionId: this.selectedCraftVersionId,
+                rootDispatchOrderId: root ? null : this.rootScheduleId
+            })
+            this.savingDraftId = id
+            try {
+                const response = await this.$http.post('/api/production/ProductionScheduleManage/CreateSchedule', postData)
+                const savedId = Number(response.data?.id)
+                if (!Number.isSafeInteger(savedId) || savedId <= 0) throw new Error('排产保存未返回有效单据ID，请查询确认后重试')
+                if (root) this.rootScheduleId = savedId
+                this.closeScheduleDraft(id)
+                this.$emit('scheduleSubmit', postData)
+                if (this.selectedId === draft.nodeId) {
+                    await this.loadScheduleOrders()
+                    if (this.scheduleListRows.some(row => row.id === `saved-${savedId}`)) this.selectOrder(`saved-${savedId}`)
+                }
+                this.showNotice(root ? '顶层排产单已生成，可以对子级排产' : '排产单保存成功')
+            } catch (error) { this.$kingzon_messager.showError(error) }
+            finally { this.savingDraftId = '' }
+        },
+        openRootSchedule() {
+            if (!this.quantityResult) return
+            this.selectedId = 'root-product'
+            this.savedOrders = []
+            if (this.rootScheduleId) {
+                this.selectOrder(`saved-${this.rootScheduleId}`)
+                this.loadScheduleOrders()
+                return
+            }
+            const draft = this.drafts.find(item => item.nodeId === 'root-product')
+            if (draft) this.selectOrder(draft.id)
+            else this.openSchedule(this.selectedSemi!)
+        },
+        async loadScheduleOrders() {
+            const token = ++this.ordersRequest, nodeId = this.selectedId, rootId = this.rootScheduleId
+            const versionId = this.selectedSemi?.serverMaterial?.craftVersionId
+            this.ordersError = ''
+            this.ordersLoading = false
+            if (!rootId || !versionId) { this.savedOrders = []; return }
+            this.ordersLoading = true
+            try {
+                const response = await this.$http.get('/api/production/ProductionScheduleManage/GetScheduleList', {
+                    craftVersionId: versionId, rootDispatchOrderId: rootId
+                })
+                if (token !== this.ordersRequest || nodeId !== this.selectedId || rootId !== this.rootScheduleId) return
+                if (!Array.isArray(response.data)) throw new Error('排产单列表返回格式无效')
+                this.savedOrders = response.data.map(order => new SavedScheduleDto(order))
+                if (!this.scheduleListRows.some(row => row.id === this.selectedOrderId)) this.selectOrder(this.scheduleListRows[0]?.id ?? '')
+            } catch (error) {
+                if (token === this.ordersRequest) { this.ordersError = '排产单查询失败，请刷新重试'; this.$kingzon_messager.showError(error) }
+            } finally { if (token === this.ordersRequest) this.ordersLoading = false }
+        },
+        async startSavedOrder(id: number) { await this.changeSavedOrder(id, 'StartSchedule', '确认开始该排产单？') },
+        async deleteSavedOrder(id: number) { await this.changeSavedOrder(id, 'DeleteSchedule', '确认删除该排产单？') },
+        async changeSavedOrder(id: number, action: string, message: string) {
+            if (this.savingDraftId || this.orderActionLoading) return
+            try { await this.$kingzon_messager.showConfim(message) } catch { return }
+            if (this.savingDraftId || this.orderActionLoading || !this.savedOrders.some(order => order.id === id)) return
+            this.orderActionLoading = true
+            let reopenRoot = false
+            try {
+                await this.$http.post(`/api/production/ProductionScheduleManage/${action}`, { id })
+                if (action === 'DeleteSchedule' && id === this.rootScheduleId) {
+                    this.rootScheduleId = 0
+                    this.drafts = []
+                    this.savedOrders = []
+                    reopenRoot = true
+                } else await this.loadScheduleOrders()
+            } catch (error) { this.$kingzon_messager.showError(error) }
+            finally {
+                this.orderActionLoading = false
+                if (reopenRoot) this.openRootSchedule()
+            }
         },
         resetFilters() {
             this.keyword = ''
@@ -519,12 +623,16 @@ export default defineComponent({
         },
         openSchedule(node: ScheduleNodeDto) {
             if (node.kind !== 'semi' || !this.shortage(node)) return
-            this.selectedId = node.id
-            let draft = this.currentDraft
-            if (!draft) {
-                draft = new ScheduleDraftDto({ id: `draft-${this.draftSequence++}`, nodeId: node.id })
-                this.drafts.push(draft)
+            if (this.savingDraftId || this.orderActionLoading) return
+            if (node.id !== 'root-product' && !this.rootScheduleId) return this.showNotice('请先生成顶层排产单，再对子级排产')
+            if (node.id === 'root-product') {
+                if (this.rootScheduleId) return this.openRootSchedule()
+                const existing = this.drafts.find(draft => draft.nodeId === node.id)
+                if (existing) { this.selectedId = node.id; this.selectOrder(existing.id); return }
             }
+            this.selectedId = node.id
+            const draft = new ScheduleDraftDto({ id: `draft-${this.draftSequence++}`, nodeId: node.id })
+            this.drafts.push(draft)
             this.selectOrder(draft.id)
         },
         saveSingleSchedule(value: ScheduleSubmissionDto) {
@@ -563,18 +671,15 @@ export default defineComponent({
                 snapshot: snapshot(requirement),
                 details
             })
-            this.closeScheduleDraft()
+            this.closeScheduleDraft(this.selectedOrderId)
             this.selectedOrderId = node.orders[node.orders.length - 1].id
             this.showNotice(
                 `已保存 ${node.name} 的排产单及工序、物料快照${materials.some((m) => m.shortage) ? '，当前缺料已标记为风险' : ''}`
             )
         },
-        closeScheduleDraft() {
-            const nodeId = this.scheduleTarget?.id
-            this.drafts = this.drafts.filter((draft) => draft.nodeId !== nodeId)
-            this.scheduleTarget = null
-            this.scheduleError = ''
-            this.selectedOrderId = this.selectedSemi?.orders[0]?.id ?? ''
+        closeScheduleDraft(id: string) {
+            this.drafts = this.drafts.filter((draft) => draft.id !== id)
+            if (this.selectedOrderId === id) this.selectOrder(this.scheduleListRows[0]?.id ?? '')
         },
         rescheduleOrder(change: ScheduleTimeChangeDto) {
             const result = scheduleChange(this.nodes, this.context, change)

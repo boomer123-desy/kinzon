@@ -1,25 +1,20 @@
 <template>
-    <div class="kingzon-page-content schedule-editor" style="min-height: 0; min-width: 0; overflow: hidden">
+    <div class="kingzon-page-content schedule-editor" :class="{ 'schedule-editor-compact': quantityReadOnly }" style="min-height: 0; min-width: 0; overflow: hidden">
         <Loading v-show="isLoading" />
-        <div class="kingzon-page-fill schedule-editor-scroll" style="min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 0 8px">
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0">
-                <div style="min-width: 0">
-                    <strong style="font-size: 14px">生产排产单</strong>
-                    <div class="kingzon-text-grey" style="padding-top: 4px; overflow-wrap: anywhere">
-                        {{ template.productName }} · {{ template.productCode }}
-                    </div>
-                </div>
-                <span class="kingzon-tag kingzon-tag-info">编辑中</span>
-            </div>
-            <Panel title="排产基本信息" class="schedule-module" :bodyStyle="{ padding: '6px' }" style="margin-bottom: 8px">
-                <div class="kingzon-text-grey" style="padding: 4px 0">
-                    工艺版本 {{ template.version || '—' }}
-                </div>
+        <div class="kingzon-page-fill schedule-editor-scroll"
+            style="min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 8px">
+            <Panel class="schedule-module" :bodyStyle="{ padding: '6px' }" style="margin-bottom: 8px">
+                <template #header>
+                    <strong>排产基本信息<small class="kingzon-text-grey" style="padding: 4px 0">
+                            工艺版本 {{ template.version || '—' }}
+                        </small></strong>
+                </template>
                 <Form :model="form" :labelWidth="68" labelAlign="right" class="schedule-basic-form">
                     <FormField name="quantity" label="排产数量:" style="min-width: 0; margin: 0">
                         <div style="display: flex; align-items: center; gap: 4px; min-width: 0">
-                            <NumberBox v-model="form.quantity" :min="0.0001" :max="99999999.9999" :precision="4"
-                                :disabled="saving" style="width: 0; flex: 1; min-width: 0; height: 28px" />
+                            <span v-if="quantityReadOnly" class="schedule-plan-quantity" aria-readonly="true" :title="'固定计划数量'">{{ form.quantity }}</span>
+                            <NumberBox v-else v-model="form.quantity" :min="0.0001" :max="99999999.9999" :precision="4"
+                                :disabled="saving" :readonly="quantityReadOnly" style="width: 0; flex: 1; min-width: 0; height: 28px" />
                             <span class="kingzon-text-grey" style="flex-shrink: 0">{{ template.quantityUnit }}</span>
                         </div>
                     </FormField>
@@ -28,10 +23,12 @@
                             :disabled="saving" style="width: 100%; height: 28px" />
                     </FormField>
                     <FormField name="start" label="计划开始:" style="min-width: 0; margin: 0">
-                        <DateTimeBox v-model="start" format="yyyy-MM-dd HH:mm" :disabled="saving" style="width: 100%; height: 28px" />
+                        <DateTimeBox v-model="start" format="yyyy-MM-dd HH:mm" :disabled="saving"
+                            style="width: 100%; height: 28px" />
                     </FormField>
                     <FormField name="end" label="计划完成:" style="min-width: 0; margin: 0">
-                        <DateTimeBox v-model="end" format="yyyy-MM-dd HH:mm" :disabled="saving" style="width: 100%; height: 28px" />
+                        <DateTimeBox v-model="end" format="yyyy-MM-dd HH:mm" :disabled="saving"
+                            style="width: 100%; height: 28px" />
                     </FormField>
                     <FormField name="urgent" label="加急:" style="min-width: 0; margin: 0">
                         <CheckBox v-model="form.urgent" :disabled="saving" />
@@ -42,37 +39,34 @@
                     </FormField>
                 </Form>
             </Panel>
-            <section class="schedule-route-module">
-                <div class="schedule-route-heading">
-                    <strong>工序路线 <small class="kingzon-text-grey">{{ processes.length }} 道</small></strong>
-                    <div>
-                        <LinkButton :disabled="!allowProcessEdit || isLoading || saving" @click="openAddProcess">新增工序
+            <Panel class="schedule-module">
+                <template #header>
+                    <div style="display: flex;">
+                        <strong style="flex: 1;">工序路线 <small class="kingzon-text-grey">{{ processes.length }}
+                                道</small></strong>
+                        <LinkButton :disabled="!allowProcessEdit || isLoading || saving" @click="openAddProcess">
+                            新增工序
                         </LinkButton>
-                        <span v-if="!allowProcessEdit" class="kingzon-text-grey" style="margin-left: 8px">工序调整由系统参数控制</span>
                     </div>
-                </div>
+                </template>
                 <ScheduleProcessCard v-for="(process, index) in processes" :key="process.key" :process="process"
-                    :index="index" :count="processes.length" :quantity="Number(form.quantity) || 0"
+                    :index="index" :count="processes.length" :compact="quantityReadOnly" :quantity="Number(form.quantity) || 0"
                     :expanded="expandedKey === process.key" :editable="allowProcessEdit" :saving="saving"
                     :crafts="template.crafts" :machineOptions="machinesFor(process)"
-                    @toggle="toggleProcess(process.key)"
-                    @move="moveProcess($event, process.key)" @copy="copyProcess(process)"
-                    @remove="removeProcess(process.key)" @materials="openMaterials(process)"
-                    @updateProcess="updateProcess(process, $event)" @dragStart="dragKey = $event" @dragEnd="dragKey = ''"
-                    @dropProcess="dropProcess" />
-            </section>
-            <Panel class="schedule-module" title="统计汇总" :bodyStyle="{ padding: '8px' }" style="margin-top: 8px">
-                <div style="display: flex; flex-wrap: wrap; gap: 4px 12px; line-height: 22px">
-                    <span>共 {{ summary.processCount }} 道工序</span><span>{{ summary.machineCount }} 台设备</span>
-                    <span>{{ summary.userCount }} 人 · {{ summary.allocations }} 条人员分配</span>
-                    <span>人工工时 {{ summary.humanHours }} 人时</span><span>计划历时 {{ plannedHours ?? '—' }} h</span>
-                    <span>物料 {{ summary.materialCount }} 种 · 齐套 {{ summary.readyCount }} 种 · 缺料
-                        {{ summary.shortageCount }} 种 · 未查询 {{ summary.uncheckedCount }} 种</span>
-                </div>
-                <div class="kingzon-text-grey" style="padding-top: 4px">
-                    人工工时为人员工时之和，不能代替设备工时或工序历时。
-                </div>
+                    @toggle="toggleProcess(process.key)" @move="moveProcess($event, process.key)" @remove="removeProcess(process.key)"
+                    @copy="copyProcess(process)" @materials="openMaterials(process)" @updateProcess="updateProcess(process, $event)"
+                    @dragStart="dragKey = $event" @dragEnd="dragKey = ''" @dropProcess="dropProcess" />
             </Panel>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px 12px; padding: 8px 0" class="kingzon-text-grey">
+                <span>{{ summary.processCount }} 道工序</span><span>{{ summary.machineCount }} 台设备</span>
+                <span>{{ summary.userCount }} 人 / {{ summary.allocations }} 条分配</span>
+                <span>{{ summary.materialCount }} 种物料</span><span>分配工时合计 {{ summary.humanHours }} h</span>
+                <template v-if="quantityReadOnly">
+                    <span>工序参考工时：未配置</span><span>设备直接派工 {{ dispatchHours.machine }} h</span>
+                    <span>人工派工 {{ dispatchHours.person }} 人时</span>
+                </template>
+                <span v-if="plannedHours != null">计划历时 {{ plannedHours }} h</span>
+            </div>
             <p v-if="loadError" style="color: var(--color-red)">{{ loadError }}</p>
             <p v-if="stockError" style="color: var(--color-red)">{{ stockError }}</p>
             <div v-if="errors.length" style="color: var(--color-red)">
@@ -82,13 +76,30 @@
         <div class="kingzon-btn-group kingzon-page-footer schedule-editor-footer" style="flex-shrink: 0">
             <LinkButton :disabled="saving" @click="$emit('cancel')">取消</LinkButton>
             <LinkButton iconCls="icon-save" :disabled="isLoading || saving || !!loadError || !processes.length"
-                @click="submit">保存排产单</LinkButton>
+                @click="submit">
+                保存排产单</LinkButton>
         </div>
+        <ScheduleMaterialDialog ref="materialDialog"
+            :modelValue="materialProcess?.materials ?? []" :processKey="materialProcess?.key ?? ''" :processName="materialProcess?.name ?? ''"
+            :craftId="materialProcess?.craftId ?? 0" :quantity="Number(form.quantity) || 0" :availability="availability"
+            :saving="saving" :checkingStock="checkingStock" :stockError="stockError"
+            @update:modelValue="applyMaterials" @preview="materialPreview = $event"
+            @close="closeMaterials" @checkStock="checkStock" />
         <Dialog ref="addProcessDialog" title="新增工序" :modal="true" :closed="true"
             :dialogStyle="{ width: '440px', maxWidth: '95vw' }">
             <div style="padding: 12px">
                 <span>工序来源：</span>
                 <ComboBox v-model="addSource" :data="addSourceOptions" :editable="false" style="width: 290px" />
+            </div>
+            <div v-if="addSource === ''" style="display: flex; flex-direction: column; gap: 8px; padding: 0 12px 12px">
+                <div style="display: flex; align-items: center; gap: 8px">
+                    <span>工序名称：</span><TextBox v-model="addName" style="width: 290px" />
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px">
+                    <span>加工工艺：</span>
+                    <ComboBox v-model="addCraftId" :data="template.crafts" valueField="id" textField="name"
+                        :editable="false" style="width: 290px" />
+                </div>
             </div>
             <div class="kingzon-btn-group kingzon-page-footer">
                 <LinkButton @click="closeAddProcess">取消</LinkButton>
@@ -101,12 +112,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import ScheduleProcessCard from './schedule-process-card.vue'
+import ScheduleMaterialDialog from './schedule-material-dialog.vue'
 import {
     ProductionSchedulePostDto,
     ProductionScheduleTemplateDto,
     ScheduleProcessEditDto,
     type ScheduleMaterialEditDto,
-    type QuantityResultDto,
     type MaterialTotalDto
 } from '@/types/schedule'
 import {
@@ -116,8 +127,7 @@ import {
     localDateTime,
     scheduleMaterialAvailability,
     scheduleEditorSummary,
-    validProductionQuantity,
-    quantityApi
+    validProductionQuantity
 } from '../schedule'
 
 interface DialogRef {
@@ -126,12 +136,13 @@ interface DialogRef {
 }
 export default defineComponent({
     name: 'CreateSchedule',
-    components: { ScheduleProcessCard },
+    components: { ScheduleProcessCard, ScheduleMaterialDialog },
     props: {
         craftVersionId: { type: Number, required: true },
-        // 宿主读取允许调整排产工序的系统参数后传入，不在此虚构系统参数编码。
-        allowProcessEdit: { type: Boolean, default: false },
+        // 控制工序新增、删除、排序；工艺属性只读，资源分配独立编辑。
+        allowProcessEdit: { type: Boolean, default: true },
         initialQuantity: { type: Number, default: 1 },
+        quantityReadOnly: Boolean,
         saving: Boolean
     },
     emits: ['submit', 'cancel'],
@@ -145,6 +156,8 @@ export default defineComponent({
             expandedKey: '',
             dragKey: '',
             addSource: '',
+            addName: '',
+            addCraftId: null as number | null,
             materialProcessKey: '',
             materialPreview: null as ScheduleMaterialEditDto[] | null,
             stocks: [] as MaterialTotalDto[],
@@ -181,6 +194,14 @@ export default defineComponent({
         summary() {
             return scheduleEditorSummary(this.effectiveProcesses, this.availability)
         },
+        dispatchHours(): { machine: number; person: number } {
+            let machine = 0, person = 0
+            for (const process of this.processes) for (const resource of process.machines) {
+                if (resource.users.length) person += resource.users.reduce((sum, user) => sum + (Number(user.hours) || 0), 0)
+                else machine += Number(resource.hours) || 0
+            }
+            return { machine: Number(machine.toFixed(4)), person: Number(person.toFixed(4)) }
+        },
         plannedHours(): number | null {
             if (
                 !this.start ||
@@ -203,6 +224,9 @@ export default defineComponent({
         }
     },
     watch: {
+        initialQuantity(value: number) {
+            if (this.quantityReadOnly) this.form.quantity = value
+        },
         craftVersionId: {
             immediate: true,
             handler() {
@@ -214,18 +238,17 @@ export default defineComponent({
             for (const process of this.processes) {
                 for (const material of process.materials)
                     material.quantity = Number((material.quantityPerUnit * value).toFixed(6))
-                const users = process.machines.flatMap((machine) => machine.users)
+                const users = process.machines.flatMap<{ quantity: number }>((machine) => machine.users.length ? machine.users : [machine])
                 if (
                     previous > 0 &&
                     Math.abs(users.reduce((sum, user) => sum + user.quantity, 0) - previous) < 0.000001
                 ) {
-                    let remaining = value
+                    let sourceQuantity = 0, allocated = 0
                     users.forEach((user, index) => {
-                        user.quantity =
-                            index === users.length - 1
-                                ? Number(remaining.toFixed(4))
-                                : Number(((user.quantity / previous) * value).toFixed(4))
-                        remaining -= user.quantity
+                        sourceQuantity += user.quantity
+                        const cumulative = index === users.length - 1 ? value : Number(((sourceQuantity / previous) * value).toFixed(4))
+                        user.quantity = Number((cumulative - allocated).toFixed(4))
+                        allocated = cumulative
                     })
                 }
             }
@@ -252,6 +275,7 @@ export default defineComponent({
             this.template = new ProductionScheduleTemplateDto()
             this.form = new ProductionSchedulePostDto({
                 craftVersionId: this.craftVersionId,
+                rootCraftVersionId: this.craftVersionId,
                 quantity: this.initialQuantity
             })
             this.start = null
@@ -291,24 +315,17 @@ export default defineComponent({
         machinesFor(process: ScheduleProcessEditDto) {
             return this.template.machines.filter((machine) => machine.craftIds.includes(process.craftId))
         },
-        uniqueCode(prefix?: string): string {
-            const codes = new Set(this.processes.map((process) => process.code))
-            let number = prefix
-                ? 1
-                : Math.max(
-                    0,
-                    ...this.processes.map((process) => Number(process.code)).filter(Number.isFinite)
-                ) + 10
-            let code = ''
-            do {
-                code = prefix ? `${prefix.slice(0, 40)}-C${number++}` : String(number).padStart(3, '0')
-                if (!prefix) number += 10
-            } while (codes.has(code))
-            return code
+        uniqueCode(): string {
+            const codes = new Set(this.processes.map(process => process.code))
+            let number = Math.max(0, ...this.processes.map(process => Number(process.code)).filter(Number.isFinite)) + 10
+            while (codes.has(String(number).padStart(3, '0'))) number += 10
+            return String(number).padStart(3, '0')
         },
         openAddProcess() {
             if (!this.allowProcessEdit || this.saving || this.isLoading) return
             this.addSource = ''
+            this.addName = ''
+            this.addCraftId = null
             const dialog = this.$refs.addProcessDialog as DialogRef
             dialog.open()
         },
@@ -321,40 +338,41 @@ export default defineComponent({
             const source =
                 this.addSource === '' ? undefined : this.template.processs[Number(this.addSource)]
             if (this.addSource !== '' && !source) return
-            this.addProcess(source)
-            this.closeAddProcess()
+            if (this.addProcess(source)) this.closeAddProcess()
         },
-        addProcess(source?: ScheduleProcessEditDto) {
-            if (!this.allowProcessEdit || this.saving || this.isLoading) return
+        addProcess(source?: ScheduleProcessEditDto): boolean {
+            if (!this.allowProcessEdit || this.saving || this.isLoading) return false
+            const craft = this.template.crafts.find(item => item.id === this.addCraftId)
+            if (!source && (!this.addName.trim() || !craft)) {
+                this.$kingzon_messager.showError('请填写工序名称并选择加工工艺')
+                return false
+            }
             const process = source
-                ? createProductionScheduleDraft(
-                    new ProductionScheduleTemplateDto({ processs: [source] }),
-                    Number(this.form.quantity) || 0
-                )[0]
-                : new ScheduleProcessEditDto({ name: '新工序' })
-            this.insertProcess(process, this.processes.length, this.uniqueCode())
-        },
-        copyProcess(source: ScheduleProcessEditDto) {
-            if (!this.allowProcessEdit || this.saving || !this.processes.includes(source)) return
-            const process = new ScheduleProcessEditDto(JSON.parse(JSON.stringify(source)))
-            process.name = `${source.name.slice(0, 95)}（副本）`
-            this.insertProcess(process, this.processes.indexOf(source) + 1, this.uniqueCode(source.code || 'P'))
-        },
-        insertProcess(process: ScheduleProcessEditDto, index: number, code: string) {
+                ? createProductionScheduleDraft(new ProductionScheduleTemplateDto({ processs: [source] }), Number(this.form.quantity) || 0)[0]
+                : new ScheduleProcessEditDto({ name: this.addName.trim(), craftId: craft!.id, isReportWork: true })
             process.key = `added-${this.nextKey++}`
-            process.code = code
+            process.code = this.uniqueCode()
             process.materials.forEach((material, position) => {
                 material.key = `${process.key}-material-${position}`
             })
-            this.processes.splice(index, 0, process)
+            this.processes.push(process)
             this.selectedKey = process.key
             this.expandedKey = process.key
+            return true
+        },
+        copyProcess(source: ScheduleProcessEditDto) {
+            if (!this.allowProcessEdit || this.saving || this.isLoading || !this.processes.includes(source)) return
+            const process = new ScheduleProcessEditDto(JSON.parse(JSON.stringify(source)))
+            process.key = `added-${this.nextKey++}`
+            process.code = this.uniqueCode()
+            process.materials.forEach((material, index) => { material.key = `${process.key}-material-${index}` })
+            this.processes.splice(this.processes.indexOf(source) + 1, 0, process)
+            this.selectedKey = this.expandedKey = process.key
         },
         moveProcess(step: number, key?: string) {
             key ??= this.selectedKey
-            if (!this.allowProcessEdit || this.saving) return
-            const index = this.processes.findIndex((process) => process.key === key),
-                target = index + step
+            if (!this.allowProcessEdit || this.saving || this.isLoading) return
+            const index = this.processes.findIndex(process => process.key === key), target = index + step
             if (index < 0 || target < 0 || target >= this.processes.length) return
             const [process] = this.processes.splice(index, 1)
             this.processes.splice(target, 0, process)
@@ -363,13 +381,10 @@ export default defineComponent({
         dropProcess(targetKey: string) {
             const key = this.dragKey
             this.dragKey = ''
-            if (!this.allowProcessEdit || this.saving || !key || key === targetKey) return
-            const source = this.processes.findIndex((process) => process.key === key),
-                target = this.processes.findIndex((process) => process.key === targetKey)
-            if (source < 0 || target < 0) return
-            const [process] = this.processes.splice(source, 1)
-            this.processes.splice(target, 0, process)
-            this.selectedKey = key
+            if (!key || key === targetKey) return
+            const source = this.processes.findIndex(process => process.key === key)
+            const target = this.processes.findIndex(process => process.key === targetKey)
+            if (source >= 0 && target >= 0) this.moveProcess(target - source, key)
         },
         removeProcess(key?: string) {
             key ??= this.selectedKey
@@ -397,14 +412,6 @@ export default defineComponent({
         updateProcess(process: ScheduleProcessEditDto, changes: Partial<ScheduleProcessEditDto>) {
             if (this.saving || !this.processes.includes(process)) return
             if (changes.machines) process.machines = changes.machines
-            if (!this.allowProcessEdit) return
-            for (const key of ['code', 'name', 'craftId', 'isOutsource', 'isInbound', 'isReportWork'] as const) {
-                if (changes[key] !== undefined) Object.assign(process, { [key]: changes[key] })
-            }
-            if (changes.craftId !== undefined)
-                process.machines = process.machines.filter((machine) =>
-                    this.machinesFor(process).some((item) => item.id === machine.machineId)
-                )
         },
         async openMaterials(process: ScheduleProcessEditDto) {
             if (this.saving || this.isLoading || !this.processes.includes(process)) return
@@ -414,6 +421,7 @@ export default defineComponent({
                 (this.$refs.materialDialog as DialogRef | undefined)?.open()
         },
         closeMaterials() {
+            ;(this.$refs.materialDialog as DialogRef | undefined)?.close()
             this.materialProcessKey = ''
             this.materialPreview = null
         },
@@ -433,17 +441,15 @@ export default defineComponent({
             this.stockError = ''
             try {
                 const response = await this.$http.post(
-                    quantityApi,
-                    {
-                        craftVersionId: version,
-                        quantity: Number(this.form.quantity)
-                    }
+                    '/api/production/ProductionScheduleManage/GetMaterialStock',
+                    Array.from(new Map(this.effectiveProcesses.flatMap(process => process.materials)
+                        .map(material => [`${material.dataType}:${material.dataId}`, { dataType: material.dataType, dataId: material.dataId }])).values())
                 )
                 if (token !== this.stockToken || version !== this.craftVersionId) return
-                const data = response.data as QuantityResultDto
-                if (data?.craftVersionId !== version || !Array.isArray(data.materials))
+                const data = response.data as MaterialTotalDto[]
+                if (!Array.isArray(data))
                     throw new Error('库存查询返回数据无效')
-                this.stocks = data.materials
+                this.stocks = data
             } catch (error) {
                 if (token === this.stockToken) {
                     this.stockError = '库存校验失败，当前保留上次成功查询结果'
@@ -464,10 +470,8 @@ export default defineComponent({
             this.form.end = this.end && Number.isFinite(this.end.getTime()) ? localDateTime(this.end) : ''
             const value = productionSchedulePost(this.form, this.processes)
             this.errors = validateProductionSchedule(value, this.template)
-            if (
-                this.processes.some((process) => !process.isOutsource && process.machines.some((machine) => !machine.users.length))
-            )
-                this.errors.push('已选设备请配置人员')
+            if (this.quantityReadOnly && value.quantity !== this.initialQuantity)
+                this.errors.push('顶层排产数量必须等于计划数量')
             return this.errors.length ? null : value
         },
         submit() {
@@ -479,13 +483,70 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.schedule-editor { background: #fff; }
-.schedule-editor-scroll { overscroll-behavior: contain; scrollbar-gutter: stable; }
-.schedule-basic-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 6px 8px; padding: 0; }
-.schedule-basic-form :deep(.textbox) { max-width: 100%; box-sizing: border-box; }
-.schedule-route-module { border: 1px solid #e5e7eb; background: #fff; padding: 6px; }
-.schedule-route-heading { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 4px 8px; padding-bottom: 6px; }
-.schedule-module :deep(.panel-header), .schedule-module :deep(.panel-body) { background: #fff; border-color: #e5e7eb; }
-.schedule-editor-footer { display: flex; justify-content: flex-end; align-items: center; gap: 6px; margin: 0; padding: 6px 8px; border-top: 1px solid #e5e7eb; background: #fff; z-index: 1; }
-.schedule-editor-footer :deep(.l-btn) { margin: 0; }
+.schedule-editor {
+    background: #fff;
+}
+
+.schedule-editor-scroll {
+    overscroll-behavior: contain;
+    box-sizing: border-box;
+}
+
+.schedule-basic-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 6px 8px;
+    padding: 0;
+}
+
+.schedule-basic-form :deep(.textbox) {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.schedule-route-module {
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    padding: 6px;
+}
+
+.schedule-route-heading {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 4px 8px;
+    padding-bottom: 6px;
+}
+
+.schedule-module :deep(.panel-header),
+.schedule-module :deep(.panel-body) {
+    background: #fff;
+    border-color: #e5e7eb;
+}
+
+.schedule-editor-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 6px 8px;
+    border-top: 1px solid #e5e7eb;
+    background: #fff;
+    z-index: 1;
+}
+
+.schedule-editor-footer :deep(.l-btn) {
+    margin: 0;
+}
+.schedule-editor-compact { display: flex; flex-direction: column; }
+.schedule-editor-compact .schedule-editor-scroll { flex: 1; min-height: 0; }
+.schedule-editor-compact .schedule-basic-form { gap: 8px 10px; }
+.schedule-editor-compact .schedule-module { border: 1px solid #dce1e7; border-radius: 4px; overflow: hidden; }
+.schedule-editor-compact .schedule-module > :deep(.panel-header) { border: 0; padding: 8px 10px; }
+.schedule-editor-compact .schedule-module > :deep(.panel-body) { border: 0; padding: 10px !important; }
+.schedule-plan-quantity { flex: 1; min-width: 0; padding: 0 8px; line-height: 28px; background: #f5f7fa; border-radius: 4px; box-sizing: border-box; }
+.schedule-editor-compact .schedule-editor-footer { height: 48px; min-height: 48px; padding: 8px 10px; box-sizing: border-box; border-color: #dce1e7; }
 </style>

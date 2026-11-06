@@ -25,9 +25,9 @@
 import { ProductionScheduleStatus } from '@/types/enums'
 import { defineAsyncComponent, defineComponent, type PropType } from 'vue'
 import { flattenTree, timelineData, timelineRange } from '../schedule'
-import type { ScheduleNodeDto } from '@/types/production-schedule'
-import type { ScheduleTimeChangeDto, TimelineTaskDto } from '@/types/production-schedule'
-import { ScheduleProductDto, type PlanContextDto } from '@/types/production-schedule'
+import type { ScheduleNodeDto } from '@/types/schedule'
+import type { ScheduleTimeChangeDto, TimelineTaskDto } from '@/types/schedule'
+import { ScheduleProductDto, type PlanContextDto } from '@/types/schedule'
 const SvarChart = defineAsyncComponent(() => import('./svar-chart.vue'))
 interface ChartRef { zoom(direction: number): void; setExpanded(expanded: boolean): void; sync(): void }
 export default defineComponent({

@@ -1,0 +1,139 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Data.Sqlite;
+using Microsoft.AspNetCore.Mvc;
+using KingZon.Core.DataBase;
+using KingZon.Core;
+using KingZon.Mes.Workflow.Entity;
+using KingZon.Mes.Workflow.Enum;
+using KingZon.Mes.Workflow.Service;
+using KingZon.OLCM.Base.Shared.DataBase.Entities;
+using KingZon.OLCM.Base.Shared.DataBase.Enum;
+using KingZon.OLCM.Production.Shared.DataBase.Entities;
+using KingZon.OLCM.Production.WebApi.Dto;
+using KingZon.OLCM.Technical.Shared.DataBase.Entities;
+using KingZon.OLCM.Technical.Shared.DataBase.Enum;
+using KingZon.OLCM.Technical.WebApi.Controllers;
+using System.Text.Json;
+using var connection = new SqliteConnection("Data Source=:memory:");
+await connection.OpenAsync();
+using var db = new QueryDb(new DbContextOptionsBuilder<QueryDb>().UseSqlite(connection)
+    .ConfigureWarnings(x=>x.Ignore(RelationalEventId.AmbientTransactionWarning)).Options);
+await db.Database.EnsureCreatedAsync();
+db.AddRange(new Base_Unit{Id=1,Name="kg"},new Base_Unit{Id=2,Name="箱"},
+ new Base_Product{Id=1,ProductNo="P1",ProductName="成品",BaseUnitId=1},new Base_Product{Id=2,ProductNo="M1",ProductName="原料",BaseUnitId=1},
+ new Base_Craft{Id=1},new Base_User{Id=1},new Base_User{Id=2},new Base_Department{Id=1},
+ new Base_Machine{Id=8,CraftRLs=new(){new(){CraftId=1}},UserRLs=new(){new(){UserId=1},new(){UserId=2}}},
+ new WF_WorkflowType{Id=1,Name="排产"});
+foreach(var typeId in new long[]{1,2,3,10,99})db.Add(new WF_NodeType{Id=typeId,WorkflowTypeId=1,Name="type"+typeId,Type=typeId==10?NodeType.start:typeId==99?NodeType.end:NodeType.node});
+db.Add(new WF_WorkflowTemplate{Id=1,Name="模板",WorkflowTypeId=1});
+db.Add(new Technical_CraftOrder{Id=1,Code="CO1",Name="工艺",ProductId=1});
+db.Add(new Technical_CraftOrderVersion{Id=1,CraftOrderId=1,WorkflowTemplateId=1,Version="V1",Status=CraftOrderVersionStatus.已发布});
+db.AddRange(new WF_NodeTemplate{Id=10,WorkflowTemplateId=1,NodeTypeId=10,Name="开始",Type="start"},
+ new WF_NodeTemplate{Id=99,WorkflowTemplateId=1,NodeTypeId=99,Name="结束",Type="end"},
+ new WF_NodeTemplate_ProductionExt{Id=11,WorkflowTemplateId=1,NodeTypeId=1,CraftOrderVersionId=1,CraftId=1,Code="010",Name="生产",IsInbound=true,IsReport=true},
+ new WF_NodeTemplate_ProductionExt{Id=12,WorkflowTemplateId=1,NodeTypeId=2,CraftOrderVersionId=1,CraftId=1,Code="020",Name="外协",IsOutsource=true,IsReport=true},
+ new WF_NodeTemplate_Material_RL{Id=1,NodeSettingTemplateId=11,DataType=InventoryDataType.Product,DataId=2,UnitId=2,UnitConversionId=7,Quantity=2,IOType=NodeIOType.输入,UnitListInfo="[{\"id\":7,\"unitId\":2,\"unitName\":\"箱\",\"ratio\":5}]"},
+ new WF_NodeTemplate_Material_RL{Id=2,NodeSettingTemplateId=11,DataType=InventoryDataType.Product,DataId=1,UnitId=1,Quantity=1,IOType=NodeIOType.输出,UnitListInfo="[]"},
+ new WF_NodePermissionTemplate{NodeTemplateId=11,PermissionType=PermissionType.用户,PermissionId=1},
+ new Base_UnitConversion{Id=7,SourceId=2,TargetId=2,FromUnitId=2,ToUnitId=1,ConversionType=UnitConversionType.Product,Ratio=9});
+await db.SaveChangesAsync();
+CommonService<T> Service<T>() where T:class=>new(new Repo<T>(db));
+var unit=new UnitWork(db);
+var workflows=new WorkflowService(new Repo<WF_Workflow>(db),new Repo<WF_NodeTemplate>(db),new Repo<WF_Node>(db),new Repo<WF_WorkflowTemplate>(db),
+ new Repo<WF_WorkflowType>(db),new Repo<WF_NodeLink>(db),new Repo<WF_NodePermission>(db),new Repo<WF_Operation>(db),db,unit);
+var controller=new ProductionScheduleManageController(Service<Technical_CraftOrder>(),Service<Technical_CraftOrderVersion>(),Service<WF_NodeTemplate_ProductionExt>(),Service<WF_NodeTemplate_Material_RL>(),
+ Service<Base_Product>(),Service<Base_ProductSpecification>(),Service<Base_UnitConversion>(),Service<KingZon.OLCM.Inventory.Shared.DataBase.Entities.Inventory_Record>(),
+ Service<Base_Machine>(),Service<Base_Craft>(),Service<Base_Department>(),Service<WF_NodeTemplate_Machine_RL>(),Service<Production_Dispatch_Order>(),
+ Service<WF_Node_ProductionExt>(),Service<WF_Node_ProductionExt_MachineRL>(),Service<Production_Material_Receive_Demand>(),Service<Production_Machine_Material_Receive_Demand>(),
+ Service<WF_Node_ProductionExt_MaterialRL>(),Service<WF_NodeType>(),workflows,new KingZon.OLCM.Base.Service.SequenceService(),unit);
+int count=0;void Check(bool condition,string message){if(!condition)throw new Exception(message);count++;}
+CreateProductionScheduleDto Data()=>new(){CraftVersionId=1,RootCraftVersionId=1,DepartmentId=1,Quantity=3,Start=DateTime.Today,End=DateTime.Today.AddDays(1),Processs=new(){
+ new(){Code="020",Name="外协",NodeSettingTemplateId=12,CraftId=1,IsOutsource=true,IsReportWork=true},
+ new(){Code="010",Name="生产",NodeSettingTemplateId=11,CraftId=1,IsInbound=true,IsReportWork=true,
+ MachineRls=new(){new(){MachineId=8,UserId=1,Quantity=1,Hours=2},new(){MachineId=8,UserId=2,Quantity=2,Hours=3}},
+ Materials=new(){new(){DataId=2,DataType=InventoryDataType.Product,Order=1,Quantity=1,UnitId=2,UnitConversionId=7,ConvUnitInfo="[{\"id\":7,\"unitId\":2,\"ratio\":999}]"}}}
+}};
+var response=(OkObjectResult)await controller.CreateSchedule(Data());
+var id=JsonSerializer.SerializeToElement(response.Value,JsonHelper.DefaultJsonSerializerOptions).GetProperty("id").GetInt64();
+var order=await db.Set<Production_Dispatch_Order>().SingleAsync(x=>x.Id==id);
+Check(order.WorkflowId>0&&order.CraftOrderVersionId==1&&order.MainQuantity==3,"order/workflow/units");
+var nodes=await db.Set<WF_Node_ProductionExt>().Where(x=>x.DispatchOrderId==id).OrderBy(x=>x.Order).ToListAsync();
+Check(nodes.Count==4&&nodes[0].NodeTypeId==2&&nodes[1].NodeTypeId==3&&nodes[2].NodeTypeId==1&&nodes[3].NodeTypeId==3,"outsource and inbound split in edited order");
+Check(nodes[1].NodeTemplateId==null&&nodes[3].NodeTemplateId==null,"generated inbound has nullable template");
+Check(db.Set<WF_Node>().Count(x=>x.WorkflowId==order.WorkflowId)==6,"TPT shares a single node identity");
+Check(db.Set<WF_NodeLink>().Count(x=>x.WorkflowId==order.WorkflowId)==5,"linear route links belong to workflow");
+Check(db.Set<WF_NodePermission>().Count(x=>x.NodeId==nodes[2].Id)==1,"template permission copied");
+Check(db.Set<WF_NodePermission>().Count(x=>x.NodeId==nodes[3].Id)==1,"generated inbound inherits permissions without pretending to be a template node");
+var demand=await db.Set<Production_Material_Receive_Demand>().SingleAsync(x=>x.DispatchOrderId==id);
+Check(demand.BaseDemandQuantity==5,"server snapshot overrides forged client unit ratio");
+var allocation=await db.Set<Production_Machine_Material_Receive_Demand>().Where(x=>x.MaterialReceiveDemandId==demand.Id).ToListAsync();
+Check(allocation.Count==2&&allocation.Sum(x=>x.DemandQuantity)==1&&allocation.Sum(x=>x.BaseDemandQuantity)==5,"split demand balances rounding across people");
+Check(db.Set<WF_Node_ProductionExt_MaterialRL>().Count(x=>x.NodeId==nodes[3].Id&&x.IOType==NodeIOType.输出)==1,"output is attached to inbound and excluded from receive demand");
+var list=JsonSerializer.SerializeToElement(((OkObjectResult)await controller.GetScheduleList(1)).Value,JsonHelper.DefaultJsonSerializerOptions);
+Check(list[0].GetProperty("canStart").GetBoolean(),"saved schedule query indicates not started");
+db.ChangeTracker.Clear();
+await controller.StartSchedule(new(){Id=id});
+Check(db.Set<WF_Workflow>().Single(x=>x.Id==order.WorkflowId).State==WorkflowState.进行中,"start lifecycle");
+Check(db.Set<WF_Node>().Count(x=>x.WorkflowId==order.WorkflowId&&x.State==NodeState.处理中)==1,"only first execution node starts");
+try{await controller.DeleteSchedule(new(){Id=id});throw new Exception("missing delete guard");}catch(Exception e)when(e.Message.Contains("未启动")){count++;}
+var invalid=Data();invalid.Processs[1].MachineRls[0].Quantity=2;
+try{await controller.CreateSchedule(invalid);throw new Exception("missing resource guard");}catch(Exception e)when(e.Message.Contains("合计")){count++;}
+Check(db.Set<Production_Dispatch_Order>().Count()==1,"invalid request creates no order");
+var second=JsonSerializer.SerializeToElement(((OkObjectResult)await controller.CreateSchedule(Data())).Value,JsonHelper.DefaultJsonSerializerOptions).GetProperty("id").GetInt64();
+await controller.DeleteSchedule(new(){Id=second});
+Check(db.Set<Production_Dispatch_Order>().Single(x=>x.Id==second).IsDeleted,"delete draft order");
+Check(db.Set<Production_Material_Receive_Demand>().Where(x=>x.DispatchOrderId==second).All(x=>x.IsDeleted),"delete soft-deletes demands");
+var missingUnit=Data();missingUnit.Processs[1].Materials[0].UnitConversionId=999;
+try{await controller.CreateSchedule(missingUnit);throw new Exception("missing conversion guard");}catch(Exception e)when(e.Message.Contains("已删除")){count++;}
+for(var userId=3;userId<=5;userId++){db.Add(new Base_User{Id=userId});db.Add(new MachineUser{MachineId=8,UserId=userId});}
+await db.SaveChangesAsync();
+var tiny=Data();tiny.Quantity=5;tiny.Processs[1].Materials[0].Quantity=0.000003m;
+tiny.Processs[1].MachineRls=Enumerable.Range(1,5).Select(userId=>new ProcessMachineRlDto{MachineId=8,UserId=userId,Quantity=1}).ToList();
+var tinyId=JsonSerializer.SerializeToElement(((OkObjectResult)await controller.CreateSchedule(tiny)).Value,JsonHelper.DefaultJsonSerializerOptions).GetProperty("id").GetInt64();
+var tinyDemand=await db.Set<Production_Material_Receive_Demand>().SingleAsync(x=>x.DispatchOrderId==tinyId);
+var tinyRows=await db.Set<Production_Machine_Material_Receive_Demand>().Where(x=>x.MaterialReceiveDemandId==tinyDemand.Id).ToListAsync();
+Check(tinyRows.All(x=>x.DemandQuantity>=0&&x.BaseDemandQuantity>=0)&&tinyRows.Sum(x=>x.DemandQuantity)==0.000003m,"tiny quantities never create negative final share");
+var stocks=JsonSerializer.SerializeToElement(((OkObjectResult)await controller.GetMaterialStock(new(){new(){DataType=InventoryDataType.Product,DataId=2}})).Value,JsonHelper.DefaultJsonSerializerOptions);
+Check(stocks.GetArrayLength()==1&&stocks[0].GetProperty("stock").GetDecimal()==0,"absent inventory is queried zero, not unknown");
+var supply=new Production_Dispatch_Order{OrderNo="SUPPLY",ProductId=2,DispatchUnit="{}",DispatchQuantity=12,MainQuantity=12,
+ Workflow=new WF_Workflow{WorkflowTemplateId=1,WorkflowTypeId=1,State=WorkflowState.新建}};
+db.Add(supply);await db.SaveChangesAsync();
+var quantities=(KingZon.OLCM.Technical.WebApi.Dto.ProductionScheduleQuantityResultDto)((OkObjectResult)await controller.GetMaterialQuantityTree(new(){CraftVersionId=1,Quantity=3})).Value!;
+Check(quantities.Materials.Single(x=>x.DataId==2).ScheduledTotal==12&&quantities.Materials.Single(x=>x.DataId==2).Transit==null,"schedules are real and transit stays unknown");
+var originalShortage=quantities.Materials.Single(x=>x.DataId==2).Net;
+supply.Workflow.State=WorkflowState.进行中;supply.MainCompleteQuantity=2;await db.SaveChangesAsync();
+quantities=(KingZon.OLCM.Technical.WebApi.Dto.ProductionScheduleQuantityResultDto)((OkObjectResult)await controller.GetMaterialQuantityTree(new(){CraftVersionId=1,Quantity=3})).Value!;
+Check(quantities.Materials.Single(x=>x.DataId==2).InProduction==10&&quantities.Materials.Single(x=>x.DataId==2).Net==originalShortage,"working supply uses remaining main quantity without consuming unrelated demand");
+db.Add(new Technical_CraftOrder{Id=2,Code="CHILD",Name="子工艺",ProductId=2});
+db.Add(new Technical_CraftOrderVersion{Id=2,CraftOrderId=2,WorkflowTemplateId=1,Version="V1",Status=CraftOrderVersionStatus.已发布});
+db.Add(new WF_NodeTemplate_ProductionExt{Id=13,WorkflowTemplateId=1,NodeTypeId=1,CraftOrderVersionId=2,CraftId=1,Code="030",Name="子工序",IsReport=true});
+await db.SaveChangesAsync();
+var child=Data();child.CraftVersionId=2;child.Quantity=1;
+child.Processs=new(){new(){Code="030",Name="子工序",NodeSettingTemplateId=13,CraftId=1,IsReportWork=true,
+ MachineRls=new(){new(){MachineId=8,UserId=1,Quantity=1,Hours=1}}}};
+try{await controller.CreateSchedule(child);throw new Exception("missing root guard");}catch(Exception e)when(e.Message.Contains("请先生成顶层")){count++;}
+child.RootDispatchOrderId=99999;
+try{await controller.CreateSchedule(child);throw new Exception("missing root existence guard");}catch(Exception e)when(e.Message.Contains("顶层排产单不存在")){count++;}
+child.RootDispatchOrderId=tinyId;
+try{await controller.CreateSchedule(child);throw new Exception("missing root reference guard");}catch(Exception e)when(e.Message.Contains("引用范围")){count++;}
+var refMaterial=await db.Set<WF_NodeTemplate_Material_RL>().SingleAsync(x=>x.Id==1);
+refMaterial.RefCraftOrderVersionId=2;await db.SaveChangesAsync();
+var childId=JsonSerializer.SerializeToElement(((OkObjectResult)await controller.CreateSchedule(child)).Value,JsonHelper.DefaultJsonSerializerOptions).GetProperty("id").GetInt64();
+Check(db.Set<Production_Dispatch_Order>().Single(x=>x.Id==childId).RootDispatchOrderId==tinyId,"child persists real root association");
+var childList=JsonSerializer.SerializeToElement(((OkObjectResult)await controller.GetScheduleList(2,tinyId)).Value,JsonHelper.DefaultJsonSerializerOptions);
+Check(childList.GetArrayLength()==1&&childList[0].GetProperty("id").GetInt64()==childId,"child list is scoped to current root");
+var unrelated=JsonSerializer.SerializeToElement(((OkObjectResult)await controller.GetScheduleList(2,id)).Value,JsonHelper.DefaultJsonSerializerOptions);
+Check(unrelated.GetArrayLength()==0,"same version cannot leak schedules from another root");
+try{await controller.DeleteSchedule(new(){Id=tinyId});throw new Exception("missing child deletion guard");}catch(Exception e)when(e.Message.Contains("下级")){count++;}
+var equipmentOnly=Data();
+equipmentOnly.Processs[1].MachineRls=new(){new(){MachineId=8,UserId=0,Quantity=3,Hours=6}};
+var equipmentId=JsonSerializer.SerializeToElement(((OkObjectResult)await controller.CreateSchedule(equipmentOnly)).Value,JsonHelper.DefaultJsonSerializerOptions).GetProperty("id").GetInt64();
+var equipmentNode=await db.Set<WF_Node_ProductionExt>().SingleAsync(x=>x.DispatchOrderId==equipmentId&&x.NodeTypeId==1);
+var equipmentRow=await db.Set<WF_Node_ProductionExt_MachineRL>().SingleAsync(x=>x.NodeId==equipmentNode.Id);
+Check(equipmentRow.UserId==null&&equipmentRow.DispatchQuantity==3&&equipmentRow.PlanWorkHours==6,"equipment-only allocation preserves quantity and hours without personnel");
+var equipmentDemand=await db.Set<Production_Material_Receive_Demand>().SingleAsync(x=>x.DispatchOrderId==equipmentId);
+Check(db.Set<Production_Machine_Material_Receive_Demand>().Where(x=>x.MaterialReceiveDemandId==equipmentDemand.Id).AsEnumerable().Sum(x=>x.DemandQuantity)==1,"equipment-only material allocation balances total demand");
+var mixed=Data();mixed.Processs[1].MachineRls=new(){new(){MachineId=8,UserId=0,Quantity=1,Hours=2},new(){MachineId=8,UserId=1,Quantity=2,Hours=3}};
+try{await controller.CreateSchedule(mixed);throw new Exception("missing mixed allocation guard");}catch(Exception e)when(e.Message.Contains("重复分配")){count++;}
+Console.WriteLine($"Schedule save: {count} isolated SQLite checks passed (ambient rollback/locking not covered).");

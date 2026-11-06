@@ -83,7 +83,7 @@ namespace KingZon.OLCM.Production.Shared.DataBase.Entities
         #region 导航属性
         public Production_Material_Receive_Demand MaterialReceiveDemand { get; set; } = null!;
         public Base_Machine Machine { get; set; } = null!;
-        public Production_NodeSetting_MachineRL NodeSettingMachine { get; set; } = null!;
+        public WF_Node_ProductionExt_MachineRL NodeSettingMachine { get; set; } = null!;
 
         #endregion
 

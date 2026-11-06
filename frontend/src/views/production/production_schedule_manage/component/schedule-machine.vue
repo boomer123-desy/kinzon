@@ -17,15 +17,15 @@
                     </GridColumn>
                     <GridColumn field="quantity" title="分配数量" width="85" align="right">
                         <template #body="{ row }">
-                            <NumberBox v-if="row.userId" :modelValue="row.quantity" :min="0" :max="quantity"
+                            <NumberBox v-if="row.userId || !row.children?.length" :modelValue="row.quantity" :min="0" :max="quantity"
                                 :precision="4" :disabled="disabled" style="width: 100%; min-width: 0; height: 28px"
                                 @update:modelValue="updateUser(row, 'quantity', $event)" />
                             <span v-else>{{ row.quantity }}</span>
                         </template>
                     </GridColumn>
-                    <GridColumn field="hours" title="人工工时(h)" width="85" align="right">
+                    <GridColumn field="hours" title="工时(h)" width="85" align="right">
                         <template #body="{ row }">
-                            <NumberBox v-if="row.userId" :modelValue="row.hours" :min="0" :max="99999999.9999"
+                            <NumberBox v-if="row.userId || !row.children?.length" :modelValue="row.hours" :min="0" :max="99999999.9999"
                                 :precision="4" :disabled="disabled" style="width: 100%; min-width: 0; height: 28px"
                                 @update:modelValue="updateUser(row, 'hours', $event)" />
                             <span v-else>{{ row.hours }}</span>
@@ -40,7 +40,7 @@
         <span>统一工时：</span>
         <NumberBox v-model="batchHours" :min="0" :max="99999999.9999" :precision="4" :disabled="disabled"
             style="width: 100px" />
-        <LinkButton :disabled="disabled || !personCount" @click="applyHours">应用到全部人员</LinkButton>
+        <LinkButton :disabled="disabled || !modelValue.length" @click="applyHours">应用到设备 / 人员</LinkButton>
     </div>
     <Dialog ref="machineDialog" title="选择设备与人员" :modal="true" :closed="true"
         :dialogStyle="{ width: '680px', maxWidth: '95vw' }" @close="selectionOpen = false">
@@ -94,14 +94,14 @@ export default defineComponent({
             return this.selectionMachineId ? this.machineOptions.filter(machine => machine.id === this.selectionMachineId) : this.machineOptions
         },
         selectedMachineIds(): number[] { return this.modelValue.map(machine => machine.machineId) },
-        totalQuantity(): number { return Number(this.modelValue.reduce((sum, machine) => sum + machine.users.reduce((n, user) => n + user.quantity, 0), 0).toFixed(4)) },
+        totalQuantity(): number { return Number(this.modelValue.reduce((sum, machine) => sum + (machine.users.length ? machine.users.reduce((n, user) => n + user.quantity, 0) : machine.quantity), 0).toFixed(4)) },
         personCount(): number { return this.modelValue.reduce((sum, machine) => sum + machine.users.length, 0) },
         rows() {
             return this.modelValue.map(machine => ({
                 id: `machine-${machine.machineId}`, machineId: machine.machineId, userId: 0,
                 name: this.machineOptions.find(item => item.id === machine.machineId)?.text ?? `设备 ${machine.machineId}`,
-                quantity: Number(machine.users.reduce((sum, user) => sum + user.quantity, 0).toFixed(4)),
-                hours: Number(machine.users.reduce((sum, user) => sum + (Number(user.hours) || 0), 0).toFixed(4)), state: 'open',
+                quantity: machine.users.length ? Number(machine.users.reduce((sum, user) => sum + user.quantity, 0).toFixed(4)) : machine.quantity,
+                hours: machine.users.length ? Number(machine.users.reduce((sum, user) => sum + (Number(user.hours) || 0), 0).toFixed(4)) : machine.hours, state: 'open',
                 children: machine.users.map(user => ({
                     id: `machine-${machine.machineId}-user-${user.userId}`, machineId: machine.machineId,
                     ...user, name: this.users(machine.machineId).find(item => item.id === user.userId)?.text ?? `人员 ${user.userId}`
@@ -138,7 +138,7 @@ export default defineComponent({
         confirmSelection() {
             if (this.disabled || !this.selectionOpen) return
             const selected = this.machineOptions.filter(machine => this.draftMachineIds.includes(machine.id))
-            // 保留已有顺序及人员数量、工时；剩余数量只分配给本次新增的人员。
+            // 保留已有分配；无人员时按设备分配，有人员时按人员分配。
             const ids = [...this.selectedMachineIds.filter(id => selected.some(machine => machine.id === id)),
             ...selected.filter(machine => !this.selectedMachineIds.includes(machine.id)).map(machine => machine.id)]
             const result = ids.map(machineId => {
@@ -146,14 +146,29 @@ export default defineComponent({
                 const users = this.users(machineId).filter(user => (this.draftUserIds[machineId] ?? []).includes(user.id))
                 const userIds = [...(old?.users ?? []).filter(user => users.some(item => item.id === user.userId)).map(user => user.userId),
                 ...users.filter(user => !old?.users.some(item => item.userId === user.id)).map(user => user.id)]
-                return new ScheduleMachineEditDto({
-                    machineId, users: userIds.map(userId =>
+                const result = new ScheduleMachineEditDto({
+                    ...old, machineId, users: userIds.map(userId =>
                         new SchedulePersonEditDto(old?.users.find(user => user.userId === userId) ?? { userId }))
                 })
+                if (old?.users.length && !result.users.length) {
+                    result.quantity = old.users.reduce((sum, user) => sum + user.quantity, 0)
+                    result.hours = old.users.reduce((sum, user) => sum + user.hours, 0)
+                }
+                if (old && !old.users.length && result.users.length) {
+                    let quantity = Number(old.quantity) || 0, hours = Number(old.hours) || 0
+                    result.users.forEach((user, index) => {
+                        user.quantity = Number((quantity / (result.users.length - index)).toFixed(4))
+                        user.hours = Number((hours / (result.users.length - index)).toFixed(4))
+                        quantity = Number((quantity - user.quantity).toFixed(4))
+                        hours = Number((hours - user.hours).toFixed(4))
+                    })
+                }
+                return result
             })
-            const added = result.flatMap(machine => machine.users.filter(user =>
-                !this.modelValue.find(old => old.machineId === machine.machineId)?.users.some(old => old.userId === user.userId)))
-            const assigned = result.reduce((sum, machine) => sum + machine.users.reduce((n, user) => n + user.quantity, 0), 0)
+            const added = result.flatMap<{ quantity: number }>(machine => !machine.users.length
+                ? (!machine.quantity && !this.modelValue.some(old => old.machineId === machine.machineId && !old.users.length) ? [machine] : [])
+                : machine.users.filter(user => !this.modelValue.find(old => old.machineId === machine.machineId)?.users.some(old => old.userId === user.userId) && user.quantity === 0))
+            const assigned = result.reduce((sum, machine) => sum + (machine.users.length ? machine.users.reduce((n, user) => n + user.quantity, 0) : machine.quantity), 0)
             let remaining = Number(Math.max(0, this.quantity - assigned).toFixed(4))
             added.forEach((user, index) => {
                 user.quantity = Number((remaining / (added.length - index)).toFixed(4))
@@ -166,7 +181,8 @@ export default defineComponent({
             const hours = this.batchHours
             if (this.disabled || hours == null || !Number.isFinite(hours) || hours < 0 || hours > 99999999.9999 || Number(hours.toFixed(4)) !== hours) return
             this.$emit('update:modelValue', this.modelValue.map(machine => new ScheduleMachineEditDto({
-                ...machine, users: machine.users.map(user => new SchedulePersonEditDto({ ...user, hours }))
+                ...machine, hours: machine.users.length ? machine.hours : hours,
+                users: machine.users.map(user => new SchedulePersonEditDto({ ...user, hours }))
             })))
         },
         users(machineId: number) { return this.machineOptions.find(machine => machine.id === machineId)?.users ?? [] },
@@ -196,7 +212,8 @@ export default defineComponent({
             if (this.disabled) return
             this.$emit('update:modelValue', this.modelValue.map(machine => machine.machineId !== row.machineId ? machine
                 : new ScheduleMachineEditDto({
-                    ...machine, users: machine.users.map(user => user.userId !== row.userId ? user
+                    ...machine, ...(!row.userId && !machine.users.length ? { [field]: Number(value) || 0 } : {}),
+                    users: machine.users.map(user => user.userId !== row.userId ? user
                         : new SchedulePersonEditDto({ ...user, [field]: Number(value) || 0 }))
                 })))
         }

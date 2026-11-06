@@ -1,3 +1,5 @@
+> 2026-11-05：排产保存、实例查询、开始、删除和实际选料库存接口已接入，完整说明见 [排产模块 README](../../frontend/src/views/production/production_schedule_manage/README.md)。在途量暂不计算；在制和已排产展示工作流实例剩余主单位量，缺量仍为库存口径。以下历史数量说明中的“仅查库存”不再表示排产量没有查询。
+
 # 排产物料数量查询
 
 
@@ -10,7 +12,7 @@
 
 
 
-`POST /api/technical/ProductionScheduleManage/GetMaterialQuantityTree`
+`POST /api/production/ProductionScheduleManage/GetMaterialQuantityTree`
 
 
 
@@ -50,9 +52,9 @@
 
 
 
-- 读取 `Technical_NodeSettingTemplate` 中该版本未删除的工序。
+- 读取 `WF_NodeTemplate_ProductionExt` 中该版本未删除的工序。
 
-- 只统计 `Technical_NodeSettingTemplate_Material_RL.IOType == 输入`；产出不计入需求，已删除工序的物料不计入。
+- 只统计 `WF_NodeTemplate_Material_RL.IOType == 输入`；产出不计入需求，已删除工序的物料不计入。
 
 - 同一版本的领用物料按 `DataType + DataId + RefCraftOrderVersionId` 汇总，先转换基本单位再合计；同物料引用不同工艺版本分别保留。
 

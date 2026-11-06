@@ -1,6 +1,7 @@
 namespace KingZon.Mes.Workflow.Entity
 {
     using KingZon.Core.DataBase;
+    using KingZon.Mes.Workflow.Enum;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using System;
@@ -15,6 +16,10 @@ namespace KingZon.Mes.Workflow.Entity
     {
         public override void Configure(EntityTypeBuilder<WF_Node> mb)
         {
+            //多表继承配置
+            mb.HasKey(o => o.Id);
+            mb.UseTptMappingStrategy();
+
             mb.HasOne(t => t.NodeTemplate)
                 .WithMany()
                 .HasForeignKey(d => d.NodeTemplateId)
@@ -37,23 +42,16 @@ namespace KingZon.Mes.Workflow.Entity
     /// </summary>
     public partial class WF_Node: BaseEntity
     {
-        public WF_Node()
-        {
-            this.Operator = new HashSet<WF_Operator>();
-            this.PreviousLines = new HashSet<WF_NodeLink>();
-            this.NextLines = new HashSet<WF_NodeLink>();
-        }
-
         [Column(Order = 1)]
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 
         public new long Id { get; set; }
 
-        public int State { get; set; }
+        public NodeState State { get; set; }
 
 
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
 
 
         public long? HandlerId { get; set; }
@@ -61,10 +59,10 @@ namespace KingZon.Mes.Workflow.Entity
         public Nullable<System.DateTime> HandleDate { get; set; }
 
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
 
-        public string Type { get; set; }
+        public string? Type { get; set; }
 
         public decimal Left { get; set; }
 
@@ -84,7 +82,7 @@ namespace KingZon.Mes.Workflow.Entity
         /// <summary>
         /// 节点对应的节点模板
         /// </summary>
-        public virtual WF_NodeTemplate NodeTemplate { get; set; }
+        public virtual WF_NodeTemplate? NodeTemplate { get; set; }
         /// <summary>
         /// 对应的工作流Id
         /// </summary>
@@ -92,7 +90,7 @@ namespace KingZon.Mes.Workflow.Entity
         /// <summary>
         /// 对应的工作流
         /// </summary>
-        public virtual WF_Workflow Workflow { get; set; }
+        public virtual WF_Workflow Workflow { get; set; } = null!;
         /// <summary>
         /// 对应的节点类型Id
         /// </summary>
@@ -100,12 +98,12 @@ namespace KingZon.Mes.Workflow.Entity
         /// <summary>
         /// 对应的节点类型
         /// </summary>
-        public virtual WF_NodeType NodeType { get; set; }
+        public virtual WF_NodeType NodeType { get; set; } = null!;
 
-        public virtual ICollection<WF_Operator> Operator { get; set; }
+        public virtual ICollection<WF_Operation> Operator { get; set; } = null!;
 
-        public virtual ICollection<WF_NodeLink> PreviousLines { get; set; }
+        public virtual ICollection<WF_NodeLink> PreviousLines { get; set; } = null!;
 
-        public virtual ICollection<WF_NodeLink> NextLines { get; set; }
+        public virtual ICollection<WF_NodeLink> NextLines { get; set; } = null!;
     }
 }

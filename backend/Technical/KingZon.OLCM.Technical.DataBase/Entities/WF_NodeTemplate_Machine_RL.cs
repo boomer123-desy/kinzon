@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,12 +12,12 @@ using System.Threading.Tasks;
 namespace KingZon.OLCM.Technical.Shared.DataBase.Entities
 {
 
-    public class Technical_NodeTemplateSettingMachineRLMap : KingZonEntityTypeConfiguration<Technical_NodeSettingTemplate_Machine_RL>
+    public class WF_NodeTemplate_Machine_RLMap : KingZonEntityTypeConfiguration<WF_NodeTemplate_Machine_RL>
     {
-        public override void Configure(EntityTypeBuilder<Technical_NodeSettingTemplate_Machine_RL> builder)
+        public override void Configure(EntityTypeBuilder<WF_NodeTemplate_Machine_RL> builder)
         {
+            builder.ToTable("WF_NodeTemplate_Machine_RL");
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.TheoreticalWorkHours).HasPrecision(12, 4).HasDefaultValue(0m);
             builder.HasOne(x => x.NodeSettingTemplate)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Cascade)
@@ -30,24 +31,27 @@ namespace KingZon.OLCM.Technical.Shared.DataBase.Entities
         }
     }
 
-    public class Technical_NodeSettingTemplate_Machine_RL : BaseEntity, ISoftDeletedEntity
+    public class WF_NodeTemplate_Machine_RL : BaseEntity, ISoftDeletedEntity
     {
         public new long Id { get; set; }
 
         public long MachineId { get; set; }
 
-        /// <summary>本工序在此设备上的理论加工工时（小时）。</summary>
-        public decimal TheoreticalWorkHours { get; set; }
-
         public long NodeSettingTemplateId { get; set; }
 
         public bool IsDeleted { get; set; }
+        /// <summary>
+        /// 加工工时，单位小时
+        /// </summary>
+
+        [Column(TypeName = "decimal(18, 6)")]
+        public decimal WorkHours { get; set; } = 0m;
 
         #region 导航属性
 
         public Base_Machine Machine { get; set; } = null!;
 
-        public Technical_NodeSettingTemplate NodeSettingTemplate { get; set; } = null!;
+        public WF_NodeTemplate_ProductionExt NodeSettingTemplate { get; set; } = null!;
 
         #endregion
     }

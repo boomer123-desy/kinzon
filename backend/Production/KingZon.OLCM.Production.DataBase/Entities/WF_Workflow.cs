@@ -27,14 +27,9 @@ namespace KingZon.Mes.Workflow.Entity
     /// <summary>
     /// 数据实体对象
     /// </summary>
-    public partial class WF_Workflow
+    public partial class WF_Workflow 
     : BaseEntity
     {
-        public WF_Workflow()
-        {
-            this.Nodes = new HashSet<WF_Node>();
-        }
-
         [Column(Order = 1)]
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -47,7 +42,7 @@ namespace KingZon.Mes.Workflow.Entity
         /// <summary>
         /// 备注
         /// </summary>
-        public string Note { get; set; }
+        public string? Note { get; set; }
         /// <summary>
         /// 创建时间
         /// </summary>
@@ -61,20 +56,20 @@ namespace KingZon.Mes.Workflow.Entity
         /// </summary>
         public long WorkflowTemplateId { get; set; }
         /// <summary>
-        /// 对应的工作流模板
-        /// </summary>
-        public virtual WF_WorkflowTemplate WorkflowTemplate { get; set; }
-        /// <summary>
         /// 工作流类型Id
         /// </summary>
         public long WorkflowTypeId { get; set; }
         /// <summary>
+        /// 对应的工作流模板
+        /// </summary>
+        public virtual WF_WorkflowTemplate WorkflowTemplate { get; set; } = null!;
+        /// <summary>
         /// 工作流类型
         /// </summary>
-        public virtual WF_WorkflowType WorkflowType { get; set; }
+        public virtual WF_WorkflowType WorkflowType { get; set; } = null!;
         /// <summary>
         /// 工作流对应的节点
         /// </summary>
-        public virtual ICollection<WF_Node> Nodes { get; set; }
+        public virtual ICollection<WF_Node> Nodes { get; set; } = null!;
     }
 }

@@ -20,7 +20,7 @@ import {
     TimelineTaskDto,
     ScheduleTimeChangeDto,
     TimelineDataDto
-} from '@/types/production-schedule'
+} from '@/types/schedule'
 
 export function localDateTime(value: Date): string {
     const pad = (part: number) => String(part).padStart(2, '0')
@@ -487,7 +487,9 @@ export function materialStockTip(node: ScheduleNodeDto, requirements: Record<str
 export function materialQuantityTip(node: ScheduleNodeDto, key: string, requirements: Record<string, MaterialRequirementDto>): string {
     if (['stock', 'occupied', 'available'].includes(key)) return materialStockTip(node, requirements)
     if (node.serverMaterial) {
-        if (['transit', 'inProduction', 'scheduledTotal', 'incoming', 'reserved', 'scheduled', 'late'].includes(key))
+        if (key === 'inProduction') return '同物料已启动排产的剩余数量，按产品主单位统计；不自动抵扣当前需求'
+        if (key === 'scheduledTotal') return '同物料未启动排产的剩余数量，按产品主单位统计；不自动抵扣当前需求'
+        if (['transit', 'incoming', 'reserved', 'scheduled', 'late'].includes(key))
             return '当前接口未查询此数量'
         if (key === 'net') return '库存口径缺量；未抵扣在途、在制和排产供应'
     }
@@ -548,6 +550,7 @@ export function createProductionScheduleDraft(template: ProductionScheduleTempla
 export function productionSchedulePost(form: ProductionSchedulePostDto, processes: ScheduleProcessEditDto[]): ProductionSchedulePostDto {
     return new ProductionSchedulePostDto({
         departmentId: form.departmentId, craftVersionId: form.craftVersionId, quantity: Number(form.quantity),
+        rootCraftVersionId: form.rootCraftVersionId, rootDispatchOrderId: form.rootDispatchOrderId,
         start: form.start, end: form.end, immediateStart: form.immediateStart, urgent: form.urgent,
         circulationCard: form.circulationCard, remark: form.remark,
         processs: processes.map((process, index) => new ProductionScheduleProcessDto({
@@ -562,8 +565,10 @@ export function productionSchedulePost(form: ProductionSchedulePostDto, processe
                     id: unit.id, unitId: unit.unitId, unitName: unit.unitName, ratio: unit.ratio, quantity: unit.quantity
                 })))
             })),
-            // 一行表示该设备下一个人的分配数量，设备数量取人员数量之和，不能重复累加机器总量。
-            machineRls: process.machines.flatMap(machine => machine.users.map(user => new ProductionScheduleMachineRlDto({
+            // 无人员时保存设备分配；有人员时只保存人员分配，设备合计不重复提交。
+            machineRls: process.machines.flatMap(machine => !machine.users.length
+                ? [new ProductionScheduleMachineRlDto({ machineId: machine.machineId, userId: 0, quantity: Number(machine.quantity), hours: Number(machine.hours) })]
+                : machine.users.map(user => new ProductionScheduleMachineRlDto({
                 machineId: machine.machineId, userId: user.userId, quantity: Number(user.quantity), hours: Number(user.hours)
             })))
         }))
@@ -603,16 +608,20 @@ export function validateProductionSchedule(value: ProductionSchedulePostDto, tem
         const pairs = new Set<string>()
         for (const row of process.machineRls) {
             const machine = template.machines.find(item => item.id === row.machineId && item.craftIds.includes(process.craftId))
-            if (!machine || !machine.users.some(user => user.id === row.userId)) errors.push(`${label}设备或人员已失效`)
+            if (!machine || (row.userId !== 0 && !machine.users.some(user => user.id === row.userId))) errors.push(`${label}设备或人员已失效`)
             const pair = `${row.machineId}:${row.userId}`
             if (pairs.has(pair)) errors.push(`${label}同一设备下的人员不能重复`)
             pairs.add(pair)
-            if (!validProductionQuantity(row.quantity) || !Number.isFinite(row.hours) || row.hours < 0
+            const quantityValid = validProductionQuantity(row.quantity) || (process.isOutsource && row.userId === 0 && row.quantity === 0)
+            if (!quantityValid || !Number.isFinite(row.hours) || row.hours < 0
                 || row.hours > 99999999.9999 || Number(row.hours.toFixed(4)) !== row.hours)
-                errors.push(`${label}人员分配数量或工时无效`)
+                errors.push(`${label}设备或人员分配数量或工时无效`)
         }
-        if (!process.isOutsource && (!process.machineRls.length || Math.abs(process.machineRls.reduce((total, row) => total + row.quantity, 0) - value.quantity) > 0.000001))
-            errors.push(`${label}人员分配数量合计须等于排产数量`)
+        if (process.machineRls.some(row => row.userId === 0 && process.machineRls.some(other => other.machineId === row.machineId && other.userId !== 0)))
+            errors.push(`${label}同一设备不能同时按设备和人员重复分配`)
+        const allocated = process.machineRls.reduce((total, row) => total + row.quantity, 0)
+        if ((!process.isOutsource || allocated > 0) && Math.abs(allocated - value.quantity) > 0.000001)
+            errors.push(`${label}分配数量合计须等于排产数量`)
     }
     return [...new Set(errors)]
 }
@@ -651,6 +660,7 @@ export function scheduleEditorSummary(processes: ScheduleProcessEditDto[], avail
     for (const process of processes) {
         for (const machine of process.machines) {
             machines.add(machine.machineId)
+            if (!machine.users.length && Number.isFinite(machine.hours) && machine.hours >= 0) humanHours += machine.hours
             for (const user of machine.users) {
                 users.add(user.userId); allocations++
                 if (Number.isFinite(user.hours) && user.hours >= 0) humanHours += user.hours

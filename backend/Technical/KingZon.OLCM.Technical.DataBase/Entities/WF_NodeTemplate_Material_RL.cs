@@ -15,39 +15,42 @@ namespace KingZon.OLCM.Technical.Shared.DataBase.Entities
 {
 
     [Comment("标准工序")]
-    public class TechnicalNodeSettingTemplateMaterialRLMap : KingZonEntityTypeConfiguration<Technical_NodeSettingTemplate_Material_RL>
+    public class WF_NodeTemplate_Material_RLMap : KingZonEntityTypeConfiguration<WF_NodeTemplate_Material_RL>
     {
-        public override void Configure(EntityTypeBuilder<Technical_NodeSettingTemplate_Material_RL> builder)
+        public override void Configure(EntityTypeBuilder<WF_NodeTemplate_Material_RL> builder)
         {
-            builder.ToTable("Technical_NodeSettingTemplate_Material_RL");
+            builder.ToTable("WF_NodeTemplate_Material_RL");
 
-            // 注意：三条 FK 均显式指定约束名，避免默认自动生成的长名在 MariaDB(64字符) 截断后撞名
             builder.HasOne(o => o.RefCraftOrderVersion)
               .WithMany()
-              .OnDelete(DeleteBehavior.Cascade)
+              .OnDelete(DeleteBehavior.Restrict)
               .HasForeignKey(o => o.RefCraftOrderVersionId)
-              .HasConstraintName("FK_Technical_NodeSettingTemplate_Material_RL_RefCraftOrderVersion")
+              .HasConstraintName("FK_WF_NodeTemplate_Material_RL_RefCraftOrderVersion")
               .IsRequired(false);
 
             builder.HasOne(o => o.NodeSettingTemplate)
               .WithMany()
-              .OnDelete(DeleteBehavior.Cascade)
+              .OnDelete(DeleteBehavior.Restrict)
               .HasForeignKey(o => o.NodeSettingTemplateId)
-              .HasConstraintName("FK_Technical_NodeSettingTemplate_Material_RL_NodeSettingTemplate")
+              .HasConstraintName("FK_WF_NodeTemplate_Material_RL_NodeSettingTemplate")
               .IsRequired(true);
 
-            // 本表自引用：替换料 InsteadSourceId -> 被替换的原物料行（同表 Id）
-            // 原物料行通过反向集合 Substitutes 挂出所有引用它的替换料
-            builder.HasOne(o => o.InsteadSource)
-              .WithMany(o => o.Substitutes)
-              .OnDelete(DeleteBehavior.SetNull)   // 或改成 Restrict；SetNull 需 InsteadSourceId 可空
-              .HasForeignKey(o => o.InsteadSourceId)
-              .HasConstraintName("FK_Technical_NodeSettingTemplate_Material_RL_InsteadSource")
-              .IsRequired(false);
+            builder.HasOne(o => o.Unit)
+              .WithMany()
+              .OnDelete(DeleteBehavior.Restrict)
+              .HasForeignKey(o => o.UnitId)
+              .IsRequired(true);
+
+            builder.HasOne(o=> o.InsteadSource)
+                .WithMany(o => o.Substitutes)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasForeignKey(o => o.InsteadSourceId)
+                .HasConstraintName("FK_WF_NodeTemplate_Material_RL_InsteadSource")
+                .IsRequired(false);
         }
     }
 
-    public class Technical_NodeSettingTemplate_Material_RL : BaseEntity
+    public class WF_NodeTemplate_Material_RL : BaseEntity
     {
         public new long Id { get; set; }
 
@@ -123,22 +126,24 @@ namespace KingZon.OLCM.Technical.Shared.DataBase.Entities
         /// <summary>
         /// 所属工序
         /// </summary>
-        public Technical_NodeSettingTemplate NodeSettingTemplate { get; set; } = null!;
+        public WF_NodeTemplate_ProductionExt NodeSettingTemplate { get; set; } = null!;
 
         /// <summary>
         /// 外部半成品引用的工艺版本
         /// </summary>
         public Technical_CraftOrderVersion? RefCraftOrderVersion { get; set; }
 
+        public Base_Unit Unit { get; set; } = null!;
+
         /// <summary>
         /// 替换料来源（本表自引用）：本行是某物料的替换料时，指向被它替换的原物料行
         /// </summary>
-        public Technical_NodeSettingTemplate_Material_RL? InsteadSource { get; set; }
+        public WF_NodeTemplate_Material_RL? InsteadSource { get; set; }
 
         /// <summary>
         /// 反向导航：以本行为原物料的所有替换料行
         /// </summary>
-        public ICollection<Technical_NodeSettingTemplate_Material_RL> Substitutes { get; set; } = new List<Technical_NodeSettingTemplate_Material_RL>();
+        public ICollection<WF_NodeTemplate_Material_RL> Substitutes { get; set; } = new List<WF_NodeTemplate_Material_RL>();
 
         #endregion
     }

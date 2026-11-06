@@ -1,219 +1,63 @@
 # 工序单排产管理
 
-## 排产编辑结构（2026-10-29）
-
-- 父组件 `create-schedule.vue` 管模板加载、工序草稿、弹窗及提交；新增和复制共用草稿插入逻辑，系统参数控制工序调整。
-- `schedule-process-card.vue` 管工艺及外协、入库、报工勾选；`schedule-machine.vue` 管设备/人员 checkbox 弹窗及数量、工时；`schedule-material-dialog.vue` 管物料副本。
-- `schedule.ts` 集中草稿转换、提交映射、校验和库存试算。DTO 统一使用 `types/production-schedule.ts`，编辑模型和提交模型通过白名单映射隔离。
-- 历史规划/甘特函数仍供原型和既有测试使用；当前独立编辑器不复用旧 `schedule-process.vue` 的类型模型。
-
-## 工序卡片界面（2026-10-28）
-
-- 创建页组织为：基本信息 → 工序路线卡片 → 当前工序配置 → 设备/人员树 → 物料摘要 → 统计汇总，默认只展开当前工序，复用现有主题，不新增全局样式。
-- 新增可选临时工序或当前工艺模板；支持复制、拖动、上下移动。key 为草稿身份、nodeSettingTemplateId 为来源，排序只修改提交顺序 Order；编码独立编辑并提交 Code，复制生成新 key 和唯一编码。
-- `schedule-process-card.vue` 管单道工序展示与编辑事件；`schedule-machine.vue` 保留设备→人员模式，支持每人数量/工时以及批量设置人工工时。人工工时累加为人时，计划历时仅根据整单时间计算，不伪造设备工时。
-- `schedule-material-dialog.vue` 使用独立副本编辑物料，确认应用、取消丢弃；主界面不再常驻完整物料表及资料库。
-- 弹窗库存校验复用 `POST /api/production/ProductionScheduleManage/GetMaterialQuantityTree` 的库存事实，按全部草稿工序顺序共用 DataType+DataId 库存池，换算到物料主单位后分配一次。未返回库存的新增物料显示未查询；未接入预计到料，不虚构到料日期。本操作不占用库存、不实际领料。
-- 当前为新增草稿编辑，不处理已开工工序；有物料/设备配置的草稿删除前确认。执行记录限制、保存事务及并发控制仍应由后续保存接口处理。提交维持父页统一 `submit` DTO，五表保存状态不变。
-
-
-## 独立创建排产组件（2026-10-28）
-
-`component/create-schedule.vue` 仅要求 `craftVersionId`，不再依赖需求树的 node/nodes/requirements/context。
-
-```vue
-<CreateSchedule :craftVersionId="craftVersionId" :allowProcessEdit="allowProcessEdit"
-    :saving="saving" @submit="submitSchedule" @cancel="close" />
-```
-
-- 初始化调用 `GET /api/production/ProductionScheduleManage/GetScheduleTemplate?craftVersionId=...`，读取已发布工艺版本的直接领用主料、工序、设备与设备关联人员。产出料及替料不额外累计为领料需求。
-- 编辑模板与工艺工序一一对应，独立维护 `isOutsource`（是否外协）和 `isInbound`（是否入库），不生成额外入库编辑行。执行节点的拆分应在后续保存阶段处理；新增临时工序的 `nodeSettingTemplateId=0`。
-- 模板复制为独立草稿；修改数量按工艺默认产出单位重新计算材料需求，可修改材料、单位和加工工艺。设备为父级、人员为子级，按人员填写数量和工时；设备分配量取所属人员分配量之和。
-- `allowProcessEdit` 应由宿主读取系统参数后传入，默认 false。当前缺少该参数的名称/枚举值，不虚构参数编码；仅控制工序增删、顺序、是否外协、是否入库、加工工艺、是否报工。后台保存时也需要读取相同参数校验。
-- `submit` 输出 `ProductionSchedulePostDto`，字段对齐 `ProductionScheduleDto.cs`，保留工序集合拼写 `processs`。数量是本次总需求，单位快照为物料单位到产品主单位的比例；提交不含 key、显示名称等编辑字段。DTO 新增 `IsReportWork` 并将部门改为可空。
-- 本组件不直接发送保存请求。当前工作区的 MachineRL 仍缺人员/工时字段，NodeSetting 仍非用户描述的新继承结构且没有 IsReportWork；五表持久化需补齐这些宿主实体、枚举及参数后接入，不丢弃人员工时、不擅自新增快照字段或额外人员表。已有父页把独立组件提交继续转发为 `scheduleSubmit`，未接通实际保存。
-- 前端验证：`node --test frontend/src/views/production/production_schedule_manage/__tests__/independent-schedule.test.cjs`；后端模板与数量回归：`python backend/Production/tests/verify_schedule_template.py`。均为隔离验证，不代表宿主数据库联调。
-
-
-
-
-当前目录是 Vue 3 / KingZon / EasyUI 前端模块。主页面已接入工序单物料数量接口，初始为空，不再加载示例产品、库存或需求树。排产单与采购接口尚未提供，实际查询模式下关闭相应保存入口，不对业务数据库执行写入。
-
-
-
-## 物料数量接口接入
-
-
-
-- 点击“选择工序单”，通过现有 `GetCraftOrderList` 和 KingZonDataGrid 分页选择，查询 `GetCraftVersionList`，默认选择该单主版本（无主版本时取返回的首个版本），可切换版本。
-
-- 宿主可传 `craftVersionId`、`initialQuantity` props，也可通过路由 query 的 `craftVersionId` 指定初始版本；版本变化自动查询，不自动改成主版本。
-
-- 查询及“刷新库存”“重新计算”调用 `POST /api/production/ProductionScheduleManage/GetMaterialQuantityTree`，发送 `{ craftVersionId, quantity }`。数量支持四位小数，版本及数量、日期校验通过才发送请求。
-
-- 产品信息、生产单位、工艺版本来自响应；缺失的客户产品编码、技术型号、负责人不使用示例值。计划日期是本页面输入，当前数量接口不返回工序交期。
-
-- `../types/production-schedule.ts` 集中定义 DTO class，`schedule.ts` 转换 TreeGrid 数据，保留路径 ID、工序物料行 ID、工序 ID、引用版本及替料。不用本地规划模型重算服务端需求、库存分配或缺量。
-
-- 在途、在制、已排产量的 `null` 显示“未查询”；缺量和满足率使用库存口径。可选的预计入库、预留、按期/逾期排产列同样显示“未查询”。
-
-- 筛选保留命中祖先，不重新分配库存。刷新成功更新树；并发请求只应用最新响应，切换版本清除旧数据，失败提示真实错误且不回退示例。
-
-- 排产列表、工序编辑、采购建议及甘特图布局保留。当前没有真实排产查询/保存，右侧明确提示尚未接入，新增/保存入口关闭，甘特图为空。
-
-
-
-## 既有排产原型及独立规划测试
-
-
-
-以下功能保留在规划模型、组件及测试中，依赖原型数据和本地排产单；它们不参与当前页面真实接口数量计算，尚未完成业务持久化接入：
-
-
-
-- 需求实例：稳定需求 ID、来源工序单、父级需求、需求日期，以及数量/交期变更后的版本快照。
-
-- MRP：按父项实际生产量展开子件，扣除分配库存、安全库存及需求日期前预计入库；逾期、撤销排产不抵扣按期净需求。
-
-- 同物料分配：用 `编码 + 规格 + 单位` 识别共享库存池；库存和采购到货按树顺序分配一次，排产供应归属各自需求实例。
-
-- 库存预留：保存排产预留直接子项当前可分配库存；预留属于该子项需求，不重复扣减需求满足量；撤销未开始排产释放预留。
-
-- 排产表单：数量依据、直接子项齐套表、内部/外协工序、独立工序时间、前序依赖、设备/人员/派工数量、供应商和目标仓库。
-
-- 保存校验：最新净需求、交期、工序顺序、工时容量、派工合计、设备和人员重叠、立即开始时当前库存齐套。父页面再次校验并复制明细，拦截旧表单和重复保存。
-
-- 缺料计划：没有落实到料的物料可保存为风险计划；已知到料晚于开工时间时要求推迟开工。立即开始要求当前时间在计划执行窗口内且物料当前库存齐套。
-
-- 采购建议：填写供应商、数量和预计到料，更新预计供应；不增加实际库存，可撤销建议。
-
-- 甘特图：采用 MIT 开源 SVAR Vue Gantt 2.7.4，97vw × 100vh Drawer。产品 → 半成品 BOM 树 → 排产单 → 工序，递归保留已有排产节点的祖先，支持五层及更深层级、依赖箭头、树展开/收起、月窗口切换、横向滚动、按钮与 Ctrl + 滚轮缩放（周/日/6小时/小时）。拖动整单平移工序，拖动工序或条形两端改期；交期、齐套、工序顺序、工时和资源校验失败则回退；在制单不可改期。选中节点可查看缺料/延期/冲突/版本风险或撤销排产。
-
-- 主表：默认依次显示总需求量、库存总量、占用量、在途量、在制量、已排产量、缺量；保留库存说明和筛选；按当前要求移除列设置和导出。
-
-- 同层排产工作区：左侧选择半成品，右侧顶部列出该半成品全部排产单（含已撤销），选中查看工序明细；列表右上角新增插入一条空白草稿行，下方填写数量、日期、齐套和工序信息。每个半成品最多一个未保存草稿；切换选择保留输入，取消移除空行，保存替换为正式排产单。重新计算产生新版本时清除草稿。
-
-
-
-## 原型计算口径与现有布局
-
-
-
-页面复用 `kingzon-page/body/content/fill` 和公共主题 class，页面特有排版直接写在 div 的行内样式中。中间左右并列的 flex 工作区给树表更多空间（约68%），右侧约32%；窄窗口允许横向滚动。左侧 TreeGrid 固定显示基础信息和七项数量；其他表格使用 KingZonDataGrid，显式关闭列设置与下载入口。长创建表单在有限高度中滚动，底部操作固定可见。
-
-
-
-```text
-
-当前可用库存 = MAX(实际库存 - 外部占用 - 安全库存, 0)
-
-根项毛需求 = 产品数量 × baseDemand / 100
-
-子项毛需求 = 父项实际生产量 × 子项baseDemand / 父项baseDemand
-
-净需求 = MAX(毛需求 - 分配库存 - 按期预计入库, 0)
-
-```
-
-
-
-父项实际生产量不含库存/采购满足的父项数量，但包含已承诺排产数量，即使旧单已超排也保留其子项生产需求。已有排产不会因新数量而直接改写；数量、计划开始或交期变化产生新需求版本，旧单需人工复核或撤销。
-
-
-
-子项日期取父项最早已排产开工时间；父项尚未排产时继承父项需求日期。这是保守的单日期需求模型，尚未按多批开工时间拆分需求。当前 BOM 未绑定物料消耗工序，全部直接子项要求在本单首工序开工前齐套。
-
-
-
-主表数量口径：总需求量为本需求毛需求；库存总量为实际库存；占用量为外部占用 + 本需求已保存排产的库存预留；在途量为未入库采购/到货计划总量；在制量为 running 排产单总量；已排产量为尚未开始的有效排产单总量（含延期，不重复计入在制）；已撤销单不参与数量。缺量沿用按期净需求，考虑库存分配、安全库存、按期到货和按期排产；不能直接用原始库存总量减占用量推导共享需求缺量。
-
-
-
-“库存分配”显示分给本需求的数量；悬浮说明实际库存、外部占用、安全库存和本计划预留。需求满足率为 `净需求为0的有效需求节点数 / 毛需求大于0的节点数`，包含预计入库，不代表可立即开工比例，也不跨单位累加数量。
-
-
-
-工时建议连续估算：`调机工时 + 最大单行派工量 × 单位工时`。工序依次排列，已知到料会推迟开工；资源冲突必须另行调整后才能保存。没有工作中心/班次/节假日日历、设备真实产能或自动寻优排程。内部工序不允许同时间重复使用同一设备或人员；相邻时间区间可以衔接。
-
-
-
-已有逾期排产覆盖的数量不能再次新增，需先撤销或复核旧单。旧示例排产没有工序明细，甘特图显示整单条和“未设置工序”，不会编造历史工序时间。钢管与胶粘剂示例库存保留少量缺口，用于演示采购和缺料风险。
-
-
-
-所有排产与到料时间均为本地日期时间，不追加 UTC `Z`。生产状态仅为本地计划状态；流转卡开关保存请求属性，尚未真正生成卡片。
-
-
-
-## 文件及接入位置
-
-
-
-| 文件 | 职责 |
-
-| --- | --- |
-
-| `../types/production-schedule.ts` | 共享数量响应、需求、排产、工序、编辑表单和甘特图 DTO class |
-
-| `../types/enums.ts` | 排产单、到料计划及需求节点状态枚举，保留现有接口值 |
-
-| `schedule.ts` | 数量映射、独立规划计算、资源校验、树表展示和甘特图适配；不发起 HTTP 请求 |
-
-| `index.vue` | 接口查询、版本与选择状态、左右区域协调及草稿管理 |
-
-| `component/schedule-material-tree.vue` | TreeGrid 固定数量列、状态与节点选择事件 |
-
-| `component/schedule-order-list.vue` | KingZonDataGrid 排产列表、选择及已保存详情 |
-
-| `component/create-schedule.vue` | 本次排产、齐套、滚动表单和统一校验/保存事件 |
-
-| `component/schedule-process.vue` | 工序与资源选择面板，以模型更新事件通知父页 |
-
-| `component/schedule-gantt.vue` | 大尺寸甘特图 Drawer、时间窗口和操作工具栏 |
-
-| `component/svar-chart.vue` | SVAR 甘特图、缩放、拖动事件与日期回退 |
-
-| `__tests__/fixtures.ts` | 仅用于独立测试的示例产品与需求树，生产页面不加载 |
-
-
-
-后续接入：补充按日期的实际采购/外协/在制供应，以及排产单查询和保存接口。`saveSingleSchedule` / `saveReceipt` / `cancelOrder` 应调用事务接口，由服务端重新净算、校验资源与需求版本，原子保存主单/工序/物料/资源并锁定库存。预留与实际领用必须区分，不要将计划预留直接写成实际消耗；资源等选择需要真实 ID。
-
-
-
-物料数量后端及口径说明见 `../../../docs/technical/production_schedule.md`。当前页面已调用该接口。
-
-
+## 当前功能（2026-11-05）
+
+- 先生成顶层排产单，再对子级排产。初次查询后展示顶层草稿，数量固定为当前计划数量；关闭草稿不代表已生成，只有后端保存成功后才解锁子级。
+- “库存口径”后的“顶层排产单详情”按钮返回右侧顶层 Tab。当前页面生成的子单保存 `RootDispatchOrderId`，查询同时按顶层 ID 筛选，避免混入其他计划的同版本单据。
+- 提交携带 `RootCraftVersionId`；子级还必须携带有效的 `RootDispatchOrderId`。后端校验顶层存在、属于当前顶层工艺，且子级工艺来自该工艺输入物料的引用范围。复用现有字段，无需新增数据库列。
+- 工序单弹窗分页查询，选择已发布版本，优先主版本；也支持 props/路由传入版本。不存在默认测试版本。
+- 选择后可直接进行成品排产；左侧仍是原工序输入物料需求 TreeGrid，选择半成品可排该引用版本。
+- 排产单使用 Tabs。每个草稿有独立临时 ID，切换保留编辑，关闭需确认；保存只提交当前草稿，失败保留草稿，提交期间禁止重复提交或关闭。
+- 工序支持新增、删除、拖动、上下排序；通过 `allowProcessEdit` 接收宿主工序调整设置。原工序加工工艺、外协、入库、报工属性只读；临时工序创建时选择工艺。
+- 设备→人员 checkbox 选择；每人编辑数量、工时及批量设置工时。工序和整单统计人工工时，不将其视作设备历时。
+- 物料弹窗独立编辑、确认应用、取消放弃。库存校验查询实际选择的物料，包括模板之外新增的物料，按全部工序共享主单位库存池。
+- 已保存排产查询实际工序、设备人员、领料需求。未启动单可开始、删除；删除采用软删除，后端检查报工、领退料和下级单据。
+- 甘特图保持原实现，本次没有接通真实排产甘特数据、拖动保存或改期。
+
+## 接口
+
+统一前缀 `/api/production/ProductionScheduleManage`，Controller 文件名沿用 `ProductionSchedueManageController.cs`。
+
+| 方法 | 路径 | 用途 |
+| --- | --- | --- |
+| GET | GetScheduleTemplate | 按工艺版本返回工序/资源/领用物料模板 |
+| POST | GetMaterialQuantityTree | 工序输入物料递归需求、库存、占用及排产供应展示 |
+| POST | GetMaterialStock | 按 DataType + DataId 批量查询实际编辑物料库存 |
+| GET | GetScheduleList | 按工艺版本查询实际排产单及明细 |
+| POST | CreateSchedule | 接收 CreateProductionScheduleDto，保存当前排产单 |
+| POST | StartSchedule | `{ id }`，启动未开始工作流 |
+| POST | DeleteSchedule | `{ id }`，删除未执行的排产及领料需求 |
+
+## 保存与数据口径
+
+1. Controller 内校验已发布版本、工艺属性、部门、设备与人员关系、数量精度及单位，再用异步流 TransactionScope 统一保存。
+2. 工序实例采用 `WF_Node_ProductionExt : WF_Node` TPT 继承，复用基类 Id。工作流 Service 新重载接收编辑后的线性路线，复制开始/结束节点及源模板权限。
+3. `ProductionScheduleNodeType` 对应 **WF_NodeType.Id**：生产=1、外协=2、入库=3。这三条基础记录的结构类型必须是 `NodeType.node`，且工作流类型与模板一致。开始/结束节点必须使用另外的类型记录；若旧库 Id=1 是开始类型，须先协调基础数据，不能直接覆盖旧记录。
+4. 普通生产生成生产节点；勾选入库或外协后追加独立入库节点，生成节点 NodeTemplateId 为空。按照界面路线建立前后关系，不能复用未调整的模板连线。
+5. 同时保存派工单、节点、设备人员分配、工序物料快照、工序领料需求、设备人员领料分摊。产出快照不生成领料需求。
+6. 工序领用数量是本单总需求。选定单位先按服务器保存的工艺快照或当前有效转换关系转主单位，不信任客户端比例。分摊采用累计舍入差额，避免小数差或多人重复领料。
+7. 派工数量使用工艺产品/规格基础单位，BaseQuantity 为该基础单位数量，MainQuantity 按规格→产品主单位关系换算。收入计价、单价未从工艺模板取得，保持未配置，不伪造换算。
+8. 在途量按用户要求暂不计算，返回 null。已排产/在制分别展示未启动/已启动工作流的剩余主单位量；库存缺量不抵扣没有需求归属关系的排产供应。保存仅生成领料需求，不实际出库或占用库存。
+9. 暂时没有需求实例/计划分配关联，因此不同工序单查询同一物料时可能看到同一批供应；不得将其重复认作各自可用供应。
+
+## 文件职责
+
+- index.vue：工序选择、数量查询、草稿身份、保存与历史操作。
+- component/schedule-craft-picker.vue：工序单及已发布版本选择。
+- component/schedule-order-list.vue：Tabs，每个草稿 TabPanel 内直接挂载 create-schedule.vue，转发提交/取消事件；schedule-saved-detail.vue：真实排产详情及开始/删除入口。
+- component/create-schedule.vue：单张独立排产草稿及工序编辑。
+- component/schedule-process-card.vue、schedule-machine.vue、schedule-material-dialog.vue：工序摘要、资源和物料编辑。
+- schedule.ts：计算、草稿映射、前端校验；共享 DTO 在 frontend/src/types/schedule.ts。
 
 ## 验证
 
-
-
-本目录新增模块级 `package.json` 和依赖锁文件，用于安装甘特图和运行检查；仍没有宿主应用的启动入口或 KingZon/EasyUI 实现。复制模块至宿主项目时，在宿主项目安装 `npm install @svar-ui/vue-gantt@2.7.4`，组件会按需加载甘特图及 `all.css`；Vue 3 为 peer dependency。开源组件官方资料：[MIT 仓库](https://github.com/svar-widgets/vue-gantt)、[缩放](https://docs.svar.dev/vue/gantt/api/properties/zoom/)、[事件 API](https://docs.svar.dev/vue/gantt/api/overview/)。
-
-
-
-本目录独立检查：
-
-
-
-```powershell
-
-cd frontend/src/views/technology/production_schedule_manage
-
-npm ci
-
-npm test
-
+```
+node --test frontend/src/views/production/production_schedule_manage/__tests__/independent-schedule.test.cjs
+python backend/Production/tests/verify_schedule_save.py
 ```
 
+当前检查覆盖 Vue 模板/严格 TypeScript、草稿切换/失败重试/并发、实际选料库存、TPT 保存、工作流连线和权限、外协入库、主单位转换、领料分摊、开始和删除。
 
+后端使用真实 Controller、工作流 Service 及实体，宿主公共依赖使用测试替身，数据库为隔离 SQLite。SQLite 不支持 MySQL 的环境事务与计算列，测试不证明 MySQL 回滚、锁或完整宿主构建。工作区未提供可运行完整前后端，未作宿主浏览器视觉检查。
 
-覆盖需求与日期净算、共享供应、防超排、预留释放、到料约束、工时容量、资源冲突、快照版本、采购建议、表单保存与甘特图。检查文件另验证全部 Vue 模板编译、严格 TypeScript 脚本检查和 Vue 属性所有权 lint。TypeScript 检查只为缺失的宿主消息服务、EasyUI 引用方法声明最小类型；行为测试使用 Vue renderer 挂载组件逻辑，未替代真实 EasyUI 页面联调。
-
-
-
-宿主页面验收：分页选择真实工序单、切换版本，核对产品及单位、七项数量列、库存分配、缺量、来源行 ID；修改四位小数数量重新计算，刷新库存；验证筛选保留祖先、数量保持四位小数，失败不出现示例数据，快速切换版本不被旧响应覆盖。排产和采购保存待对应接口接入后再验收。
-
-
-
+旧 production-schedule.test.cjs / production-schedule-checks.test.cjs 仍引用迁移前 DTO 路径、旧页面及本地原型保存方法，不能作为当前页面集成验收入口；其历史甘特/规划模型留存，本次未改造。

@@ -1,7 +1,6 @@
 using KingZon.Core.DataBase;
 using KingZon.Mes.Workflow.Entity;
 using KingZon.OLCM.Base.Shared.DataBase.Entities;
-using KingZon.OLCM.Production.Shared.DataBase.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,11 +8,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace KingZon.OLCM.Production.Shared.DataBase.Entities
 {
     [Comment("生产：工序节点")]
-    public class Production_NodeSettingMap : KingZonEntityTypeConfiguration<Production_NodeSetting>
+    public class WF_Node_ProductionExtMap : KingZonEntityTypeConfiguration<WF_Node_ProductionExt>
     {
-        public override void Configure(EntityTypeBuilder<Production_NodeSetting> builder)
+        public override void Configure(EntityTypeBuilder<WF_Node_ProductionExt> builder)
         {
-            builder.HasKey(x => x.Id);
+            builder.ToTable("WF_Node_ProductionExt");
 
             builder.HasOne(builder => builder.DispatchOrder)
                .WithMany()
@@ -30,26 +29,9 @@ namespace KingZon.OLCM.Production.Shared.DataBase.Entities
             builder.Property(x => x.DoingQuantity).HasComputedColumnSql("IF(ReciveQuantity > CompleteQuantity,ReciveQuantity - CompleteQuantity,0)", stored: false);
         }
     }
-    public class Production_NodeSetting : BaseEntity, ISoftDeletedEntity
+    public class WF_Node_ProductionExt : WF_Node, ISoftDeletedEntity
     {
-        public new long Id { get; set; }
         public int Order { get; set; }
-        /// <summary>
-        /// 工序类型
-        /// </summary>
-        public NodeType NodeType { get; set; }
-        /// <summary>
-        /// 工序状态
-        /// </summary>
-        public NodeState State { get; set; }
-        /// <summary>
-        /// 工序名称
-        /// </summary>
-        public required string NodeName { get; set; }
-        /// <summary>
-        /// 工作流节点
-        /// </summary>
-        public long? NodeId {  get; set; }
         /// <summary>
         /// 派工单
         /// </summary>
@@ -78,13 +60,28 @@ namespace KingZon.OLCM.Production.Shared.DataBase.Entities
         /// </summary>
         [Column(TypeName = "decimal(12,4)")]
         public decimal DoingQuantity { get; set; }
+        /// <summary>
+        /// 预计工时
+        /// </summary>
+        [Column(TypeName = "decimal(12,4)")]
+        public decimal PlanWorkHours { get; set; }
+        /// <summary>
+        /// 实际工时
+        /// </summary>
+        [Column(TypeName = "decimal(12,4)")]
+        public decimal ActualWorkHours { get; set; }
         #endregion
+
+        /// <summary>
+        /// 工序价格（不含物料成本）
+        /// </summary>
+        [Column(TypeName = "decimal(12,4)")]
+        public decimal ProcessPrice { get; set; }
 
         #region 导航属性
 
         public Production_Dispatch_Order DispatchOrder { get; set; } = null!;
         public Base_Craft Craft { get; set; } = null!;
-        public WF_Node? WFNode { get; set; }
         #endregion
     }
 }

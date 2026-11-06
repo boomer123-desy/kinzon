@@ -1,4 +1,6 @@
-"""Generate a complete, isolated craft-version fixture in test_standard.
+"""Generate a complete TPT craft-version fixture in test_standard.
+
+Production nodes share their Id between WF_NodeTemplate and its ProductionExt table.
 
 The default run validates inside a transaction and rolls back. Use --apply to
 commit. Supply CRAFT_DB_PASSWORD at runtime; credentials are never saved.
@@ -43,8 +45,8 @@ ENTITY_TABLES = [
     'Base_Craft', 'Base_Machine', 'Technical_CraftOrder',
     'Production_MBom', 'Production_MBom_Version', 'WF_WorkflowTemplate',
     'Technical_CraftOrderVersion', 'WF_NodeTemplate',
-    'Technical_NodeSettingTemplate', 'Technical_NodeSettingTemplate_Machine_RL',
-    'Technical_NodeSettingTemplate_Material_RL', 'Production_MBom_Detail',
+    'WF_NodeTemplate_ProductionExt', 'WF_NodeTemplate_Machine_RL',
+    'WF_NodeTemplate_Material_RL', 'Production_MBom_Detail',
 ]
 RELATION_TABLES = ['Base_Machine_Craft_RL', 'WF_NodeTemplateLink']
 
@@ -80,13 +82,13 @@ class Fixture:
 
     def insert(self, table, **values):
         require(table in self.ids or table in self.relations, 'Unapproved table')
-        if table in self.ids:
+        if table in self.ids and table != 'WF_NodeTemplate_ProductionExt':
             values = {**self.audit, **values}
         fields = ','.join('`' + name + '`' for name in values)
         self.q.execute(f'INSERT INTO `{table}` ({fields}) VALUES ('
                        + ','.join(['%s'] * len(values)) + ')', tuple(values.values()))
         if table in self.ids:
-            result = self.q.lastrowid
+            result = values['Id'] if table == 'WF_NodeTemplate_ProductionExt' else self.q.lastrowid
             self.ids[table].append(result)
             return result
         self.relations[table].append(values)
@@ -123,10 +125,18 @@ class Fixture:
         categories = self.all('SELECT Id FROM Base_Category WHERE Id IN (45,60,135,141) '
                               'AND EnterpriseId=0 AND IsDeleted=0')
         require(len(categories) == 4, 'Missing required categories')
-        node_types = self.all('SELECT Id,NodeTypeEnum FROM WF_NodeType '
+        node_types = self.all('SELECT Id,Type FROM WF_NodeType '
                               'WHERE WorkflowTypeId=1 AND EnterpriseId=0 AND Id IN (1,2,3)')
-        require({x['Id']: x['NodeTypeEnum'] for x in node_types} == {1: 1, 2: 10, 3: 99},
+        require({x['Id']: x['Type'] for x in node_types} == {1: 1, 2: 10, 3: 99},
                 'Unexpected craft workflow node types')
+        inheritance = self.all("SELECT COLUMN_NAME,REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME "
+                               "FROM information_schema.KEY_COLUMN_USAGE WHERE CONSTRAINT_SCHEMA=DATABASE() "
+                               "AND TABLE_NAME='WF_NodeTemplate_ProductionExt' AND COLUMN_NAME='Id' "
+                               "AND REFERENCED_TABLE_NAME IS NOT NULL")
+        require(len(inheritance) == 1 and inheritance[0]['REFERENCED_TABLE_NAME'] == 'WF_NodeTemplate'
+                and inheritance[0]['REFERENCED_COLUMN_NAME'] == 'Id', 'Expected shared primary-key TPT mapping')
+        self.before_counts = {table: self.all(f'SELECT COUNT(*) AS n FROM `{table}`')[0]['n'] for table in tables}
+
 
     def snapshot(self, unit_id, quantity=1, conversion_id=0, ratio=1):
         return dict(Id=conversion_id, UnitId=unit_id, UnitName=self.units[unit_id],
@@ -174,7 +184,7 @@ class Fixture:
                 remark = f'{self.batch} {key}-V{number}；{count}道工序；用于版本切换对照'
                 if key == 'E':
                     remark += '；故意未勾选末工序报工，测试发布校验'
-                workflow_id = self.insert('WF_WorkflowTemplate', Name=f'{name}-V{number}', WorkflowTypeId=1)
+                workflow_id = self.insert('WF_WorkflowTemplate', Name=f'{name}-V{number}', WorkflowTypeId=1, StartNodeId=None, EndNodeId=None)
                 units = [self.snapshot(141 if key == 'F' else PRODUCTS[key][2], conversion_id=-1)]
                 if key == 'F':
                     units.append(self.snapshot(147, quantity=5,
@@ -200,7 +210,7 @@ class Fixture:
     def material(self, version, node, key, quantity, substitute=None, ref=None, output=False):
         is_spec = key == 'F' and output
         unit = 141 if is_spec else PRODUCTS[key][2]
-        material_id = self.insert('Technical_NodeSettingTemplate_Material_RL',
+        material_id = self.insert('WF_NodeTemplate_Material_RL',
             NodeSettingTemplateId=node, DataType=2 if is_spec else 1,
             DataId=self.spec_id if is_spec else self.products[key],
             IOType=2 if output else 1, InsteadSourceId=substitute, Quantity=quantity,
@@ -226,20 +236,21 @@ class Fixture:
                 wf_node = self.workflow_node(workflow, name, 2, index + 1)
                 chain.append(wf_node)
                 inbound = index == count - 1 or index == outsource - 1
-                node = self.insert('Technical_NodeSettingTemplate', CraftOrderVersionId=version['id'],
-                    Sequence=index + 1, Code=f'{key}-V{number}-N{index + 1:02d}', Name=name,
+                node = self.insert('WF_NodeTemplate_ProductionExt', Id=wf_node, CraftOrderVersionId=version['id'],
+                    Sequence=(index + 1) * 10, Code=f'{key}-V{number}-N{index + 1:02d}',
                     IsOutsource=index == outsource, IsInbound=inbound,
                     IsReport=key != 'E', WorkHours=Decimal(number + index + 1) / 10,
                     Description=f'{self.batch} 用于核对版本工序差异', IsDeleted=0,
-                    NodeTemplateId=wf_node, CraftId=self.crafts[craft])
+                    CraftId=self.crafts[craft])
                 version['nodes'].append(node)
                 for machine_index, machine in enumerate(self.machines[craft]):
-                    self.insert('Technical_NodeSettingTemplate_Machine_RL', MachineId=machine,
+                    self.insert('WF_NodeTemplate_Machine_RL', MachineId=machine,
                         NodeSettingTemplateId=node, IsDeleted=0,
                         WorkHours=Decimal(number + index + machine_index + 1) / 10)
-                if inbound:
+                if inbound or index == outsource:
                     self.material(version, node, key, 1, output=True)
             chain.append(self.workflow_node(workflow, '结束', 3, count + 1))
+            self.update('WF_WorkflowTemplate', workflow, StartNodeId=chain[0], EndNodeId=chain[-1])
             for previous, following in zip(chain, chain[1:]):
                 self.insert('WF_NodeTemplateLink', PreviousId=previous, NextId=following,
                             WorkflowTemplateId=workflow)
@@ -259,8 +270,8 @@ class Fixture:
 
     def aggregate(self):
         rows = self.all('''SELECT m.*, n.CraftOrderVersionId, v.BomVersionId AS RefBomVersionId
-            FROM Technical_NodeSettingTemplate_Material_RL m
-            JOIN Technical_NodeSettingTemplate n ON n.Id=m.NodeSettingTemplateId
+            FROM WF_NodeTemplate_Material_RL m
+            JOIN WF_NodeTemplate_ProductionExt n ON n.Id=m.NodeSettingTemplateId
             LEFT JOIN Technical_CraftOrderVersion v ON v.Id=m.RefCraftOrderVersionId
             WHERE m.CreateUserNo=%s AND m.IOType=1 ORDER BY m.Id''', (self.batch,))
         totals = defaultdict(lambda: defaultdict(lambda: dict(quantity=Decimal(0), substitutes=defaultdict(Decimal))))
@@ -312,7 +323,11 @@ class Fixture:
             checks.append(name)
 
         for table, ids in self.ids.items():
-            rows = self.all(f'SELECT Id FROM `{table}` WHERE CreateUserNo=%s', (self.batch,))
+            if table == 'WF_NodeTemplate_ProductionExt':
+                rows = self.all('SELECT e.Id FROM WF_NodeTemplate_ProductionExt e '
+                                'JOIN WF_NodeTemplate n ON n.Id=e.Id WHERE n.CreateUserNo=%s', (self.batch,))
+            else:
+                rows = self.all(f'SELECT Id FROM `{table}` WHERE CreateUserNo=%s', (self.batch,))
             check({r['Id'] for r in rows} == set(ids), f'{table}: 插入ID及批次一致')
         versions = self.all('''SELECT v.*, b.IsMain AS BomMain,b.Status AS BomStatus,
             b.MBomId,b.UnitInfo,b.TotalQuantity,b.UnitConversionId,
@@ -335,13 +350,25 @@ class Fixture:
             check(version['TotalQuantity'] == 1 and version['UnitConversionId'] == -1
                   and all(Decimal(str(u['Ratio'])) * Decimal(str(u['Quantity'])) == 1 for u in units),
                   f"V{version['Id']}: BOM单位比例有效")
-        nodes = self.all('SELECT * FROM Technical_NodeSettingTemplate WHERE CreateUserNo=%s', (self.batch,))
+        nodes = self.all('SELECT e.*,n.WorkflowTemplateId,n.NodeTypeId FROM WF_NodeTemplate_ProductionExt e '
+                         'JOIN WF_NodeTemplate n ON n.Id=e.Id WHERE n.CreateUserNo=%s', (self.batch,))
+        check(len(nodes) == sum(v['process_count'] for v in self.versions.values()), 'TPT生产节点主表与扩展表数量匹配')
         for version in self.versions.values():
             route = sorted((n for n in nodes if n['CraftOrderVersionId'] == version['id']), key=lambda n: n['Sequence'])
-            check(len(route) == version['process_count'] and [n['Sequence'] for n in route] == list(range(1, len(route) + 1)),
+            check(len(route) == version['process_count'] and [n['Sequence'] for n in route] == [10 * (i + 1) for i in range(len(route))],
                   f"{version['key']}-V{version['number']}: 工序顺序完整")
+            check(all(n['NodeTypeId'] == 2 and n['WorkflowTemplateId'] == version['workflow_id'] for n in route),
+                  f"{version['key']}-V{version['number']}: TPT工序与版本工作流一致")
+            workflow_head = self.all('SELECT StartNodeId,EndNodeId FROM WF_WorkflowTemplate WHERE Id=%s', (version['workflow_id'],))[0]
+
             check(all(not n['IsOutsource'] or i > 0 and route[i-1]['IsInbound'] for i, n in enumerate(route)),
                   f"{version['key']}-V{version['number']}: 外协前入库")
+            output_nodes = {r['NodeSettingTemplateId'] for r in self.all(
+                'SELECT m.NodeSettingTemplateId FROM WF_NodeTemplate_Material_RL m '
+                'JOIN WF_NodeTemplate_ProductionExt e ON e.Id=m.NodeSettingTemplateId '
+                'WHERE e.CraftOrderVersionId=%s AND m.IOType=2', (version['id'],))}
+            check(all(n['Id'] in output_nodes for n in route if n['IsInbound'] or n['IsOutsource']),
+                  f"{version['key']}-V{version['number']}: 入库和外协工序均配置产出物料")
             if version['key'] != 'E':
                 check(route[-1]['IsReport'] and (route[-1]['IsInbound'] or route[-1]['IsOutsource']),
                       f"{version['key']}-V{version['number']}: 末工序满足发布条件")
@@ -358,14 +385,19 @@ class Fixture:
             check(len(visited) == len(wf_nodes) == len(route) + 2 and len(links) == len(wf_nodes) - 1
                   and next(n['NodeTypeId'] for n in wf_nodes if n['Id'] == visited[-1]) == 3,
                   f"{version['key']}-V{version['number']}: 工作流起止节点及连接完整")
-        bad_machines = self.all('''SELECT m.Id FROM Technical_NodeSettingTemplate_Machine_RL m
-            JOIN Technical_NodeSettingTemplate n ON n.Id=m.NodeSettingTemplateId
+            check(workflow_head['StartNodeId'] == visited[0] and workflow_head['EndNodeId'] == visited[-1],
+                  f"{version['key']}-V{version['number']}: 工作流头起止Id正确")
+            check(set(version['nodes']) == {n['Id'] for n in wf_nodes if n['NodeTypeId'] == 2},
+                  f"{version['key']}-V{version['number']}: 生产类型节点均有TPT扩展")
+
+        bad_machines = self.all('''SELECT m.Id FROM WF_NodeTemplate_Machine_RL m
+            JOIN WF_NodeTemplate_ProductionExt n ON n.Id=m.NodeSettingTemplateId
             LEFT JOIN Base_Machine_Craft_RL r ON r.MachineId=m.MachineId AND r.CraftId=n.CraftId
             WHERE m.CreateUserNo=%s AND (r.MachineId IS NULL OR m.WorkHours<=0)''', (self.batch,))
         check(not bad_machines, '设备属于对应加工类别，设备工时有效')
         references = self.all('''SELECT m.Id,v.Id AS RefId,v.Status,o.ProductId,m.DataId,n.CraftOrderVersionId
-            FROM Technical_NodeSettingTemplate_Material_RL m
-            JOIN Technical_NodeSettingTemplate n ON n.Id=m.NodeSettingTemplateId
+            FROM WF_NodeTemplate_Material_RL m
+            JOIN WF_NodeTemplate_ProductionExt n ON n.Id=m.NodeSettingTemplateId
             JOIN Technical_CraftOrderVersion v ON v.Id=m.RefCraftOrderVersionId
             JOIN Technical_CraftOrder o ON o.Id=v.CraftOrderId WHERE m.CreateUserNo=%s''', (self.batch,))
         check(len(references) == 16 and all(r['Status'] == 2 and r['DataId'] == r['ProductId'] for r in references),
@@ -402,12 +434,15 @@ class Fixture:
                  '-- 默认 ROLLBACK；确认查询与删除范围后才能改为 COMMIT。', 'START TRANSACTION;']
         def remove(table, extra=''):
             ids = ','.join(map(str, self.ids[table]))
-            lines.append(f"DELETE FROM `{table}` WHERE Id IN ({ids}) AND CreateUserNo='{self.batch}'{extra};")
-        material = 'Technical_NodeSettingTemplate_Material_RL'
+            if table == 'WF_NodeTemplate_ProductionExt':
+                lines.append(f"DELETE e FROM `{table}` e JOIN WF_NodeTemplate n ON n.Id=e.Id WHERE e.Id IN ({ids}) AND n.CreateUserNo='{self.batch}';")
+            else:
+                lines.append(f"DELETE FROM `{table}` WHERE Id IN ({ids}) AND CreateUserNo='{self.batch}'{extra};")
+        material = 'WF_NodeTemplate_Material_RL'
         remove(material, ' AND InsteadSourceId IS NOT NULL')
         remove(material)
-        remove('Technical_NodeSettingTemplate_Machine_RL')
-        remove('Technical_NodeSettingTemplate')
+        remove('WF_NodeTemplate_Machine_RL')
+        remove('WF_NodeTemplate_ProductionExt')
         remove('Production_MBom_Detail', ' AND IsSubstitute=1')
         remove('Production_MBom_Detail')
         remove('Technical_CraftOrderVersion')
@@ -415,6 +450,7 @@ class Fixture:
         remove('Production_MBom')
         remove('Technical_CraftOrder')
         wfids = ','.join(map(str, self.ids['WF_WorkflowTemplate']))
+        lines.append(f"UPDATE WF_WorkflowTemplate SET StartNodeId=NULL,EndNodeId=NULL WHERE Id IN ({wfids}) AND CreateUserNo='{self.batch}';")
         lines.append(f'DELETE FROM WF_NodeTemplateLink WHERE WorkflowTemplateId IN ({wfids});')
         remove('WF_NodeTemplate')
         remove('WF_WorkflowTemplate')
@@ -459,7 +495,7 @@ def main():
                 created_at=datetime.now(), ids=fixture.ids, relations=fixture.relations,
                 counts={**{t: len(ids) for t, ids in fixture.ids.items()},
                         **{t: len(rows) for t, rows in fixture.relations.items()}},
-                orders=fixture.orders, checks=checks)
+                orders=fixture.orders, checks=checks, before_counts=fixture.before_counts, inheritance='TPT: WF_NodeTemplate.Id = WF_NodeTemplate_ProductionExt.Id')
             output.mkdir(parents=True, exist_ok=True)
             # Persist IDs before commit so even an interrupted run remains traceable.
             manifest_path.write_text(encode(manifest), encoding='utf-8')

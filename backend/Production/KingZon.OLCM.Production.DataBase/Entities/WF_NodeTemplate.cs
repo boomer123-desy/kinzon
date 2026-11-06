@@ -1,4 +1,5 @@
 using KingZon.Core.DataBase;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,6 +16,8 @@ namespace KingZon.Mes.Workflow.Entity
     {
         public override void Configure(EntityTypeBuilder<WF_NodeTemplate> builder)
         {
+            //多表继承配置
+            builder.UseTptMappingStrategy();
             builder.HasOne(o => o.WorkflowTemplate)
                 .WithMany(o=>o.NodeTemplates)
                 .HasForeignKey(o => o.WorkflowTemplateId);
@@ -25,13 +28,7 @@ namespace KingZon.Mes.Workflow.Entity
     /// </summary>
     public partial class WF_NodeTemplate
     : BaseEntity
-
-
     {
-        public WF_NodeTemplate()
-        {
-        }
-
         [Column(Order = 1)]
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -39,10 +36,10 @@ namespace KingZon.Mes.Workflow.Entity
         public new long Id { get; set; }
 
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
 
-        public string Type { get; set; }
+        public string? Type { get; set; }
 
         public decimal Left { get; set; }
 
@@ -53,19 +50,19 @@ namespace KingZon.Mes.Workflow.Entity
         public decimal Height { get; set; }
 
         public long NodeTypeId { get; set; }
-        public virtual WF_NodeType NodeType { get; set; }
+        public virtual WF_NodeType NodeType { get; set; } = null!;
 
         public long DataId { get; set; }
         public long WorkflowTemplateId { get; set; }
         /// <summary>
         /// 对应的流程模板
         /// </summary>
-        public virtual WF_WorkflowTemplate WorkflowTemplate { get; set; }
+        public virtual WF_WorkflowTemplate WorkflowTemplate { get; set; } = null!;
 
-        public virtual ICollection<WF_NodeTemplateLink> PreviousLineTemplates { get; set; } = new HashSet<WF_NodeTemplateLink>();
+        public virtual ICollection<WF_NodeTemplateLink> PreviousLineTemplates { get; set; } = null!;
 
-        public virtual ICollection<WF_NodeTemplateLink> NextLineTemplates { get; set; } = new HashSet<WF_NodeTemplateLink>();
+        public virtual ICollection<WF_NodeTemplateLink> NextLineTemplates { get; set; } = null!;
 
-        public virtual ICollection<WF_NodePermissionTemplate> NodePermissionTemplates { get; set; } = new HashSet<WF_NodePermissionTemplate>();
+        public virtual ICollection<WF_NodePermissionTemplate> NodePermissionTemplates { get; set; } = null!;
     }
 }
